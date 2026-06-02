@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ShopKart</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#f4f4f4;
+    overflow-x:hidden;
+}
+
+/* NAVBAR */
+
+.navbar{
+    background:#131921;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    z-index:9999;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 5%;
+}
+
+.logo{
+    font-size:42px;
+    font-weight:bold;
+    color:#ff9900;
+}
+
+.search-wrapper{
+    display:block !important;
+    width:500px !important;
+    background:red;
+}
+.search-box{
+    display:flex;
+}
+
+.search-box input{
+    flex:1;
+    padding:14px;
+    border:none;
+    outline:none;
+    font-size:16px;
+}
+
+.search-box button{
+    background:#ff9900;
+    border:none;
+    padding:14px 28px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.cart{
+    color:white;
+    text-decoration:none;
+    font-size:28px;
+    font-weight:bold;
+}
+
+/* SEARCH SUGGESTIONS */
+
+#suggestions{
+    position:absolute;
+    top:58px;
+    width:100%;
+    background:white;
+    border-radius:10px;
+    overflow:hidden;
+    display:none;
+    box-shadow:0 5px 20px rgba(0,0,0,.2);
+    z-index:9999;
+    max-height:300px;
+    overflow-y:auto;
+}
+
+.suggestion-item{
+    padding:14px;
+    cursor:pointer;
+    border-bottom:1px solid #eee;
+}
+
+.suggestion-item:hover{
+    background:#f4f4f4;
+}
+
+/* HERO */
+
+.hero-slider{
+    position:relative;
+    width:100%;
+    height:100vh;
+    overflow:hidden;
+}
+
+.hero-slide{
+    position:absolute;
+    width:100%;
+    height:100%;
+    opacity:0;
+    animation:heroSlider 30s infinite;
+}
+
+.hero-slide img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.hero-slide:nth-child(1){animation-delay:0s;}
+.hero-slide:nth-child(2){animation-delay:5s;}
+.hero-slide:nth-child(3){animation-delay:10s;}
+.hero-slide:nth-child(4){animation-delay:15s;}
+.hero-slide:nth-child(5){animation-delay:20s;}
+.hero-slide:nth-child(6){animation-delay:25s;}
+
+@keyframes heroSlider{
+
+    0%{
+        opacity:0;
+        transform:scale(1);
+    }
+
+    10%{
+        opacity:1;
+    }
+
+    20%{
+        opacity:1;
+        transform:scale(1.05);
+    }
+
+    30%{
+        opacity:0;
+    }
+
+    100%{
+        opacity:0;
+    }
+}
+
+.hero-content{
+    position:absolute;
+    top:55%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    text-align:center;
+    color:white;
+}
+
+.hero-content h1{
+    font-size:85px;
+    margin-bottom:20px;
+}
+
+.hero-content p{
+    font-size:28px;
+    margin-bottom:30px;
+}
+
+.hero-btn{
+    display:inline-block;
+    background:#ff9900;
+    color:black;
+    padding:18px 40px;
+    border-radius:10px;
+    text-decoration:none;
+    font-size:22px;
+    font-weight:bold;
+}
+
+/* FEATURED PRODUCTS */
+
+.products-section{
+    padding:80px 0;
+}
+
+.section-title{
+    text-align:center;
+    font-size:65px;
+    margin-bottom:50px;
+}
+
+.slider-container{
+    overflow:hidden;
+}
+
+.slider-track{
+    display:flex;
+    gap:30px;
+    width:max-content;
+    animation:autoScroll 45s linear infinite;
+    padding:20px;
+}
+
+.slider-track:hover{
+    animation-play-state:paused;
+}
+
+@keyframes autoScroll{
+
+    from{
+        transform:translateX(0);
+    }
+
+    to{
+        transform:translateX(-50%);
+    }
+}
+
+.product-card{
+    min-width:320px;
+    max-width:320px;
+    background:white;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 5px 15px rgba(0,0,0,.15);
+}
+
+.product-card img{
+    width:100%;
+    height:250px;
+    object-fit:cover;
+}
+
+.product-card-content{
+    padding:20px;
+}
+
+.product-card h3{
+    font-size:28px;
+    margin-bottom:15px;
+}
+
+.product-card p{
+    color:green;
+    font-size:30px;
+    font-weight:bold;
+    margin-bottom:20px;
+}
+
+.product-buttons{
+    display:flex;
+    gap:15px;
+}
+
+.product-rating{
+
+    color:#ff9900;
+
+    font-size:22px;
+
+    font-weight:bold;
+
+    margin-bottom:12px;
+}
+
+.cart-btn{
+    flex:1;
+    text-align:center;
+    background:#ff9900;
+    color:black;
+    padding:12px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.view-btn{
+    flex:1;
+    text-align:center;
+    background:#007bff;
+    color:white;
+    padding:12px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+/* SEARCH RESULTS */
+
+.search-results{
+    padding:140px 5% 80px;
+}
+
+.search-products{
+    display:flex;
+    flex-direction:column;
+    gap:25px;
+}
+
+.search-card{
+    background:white;
+    display:flex;
+    gap:25px;
+    padding:20px;
+    border-radius:20px;
+    box-shadow:0 5px 15px rgba(0,0,0,.1);
+}
+
+.search-card img{
+    width:320px;
+    height:250px;
+    object-fit:cover;
+    border-radius:15px;
+}
+
+.search-info{
+    flex:1;
+}
+
+.search-info h2{
+    font-size:42px;
+    margin-bottom:15px;
+}
+
+.search-price{
+    color:green;
+    font-size:42px;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+
+.search-buttons{
+    display:flex;
+    gap:15px;
+    margin-top:25px;
+}
+
+/* PAGINATION */
+
+.pagination{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-top:50px;
+    flex-wrap:wrap;
+}
+
+.pagination a{
+    background:#ff9900;
+    color:black;
+    padding:12px 18px;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.pagination .active{
+    background:#131921;
+    color:white;
+}
+
+/* MOBILE INFINITE */
+
+#load-more-trigger{
+    height:20px;
+}
+
+.loading{
+    text-align:center;
+    font-size:24px;
+    padding:30px;
+    font-weight:bold;
+    display:none;
+}
+
+/* FOOTER */
+
+footer{
+    background:#131921;
+    color:white;
+    text-align:center;
+    padding:40px;
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+.navbar{
+    display:flex;
+    align-items:center;
+    gap:20px;
+}
+
+.logo{
+    font-size:48px;
+    font-weight:bold;
+}
+
+.search-wrapper{
+    flex:1;
+    max-width:700px;
+}
+
+.search-box{
+    display:flex;
+    width:100%;
+}
+
+.search-box input{
+    flex:1;
+    padding:12px;
+}
+
+.search-box button{
+    padding:12px 20px;
+}
+
+    .search-wrapper{
+        width:100%;
+    }
+
+    .hero-content h1{
+        font-size:52px;
+    }
+
+    .hero-content p{
+        font-size:20px;
+    }
+
+    .section-title{
+        font-size:42px;
+    }
+
+    .search-card{
+        flex-direction:column;
+    }
+
+    .search-card img{
+        width:100%;
+        height:240px;
+    }
+
+    .search-info h2{
+        font-size:32px;
+    }
+
+    .search-price{
+        font-size:34px;
+    }
+
+    .search-buttons{
+        flex-direction:column;
+    }
+
+    .pagination{
+        display:none;
+    }
+
+    .loading{
+        display:block;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<nav class="navbar">
+
+    <div class="logo">
+        ShopKart
+    </div>
+
+    <div class="search-wrapper">
+
+        <form method="GET" action="{% url 'home' %}" class="search-box">
+
+            <input
+                type="text"
+                id="searchInput"
+                name="search"
+                placeholder="Search products..."
+                autocomplete="off"
+                value="{{ search }}"
+            >
+
+            <button type="submit">
+                Search
+            </button>
+
+        </form>
+
+        <div id="suggestions"></div>
+
+    </div>
+
+    <a href="{% url 'cart' %}" class="cart">
+        🛒 Cart
+    </a>
+
+</nav>
+
+{% if search %}
+
+<section class="search-results">
+
+    <div class="search-products" id="products-container">
+
+        {% for product in products %}
+
+        <div class="search-card">
+
+            <img src="{{ product.image }}">
+
+            <div class="search-info">
+
+            <h2>{{ product.name }}</h2>
+
+            <div class="product-rating">
+
+                ⭐ {{ product.average_rating }}/5
+
+                ({{ product.total_reviews }} Reviews)
+
+            </div>
+
+            <div class="search-price">
+
+                ₹{{ product.price }}
+
+            </div>
+
+                <p>{{ product.description }}</p>
+
+                <div class="search-buttons">
+
+                    <a href="{% url 'add_to_cart' product.id %}" class="cart-btn">
+                        Add To Cart
+                    </a>
+
+                    <a href="{% url 'product_detail' product.id %}" class="view-btn">
+                        View Product
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    <!-- DESKTOP PAGINATION -->
+
+    <div class="pagination">
+
+        {% if products.has_previous %}
+        <a href="?search={{ search }}&page={{ products.previous_page_number }}">
+            Prev
+        </a>
+        {% endif %}
+
+        {% for num in products.paginator.page_range %}
+
+            {% if products.number == num %}
+
+            <a class="active">
+                {{ num }}
+            </a>
+
+            {% else %}
+
+            <a href="?search={{ search }}&page={{ num }}">
+                {{ num }}
+            </a>
+
+            {% endif %}
+
+        {% endfor %}
+
+        {% if products.has_next %}
+        <a href="?search={{ search }}&page={{ products.next_page_number }}">
+            Next
+        </a>
+        {% endif %}
+
+    </div>
+
+    <!-- MOBILE SCROLL -->
+
+    <div id="load-more-trigger"></div>
+
+    <div class="loading" id="loading-text">
+        Loading More Products...
+    </div>
+
+</section>
+
+{% else %}
+
+<!-- HERO -->
+
+<section class="hero-slider">
+
+    <div class="hero-slide">
+        <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600">
+    </div>
+
+    <div class="hero-slide">
+        <img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=1600">
+    </div>
+
+    <div class="hero-slide">
+        <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1600">
+    </div>
+
+    <div class="hero-slide">
+        <img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=1600">
+    </div>
+
+    <div class="hero-slide">
+        <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=1600">
+    </div>
+
+    <div class="hero-slide">
+        <img src="https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1600">
+    </div>
+
+    <div class="hero-content">
+
+        <h1>
+            Welcome To ShopKart
+        </h1>
+
+        <p>
+            Discover Amazing Products At Best Prices
+        </p>
+
+        <a href="#products" class="hero-btn">
+            Shop Now
+        </a>
+
+    </div>
+
+</section>
+
+<!-- FEATURED PRODUCTS -->
+
+<section class="products-section" id="products">
+
+    <h2 class="section-title">
+        Featured Products
+    </h2>
+
+    <div class="slider-container">
+
+        <div class="slider-track">
+
+            {% for product in featured_products %}
+
+            <div class="product-card">
+
+                <img src="{{ product.image }}">
+
+                <div class="product-card-content">
+
+                    <h3>{{ product.name }}</h3>
+
+                    <div class="product-rating">
+
+                        ⭐ {{ product.average_rating }}/5
+
+                        ({{ product.total_reviews }})
+
+                    </div>
+
+                    <p>₹{{ product.price }}</p>
+
+                    <div class="product-buttons">
+
+                        <a href="{% url 'add_to_cart' product.id %}" class="cart-btn">
+                            Add To Cart
+                        </a>
+
+                        <a href="{% url 'product_detail' product.id %}" class="view-btn">
+                            View Product
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+            {% for product in featured_products %}
+
+            <div class="product-card">
+
+                <img src="{{ product.image }}">
+
+                <div class="product-card-content">
+
+                    <h3>{{ product.name }}</h3>
+
+                    <p>₹{{ product.price }}</p>
+
+                    <div class="product-buttons">
+
+                        <a href="{% url 'add_to_cart' product.id %}" class="cart-btn">
+                            Add To Cart
+                        </a>
+
+                        <a href="{% url 'product_detail' product.id %}" class="view-btn">
+                            View Product
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+<footer>
+
+    <h2>ShopKart</h2>
+
+    <p>Powered by Django & PostgreSQL</p>
+
+</footer>
+
+<script>
+
+const searchInput =
+document.getElementById("searchInput");
+
+const suggestions =
+document.getElementById("suggestions");
+
+let debounceTimer;
+
+/* SEARCH */
+
+if(searchInput){
+
+    searchInput.addEventListener(
+        "input",
+        function(){
+
+            clearTimeout(debounceTimer);
+
+            const query =
+            this.value.trim();
+
+            if(query.length === 0){
+
+                suggestions.style.display =
+                "none";
+
+                return;
+            }
+
+            debounceTimer = setTimeout(()=>{
+
+                fetch(
+                    `/search-suggestions/?term=${encodeURIComponent(query)}`
+                )
+
+                .then(res=>res.json())
+
+                .then(data=>{
+
+                    let html = "";
+
+                    data.forEach(product=>{
+
+                        html += `
+
+                        <div
+                            class="suggestion-item"
+                            onclick="window.location='/product/${product.id}/'"
+                        >
+
+                            <strong>${product.name}</strong>
+
+                            <br>
+
+                            ₹${product.price}
+
+                        </div>
+
+                        `;
+
+                    });
+
+                    suggestions.innerHTML =
+                    html;
+
+                    suggestions.style.display =
+                    "block";
+
+                });
+
+            },300);
+
+        }
+    );
+
+}
+
+/* CLOSE SUGGESTIONS */
+
+document.addEventListener(
+    "click",
+    function(e){
+
+        if(
+            searchInput &&
+            suggestions &&
+            !searchInput.contains(e.target) &&
+            !suggestions.contains(e.target)
+        ){
+
+            suggestions.style.display =
+            "none";
+
+        }
+
+    }
+);
+
+/* MOBILE INFINITE SCROLL */
+
+function isMobile(){
+
+    return window.innerWidth <= 900;
+
+}
+
+const trigger =
+document.getElementById("load-more-trigger");
+
+const loadingText =
+document.getElementById("loading-text");
+
+const container =
+document.getElementById("products-container");
+
+let currentPage =
+parseInt("{{ products.number|default:1 }}");
+
+let loading = false;
+
+let hasNext =
+{{ products.has_next|yesno:"true,false" }};
+
+async function loadMoreProducts(){
+
+    if(
+        loading ||
+        !hasNext ||
+        !isMobile()
+    ){
+        return;
+    }
+
+    loading = true;
+
+    loadingText.style.display =
+    "block";
+
+    try{
+
+        const nextPage =
+        currentPage + 1;
+
+        const response =
+        await fetch(
+
+            `/?search={{ search }}&page=${nextPage}`,
+
+            {
+                headers:{
+                    "X-Requested-With":
+                    "XMLHttpRequest"
+                }
+            }
+
+        );
+
+        const data =
+        await response.json();
+
+        if(
+            !data.products ||
+            data.products.length === 0
+        ){
+
+            hasNext = false;
+
+            loadingText.innerHTML =
+            "No More Products";
+
+            return;
+        }
+
+        data.products.forEach(product=>{
+
+            const html = `
+
+            <div class="search-card">
+
+                <img src="${product.image}">
+
+                <div class="search-info">
+
+                    <h2>${product.name}</h2>
+
+<h2>${product.name}</h2>
+
+<div class="product-rating">
+
+    ⭐ ${product.rating}/5
+
+    (${product.reviews} Reviews)
+
+</div>
+
+<div class="search-price">
+
+    ₹${product.price}
+
+</div>
+
+                    <p>
+                        ${product.description}
+                    </p>
+
+                    <div class="search-buttons">
+
+                        <a
+                            href="/add-to-cart/${product.id}/"
+                            class="cart-btn"
+                        >
+                            Add To Cart
+                        </a>
+
+                        <a
+                            href="/product/${product.id}/"
+                            class="view-btn"
+                        >
+                            View Product
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            `;
+
+            container.insertAdjacentHTML(
+                "beforeend",
+                html
+            );
+
+        });
+
+        currentPage = nextPage;
+
+        hasNext = data.has_next;
+
+        const url =
+        new URL(window.location);
+
+        url.searchParams.set(
+            "page",
+            currentPage
+        );
+
+        window.history.replaceState(
+            {},
+            "",
+            url
+        );
+
+        if(!hasNext){
+
+            loadingText.innerHTML =
+            "No More Products";
+
+        }
+
+    }
+
+    catch(error){
+
+        console.log(error);
+
+    }
+
+    loading = false;
+}
+
+if(trigger){
+
+    const observer =
+    new IntersectionObserver(
+
+        entries=>{
+
+            if(
+                entries[0].isIntersecting
+            ){
+
+                loadMoreProducts();
+
+            }
+
+        },
+
+        {
+            threshold:0.1
+        }
+
+    );
+
+    observer.observe(trigger);
+
+}
+
+</script>
+
+</body>
+</html>

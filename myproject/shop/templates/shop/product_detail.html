@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>{{ product.name }}</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#f4f4f4;
+}
+
+/* NAVBAR */
+
+.navbar{
+    background:#131921;
+    padding:18px 5%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.logo{
+    color:#ff9900;
+    font-size:36px;
+    font-weight:bold;
+    text-decoration:none;
+}
+
+.cart{
+    color:white;
+    text-decoration:none;
+    font-size:22px;
+    font-weight:bold;
+}
+.search-wrapper{
+    flex:1;
+    max-width:700px;
+    margin:0 30px;
+}
+
+.search-box{
+    display:flex;
+    width:100%;
+}
+
+.search-box input{
+    flex:1;
+    padding:12px 15px;
+    border:none;
+    border-radius:6px 0 0 6px;
+    font-size:16px;
+}
+
+.search-box button{
+    padding:12px 20px;
+    border:none;
+    background:#ff9900;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    border-radius:0 6px 6px 0;
+}
+
+/* PRODUCT */
+
+.product-container{
+    max-width:1400px;
+    margin:40px auto;
+    background:white;
+    border-radius:20px;
+    padding:40px;
+    display:flex;
+    gap:50px;
+    box-shadow:0 5px 20px rgba(0,0,0,.1);
+}
+
+.product-image{
+    flex:1;
+}
+
+.product-image img{
+    width:100%;
+    height:500px;
+    object-fit:cover;
+    border-radius:20px;
+}
+
+.product-info{
+    flex:1;
+}
+
+.product-title{
+    font-size:48px;
+    margin-bottom:15px;
+}
+
+.rating{
+    color:#ff9900;
+    font-size:24px;
+    margin-bottom:15px;
+}
+
+.price{
+    color:green;
+    font-size:48px;
+    font-weight:bold;
+    margin-bottom:20px;
+}
+
+.description{
+    font-size:20px;
+    line-height:1.8;
+    margin-bottom:20px;
+}
+
+.stock{
+    color:green;
+    font-weight:bold;
+    font-size:20px;
+    margin-bottom:25px;
+}
+
+.cart-btn{
+    display:inline-block;
+    background:#ff9900;
+    color:black;
+    padding:15px 35px;
+    text-decoration:none;
+    border-radius:10px;
+    font-weight:bold;
+    font-size:20px;
+}
+
+.cart-btn:hover{
+    background:#e68a00;
+}
+
+/* REVIEW FORM */
+
+.review-form-section{
+    max-width:1400px;
+    margin:40px auto;
+}
+
+.review-form{
+    background:white;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.review-form h2{
+    margin-bottom:25px;
+}
+
+.review-form input,
+.review-form textarea,
+.review-form select{
+    width:100%;
+    padding:14px;
+    margin-bottom:15px;
+    border:1px solid #ddd;
+    border-radius:8px;
+}
+
+.review-form textarea{
+    height:140px;
+    resize:none;
+}
+
+.review-form button{
+    background:#ff9900;
+    border:none;
+    padding:14px 30px;
+    border-radius:8px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* REVIEWS */
+
+.review-section{
+    max-width:1400px;
+    margin:40px auto;
+}
+
+.review-title{
+    font-size:40px;
+    margin-bottom:30px;
+}
+
+.review-card{
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    margin-bottom:20px;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.review-name{
+    font-size:24px;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+.review-stars{
+    color:#ff9900;
+    font-size:20px;
+    margin-bottom:10px;
+}
+
+.review-card h4{
+    margin-bottom:10px;
+}
+
+.review-card small{
+    color:gray;
+}
+
+/* RELATED PRODUCTS */
+
+.related-section{
+    max-width:1400px;
+    margin:60px auto;
+}
+
+.related-title{
+    font-size:40px;
+    margin-bottom:30px;
+}
+
+.related-products{
+    display:flex;
+    gap:25px;
+    overflow-x:auto;
+    padding-bottom:15px;
+}
+
+.related-card{
+    min-width:280px;
+    background:white;
+    border-radius:15px;
+    overflow:hidden;
+    text-decoration:none;
+    color:black;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.related-card img{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+}
+
+.related-card h3{
+    padding:15px;
+    text-align:center;
+}
+
+.related-card p{
+    color:green;
+    font-size:26px;
+    font-weight:bold;
+    text-align:center;
+    padding-bottom:20px;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+    .product-container{
+        flex-direction:column;
+        padding:20px;
+    }
+
+    .product-image img{
+        height:320px;
+    }
+
+    .product-title{
+        font-size:32px;
+    }
+
+    .price{
+        font-size:34px;
+    }
+
+    .review-title,
+    .related-title{
+        font-size:30px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<nav class="navbar">
+
+    <a href="{% url 'home' %}" class="logo">
+        ShopKart
+    </a>
+
+    <div class="search-wrapper">
+
+        <form method="GET" action="{% url 'home' %}" class="search-box">
+
+            <input
+                type="text"
+                name="search"
+                placeholder="Search products..."
+                value="{{ search }}"
+            >
+
+            <button type="submit">
+                Search
+            </button>
+
+        </form>
+
+    </div>
+
+    <a href="{% url 'cart' %}" class="cart">
+        🛒 Cart
+    </a>
+
+</nav>
+
+<!-- PRODUCT -->
+
+<section class="product-container">
+
+    <div class="product-image">
+        <img src="{{ product.image }}" alt="{{ product.name }}">
+    </div>
+
+    <div class="product-info">
+
+        <h1 class="product-title">
+            {{ product.name }}
+        </h1>
+
+        <div class="rating">
+            ⭐ {{ product.average_rating }}/5
+            ({{ product.total_reviews }} Reviews)
+        </div>
+
+        <div class="price">
+            ₹{{ product.price }}
+        </div>
+
+        <div class="description">
+            {{ product.description }}
+        </div>
+
+        <div class="stock">
+            In Stock : {{ product.stock }}
+        </div>
+
+        <a
+            href="{% url 'add_to_cart' product.id %}"
+            class="cart-btn"
+        >
+            Add To Cart
+        </a>
+
+    </div>
+
+</section>
+
+<!-- REVIEW FORM -->
+
+<section class="review-form-section">
+
+    <form method="POST" class="review-form">
+
+        {% csrf_token %}
+
+        <h2>Write A Review</h2>
+
+        <input
+            type="text"
+            name="customer_name"
+            placeholder="Your Name"
+            required
+        >
+
+        <input
+            type="email"
+            name="email"
+            placeholder="Your Email"
+        >
+
+        <select name="rating" required>
+            <option value="5">⭐⭐⭐⭐⭐</option>
+            <option value="4">⭐⭐⭐⭐</option>
+            <option value="3">⭐⭐⭐</option>
+            <option value="2">⭐⭐</option>
+            <option value="1">⭐</option>
+        </select>
+
+        <textarea
+            name="review_text"
+            placeholder="Write Your Review"
+            required
+        ></textarea>
+
+        <button type="submit">
+            Submit Review
+        </button>
+
+    </form>
+
+</section>
+
+<!-- REVIEWS -->
+
+<section class="review-section">
+
+    <h2 class="review-title">
+        Customer Reviews
+    </h2>
+
+    {% for review in reviews %}
+
+    <div class="review-card">
+
+        <div class="review-name">
+            {{ review.customer_name }}
+        </div>
+
+        <div class="review-stars">
+            {{ review.rating }} ⭐
+        </div>
+
+        {% if review.title %}
+        <h4>{{ review.title }}</h4>
+        {% endif %}
+
+        <p>
+            {{ review.review_text }}
+        </p>
+
+        <br>
+
+        <small>
+            {{ review.created_at }}
+        </small>
+
+    </div>
+
+    {% empty %}
+
+    <div class="review-card">
+        <h3>No Reviews Yet</h3>
+    </div>
+
+    {% endfor %}
+
+</section>
+
+<!-- RELATED PRODUCTS -->
+
+<section class="related-section">
+
+    <h2 class="related-title">
+        Related Products
+    </h2>
+
+    <div class="related-products">
+
+        {% for item in related_products %}
+
+        <a
+            href="{% url 'product_detail' item.id %}"
+            class="related-card"
+        >
+
+            <img src="{{ item.image }}">
+
+            <h3>{{ item.name }}</h3>
+
+            <p>₹{{ item.price }}</p>
+
+        </a>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+</body>
+</html>

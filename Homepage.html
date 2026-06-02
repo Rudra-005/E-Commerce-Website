@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShopKart</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#f4f4f4;
+}
+
+.navbar{
+    background:#131921;
+    color:white;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 5%;
+    flex-wrap:wrap;
+}
+
+.logo{
+    font-size:28px;
+    font-weight:bold;
+    color:#ff9900;
+}
+
+.search-box{
+    display:flex;
+    width:40%;
+}
+
+.search-box input{
+    flex:1;
+    padding:10px;
+    border:none;
+    outline:none;
+}
+
+.search-box button{
+    background:#ff9900;
+    border:none;
+    padding:10px 15px;
+    cursor:pointer;
+}
+
+.cart{
+    font-size:18px;
+}
+
+.hero{
+    height:400px;
+    background:linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)),
+    url("https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1200");
+    background-size:cover;
+    background-position:center;
+    color:white;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+}
+
+.hero h1{
+    font-size:55px;
+}
+
+.hero p{
+    margin:15px 0;
+    font-size:20px;
+}
+
+.hero button{
+    padding:12px 25px;
+    border:none;
+    background:#ff9900;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+    border-radius:5px;
+}
+
+.categories{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    padding:20px;
+    flex-wrap:wrap;
+}
+
+.categories button{
+    padding:10px 20px;
+    border:none;
+    background:#131921;
+    color:white;
+    cursor:pointer;
+    border-radius:5px;
+}
+
+.categories button:hover{
+    background:#ff9900;
+}
+
+.products{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:25px;
+    padding:30px 5%;
+}
+
+.card{
+    background:white;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 4px 12px rgba(0,0,0,.1);
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+}
+
+.card img{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+}
+
+.card-body{
+    padding:15px;
+}
+
+.card h3{
+    margin-bottom:10px;
+}
+
+.price{
+    color:green;
+    font-size:22px;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+
+.card button{
+    width:100%;
+    padding:12px;
+    border:none;
+    background:#007bff;
+    color:white;
+    cursor:pointer;
+    border-radius:5px;
+}
+
+.card button:hover{
+    background:#0056b3;
+}
+
+footer{
+    background:#131921;
+    color:white;
+    text-align:center;
+    padding:20px;
+    margin-top:30px;
+}
+
+@media(max-width:768px){
+
+    .navbar{
+        flex-direction:column;
+        gap:15px;
+    }
+
+    .search-box{
+        width:100%;
+    }
+
+    .hero h1{
+        font-size:35px;
+    }
+
+    .hero p{
+        font-size:16px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="logo">ShopKart</div>
+
+    <div class="search-box">
+        <input type="text" placeholder="Search products...">
+        <button>Search</button>
+    </div>
+
+    <div class="cart">
+        🛒 Cart: <span id="cartCount">0</span>
+    </div>
+</nav>
+
+<section class="hero">
+    <h1>Big Summer Sale</h1>
+    <p>Up to 50% Off On Electronics</p>
+    <button>Shop Now</button>
+</section>
+
+<div class="categories">
+    <button onclick="filterProducts('all')">All</button>
+    <button onclick="filterProducts('electronics')">Electronics</button>
+    <button onclick="filterProducts('fashion')">Fashion</button>
+    <button onclick="filterProducts('shoes')">Shoes</button>
+</div>
+
+<section class="products" id="productContainer">
+
+<div class="card electronics">
+    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600">
+    <div class="card-body">
+        <h3>Wireless Headphones</h3>
+        <div class="price">₹1999</div>
+        <button onclick="addToCart()">Add To Cart</button>
+    </div>
+</div>
+
+<div class="card electronics">
+    <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=600">
+    <div class="card-body">
+        <h3>Smart Watch</h3>
+        <div class="price">₹2999</div>
+        <button onclick="addToCart()">Add To Cart</button>
+    </div>
+</div>
+
+<div class="card electronics">
+    <img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=600">
+    <div class="card-body">
+        <h3>Bluetooth Speaker</h3>
+        <div class="price">₹1499</div>
+        <button onclick="addToCart()">Add To Cart</button>
+    </div>
+</div>
+
+<div class="card fashion">
+    <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600">
+    <div class="card-body">
+        <h3>Men T-Shirt</h3>
+        <div class="price">₹799</div>
+        <button onclick="addToCart()">Add To Cart</button>
+    </div>
+</div>
+
+<div class="card fashion">
+    <img src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600">
+    <div class="card-body">
+        <h3>Denim Jacket</h3>
+        <div class="price">₹1499</div>
+        <button onclick="addToCart()">Add To Cart</button>
+    </div>
+</div>
+
+<div class="card shoes">
+    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600">
+    <div class="card-body">
+        <h3>Running Shoes</h3>
+        <div class="price">₹2499</div>
+        <button onclick="addToCart()">Add To Cart</button>
+    </div>
+</div>
+
+</section>
+
+<footer>
+    <h3>ShopKart</h3>
+    <p></p>
+</footer>
+
+<script>
+
+let cart = 0;
+
+function addToCart(){
+    cart++;
+    document.getElementById("cartCount").innerText = cart;
+    alert("Product Added To Cart");
+}
+
+function filterProducts(category){
+
+    let cards = document.querySelectorAll(".card");
+
+    cards.forEach(card=>{
+
+        if(category==="all"){
+            card.style.display="block";
+        }
+        else if(card.classList.contains(category)){
+            card.style.display="block";
+        }
+        else{
+            card.style.display="none";
+        }
+
+    });
+}
+
+</script>
+
+</body>
+</html>

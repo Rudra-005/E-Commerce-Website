@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>ShopKart Cart</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#f4f4f4;
+}
+
+/* NAVBAR */
+
+.navbar{
+
+    background:#131921;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:18px 5%;
+}
+
+.logo{
+
+    color:#ff9900;
+
+    font-size:42px;
+
+    font-weight:bold;
+}
+
+.back-btn{
+
+    background:#ff9900;
+
+    color:black;
+
+    padding:12px 24px;
+
+    text-decoration:none;
+
+    border-radius:10px;
+
+    font-weight:bold;
+}
+
+/* PAGE TITLE */
+
+.page-title{
+
+    text-align:center;
+
+    font-size:55px;
+
+    margin:50px 0;
+}
+
+/* CART */
+
+.cart-container{
+
+    width:90%;
+
+    max-width:1300px;
+
+    margin:auto;
+}
+
+.cart-item{
+
+    background:white;
+
+    display:flex;
+
+    gap:25px;
+
+    padding:25px;
+
+    margin-bottom:25px;
+
+    border-radius:20px;
+
+    align-items:center;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.1);
+}
+
+.cart-item img{
+
+    width:220px;
+
+    height:220px;
+
+    object-fit:cover;
+
+    border-radius:15px;
+}
+
+.cart-info{
+
+    flex:1;
+}
+
+.cart-info h2{
+
+    font-size:38px;
+
+    margin-bottom:15px;
+}
+
+.price{
+
+    color:green;
+
+    font-size:34px;
+
+    font-weight:bold;
+
+    margin-bottom:15px;
+}
+
+.quantity{
+
+    font-size:24px;
+
+    margin-bottom:10px;
+}
+
+.subtotal{
+
+    font-size:26px;
+
+    font-weight:bold;
+
+    margin-bottom:20px;
+}
+
+.button-group{
+
+    display:flex;
+
+    gap:15px;
+
+    flex-wrap:wrap;
+}
+
+.qty-btn{
+
+    background:#007bff;
+
+    color:white;
+
+    padding:12px 20px;
+
+    border-radius:10px;
+
+    text-decoration:none;
+
+    font-weight:bold;
+}
+
+.remove-btn{
+
+    background:red;
+
+    color:white;
+
+    padding:12px 20px;
+
+    border-radius:10px;
+
+    text-decoration:none;
+
+    font-weight:bold;
+}
+
+/* TOTAL BOX */
+
+.total-section{
+
+    background:white;
+
+    margin-top:40px;
+
+    padding:35px;
+
+    border-radius:20px;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.1);
+
+    text-align:right;
+}
+
+.total-section h2{
+
+    font-size:42px;
+
+    margin-bottom:25px;
+}
+
+.checkout-btn{
+
+    background:#28a745;
+
+    color:white;
+
+    padding:15px 30px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    font-size:22px;
+
+    font-weight:bold;
+
+    margin-right:15px;
+}
+
+.clear-btn{
+
+    background:#dc3545;
+
+    color:white;
+
+    padding:15px 30px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    font-size:22px;
+
+    font-weight:bold;
+}
+
+/* EMPTY CART */
+
+.empty-cart{
+
+    text-align:center;
+
+    background:white;
+
+    padding:80px;
+
+    border-radius:20px;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.1);
+}
+
+.empty-cart h2{
+
+    font-size:45px;
+
+    margin-bottom:25px;
+}
+
+.shop-btn{
+
+    display:inline-block;
+
+    background:#ff9900;
+
+    color:black;
+
+    padding:16px 35px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    font-size:22px;
+
+    font-weight:bold;
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+    .cart-item{
+
+        flex-direction:column;
+
+        text-align:center;
+    }
+
+    .cart-item img{
+
+        width:100%;
+
+        height:300px;
+    }
+
+    .cart-info h2{
+
+        font-size:30px;
+    }
+
+    .price{
+
+        font-size:28px;
+    }
+
+    .page-title{
+
+        font-size:40px;
+    }
+
+    .total-section{
+
+        text-align:center;
+    }
+
+    .button-group{
+
+        justify-content:center;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<nav class="navbar">
+
+    <div class="logo">
+        ShopKart
+    </div>
+
+    <a
+        href="{% url 'home' %}"
+        class="back-btn"
+    >
+        ← Continue Shopping
+    </a>
+
+</nav>
+
+<!-- TITLE -->
+
+<h1 class="page-title">
+    Your Shopping Cart
+</h1>
+
+<div class="cart-container">
+
+{% if cart_items %}
+
+    {% for item in cart_items %}
+
+    <div class="cart-item">
+
+        <img
+            src="{{ item.product.image }}"
+            alt="{{ item.product.name }}"
+        >
+
+        <div class="cart-info">
+
+            <h2>
+                {{ item.product.name }}
+            </h2>
+
+            <div class="price">
+                ₹{{ item.product.price }}
+            </div>
+
+            <div class="quantity">
+                Quantity:
+                <strong>{{ item.quantity }}</strong>
+            </div>
+
+            <div class="subtotal">
+                Subtotal:
+                ₹{{ item.subtotal }}
+            </div>
+
+            <div class="button-group">
+
+                <a
+                    href="{% url 'decrease_quantity' item.product.id %}"
+                    class="qty-btn"
+                >
+                    −
+                </a>
+
+                <a
+                    href="{% url 'increase_quantity' item.product.id %}"
+                    class="qty-btn"
+                >
+                    +
+                </a>
+
+                <a
+                    href="{% url 'remove_from_cart' item.product.id %}"
+                    class="remove-btn"
+                >
+                    Remove
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+    <div class="total-section">
+
+        <h2>
+            Total: ₹{{ total }}
+        </h2>
+
+        <a
+            href="{% url 'checkout' %}"
+            class="checkout-btn"
+        >
+            Proceed To Checkout
+        </a>
+
+        <a
+            href="{% url 'clear_cart' %}"
+            class="clear-btn"
+        >
+            Clear Cart
+        </a>
+
+    </div>
+
+{% else %}
+
+    <div class="empty-cart">
+
+        <h2>
+            Your Cart Is Empty
+        </h2>
+
+        <a
+            href="{% url 'home' %}"
+            class="shop-btn"
+        >
+            Shop Now
+        </a>
+
+    </div>
+
+{% endif %}
+
+</div>
+
+</body>
+
+</html>
