@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>ShopKart</title>
+<title>Velora</title>
 
 <style>
 
@@ -25,47 +25,178 @@ body{
 /* NAVBAR */
 
 .navbar{
-    background:#131921;
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    z-index:9999;
     display:flex;
-    justify-content:space-between;
     align-items:center;
-    padding:15px 5%;
+    justify-content:space-between;
+
+    padding:0px 28px;
+    min-height:65px;
+
+    background:linear-gradient(
+        135deg,
+        #071321,
+        #0d1b2a,
+        #071321
+    );
+
+    backdrop-filter:blur(20px);
+
+    border-bottom:
+        1px solid rgba(255,255,255,.08);
+}
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
 }
 
 .logo{
-    font-size:42px;
-    font-weight:bold;
-    color:#ff9900;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.logo-icon{
+    width:42px;
+    height:42px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:12px;
+
+    background:linear-gradient(
+        135deg,
+        #ffb000,
+        #ff6200
+    );
+
+    color:white;
+    font-size:24px;
+    font-weight:800;
+}
+
+.logo-text{
+    font-size:32px;
+    font-weight:800;
+    color:#ffb000;
+    line-height:1;
 }
 
 .search-wrapper{
-    display:block !important;
-    width:500px !important;
-    background:red;
-}
-.search-box{
     display:flex;
+    justify-content:center;
+    align-items:center;
+    width:100%;
+}
+
+.search-box{
+    width:520px;
+    height:46px;   /* 70px se 55px */
+
+    display:flex;
+    align-items:center;
+
+    background:rgba(255,255,255,0.12);
+    backdrop-filter:blur(20px);
+
+    border:1px solid rgba(255,255,255,0.15);
+
+    border-radius:22px;
+
+    overflow:hidden;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.25);
+
+    transition:.35s ease;
+}
+
+.search-box:hover{
+    transform:translateY(-3px);
+    box-shadow:
+        0 20px 50px rgba(0,0,0,0.35);
+}
+
+.search-box:focus-within{
+    border:1px solid #ff9800;
+    box-shadow:
+        0 0 0 4px rgba(255,152,0,.18),
+        0 20px 50px rgba(0,0,0,.35);
 }
 
 .search-box input{
     flex:1;
-    padding:14px;
+
     border:none;
     outline:none;
-    font-size:16px;
+
+    background:transparent;
+
+    padding:0 16px;
+
+    color:white;
+    font-size:15px;
+    font-weight:500;
+}
+
+.search-box input::placeholder{
+    color:rgba(255,255,255,.65);
+}
+
+.search-box select{
+    width:140px;
+    height:100%;
+
+    border:none;
+    outline:none;
+
+    background:rgba(255,255,255,.08);
+
+    color:white;
+
+    font-size:14px;
+    padding:0 20px;
+
+    cursor:pointer;
 }
 
 .search-box button{
-    background:#ff9900;
+    width:120px;
+    height:100%;
+
     border:none;
-    padding:14px 28px;
-    font-weight:bold;
     cursor:pointer;
+
+    font-size:15px;
+    font-weight:700;
+
+    color:white;
+
+    background:linear-gradient(
+        135deg,
+        #ff9d00,
+        #ff5f00
+    );
+
+    transition:.3s ease;
+}
+.search-box select{
+    background:#3f4a5a;
+    color:white;
+    border:none;
+    outline:none;
+}
+
+.search-box select option{
+    background:#1b2430;
+    color:white;
+}
+
+.search-box button:hover{
+    letter-spacing:1px;
+    transform:scale(1.02);
 }
 
 .cart{
@@ -110,41 +241,62 @@ body{
     overflow:hidden;
 }
 
-.hero-slide{
-    position:absolute;
-    width:100%;
-    height:100%;
-    opacity:0;
-    animation:heroSlider 30s infinite;
-}
 
 .hero-slide img{
     width:100%;
     height:100%;
     object-fit:cover;
 }
+.hero-slide::after{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.45);
+}
 
-.hero-slide:nth-child(1){animation-delay:0s;}
-.hero-slide:nth-child(2){animation-delay:5s;}
-.hero-slide:nth-child(3){animation-delay:10s;}
-.hero-slide:nth-child(4){animation-delay:15s;}
-.hero-slide:nth-child(5){animation-delay:20s;}
-.hero-slide:nth-child(6){animation-delay:25s;}
+.hero-slide{
+    position:absolute;
+    width:100%;
+    height:100%;
+    opacity:0;
+    animation:heroSlider 25s infinite;
+}
+
+.hero-slide:nth-child(1){
+    animation-delay:0s;
+}
+
+.hero-slide:nth-child(2){
+    animation-delay:5s;
+}
+
+.hero-slide:nth-child(3){
+    animation-delay:10s;
+}
+
+.hero-slide:nth-child(4){
+    animation-delay:15s;
+}
+
+.hero-slide:nth-child(5){
+    animation-delay:20s;
+}
 
 @keyframes heroSlider{
 
     0%{
         opacity:0;
-        transform:scale(1);
     }
 
-    10%{
+    5%{
         opacity:1;
     }
 
-    20%{
+    25%{
         opacity:1;
-        transform:scale(1.05);
     }
 
     30%{
@@ -154,6 +306,7 @@ body{
     100%{
         opacity:0;
     }
+
 }
 
 .hero-content{
@@ -163,6 +316,8 @@ body{
     transform:translate(-50%,-50%);
     text-align:center;
     color:white;
+
+    z-index:10;   /* ADD THIS */
 }
 
 .hero-content h1{
@@ -184,6 +339,79 @@ body{
     text-decoration:none;
     font-size:22px;
     font-weight:bold;
+}
+/* CATEGORY SECTION */
+
+.categories-section{
+    padding:70px 5%;
+    background:white;
+}
+
+.category-title{
+    text-align:center;
+    font-size:45px;
+    margin-bottom:40px;
+}
+
+.category-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:25px;
+}
+
+.category-card{
+    background:white;
+    border-radius:20px;
+    padding:30px 20px;
+    text-align:center;
+    text-decoration:none;
+    color:#111;
+    box-shadow:0 5px 15px rgba(0,0,0,.12);
+    transition:.3s;
+
+    font-size:60px;   /* NEW */
+}
+.category-card{
+    min-height:180px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+}
+
+.category-card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 10px 25px rgba(0,0,0,.15);
+}
+
+.category-card span{
+    display:block;
+    margin-top:15px;
+    font-size:22px;
+    font-weight:bold;
+}
+/* OFFER BAR */
+
+.offer-wrapper{
+    background:#ff9900;
+    overflow:hidden;
+}
+
+.offer-bar{
+    display:inline-block;
+    white-space:nowrap;
+    padding:12px 0;
+    font-weight:bold;
+    animation:scrollOffer 15s linear infinite;
+}
+
+@keyframes scrollOffer{
+    from{
+        transform:translateX(100%);
+    }
+    to{
+        transform:translateX(-100%);
+    }
 }
 
 /* FEATURED PRODUCTS */
@@ -297,7 +525,7 @@ body{
 /* SEARCH RESULTS */
 
 .search-results{
-    padding:140px 5% 80px;
+    padding:10px 5% 30px;
 }
 
 .search-products{
@@ -401,11 +629,6 @@ footer{
     gap:20px;
 }
 
-.logo{
-    font-size:48px;
-    font-weight:bold;
-}
-
 .search-wrapper{
     flex:1;
     max-width:700px;
@@ -480,31 +703,42 @@ footer{
 <nav class="navbar">
 
     <div class="logo">
-        ShopKart
+        <span class="logo-icon"> ✦ </span>
+        <span class="logo-text">Velora</span>
     </div>
 
-    <div class="search-wrapper">
+<div class="search-wrapper">
 
-        <form method="GET" action="{% url 'home' %}" class="search-box">
+    <form method="GET" class="search-form">
+
+        <div class="search-box">
 
             <input
                 type="text"
-                id="searchInput"
                 name="search"
-                placeholder="Search products..."
-                autocomplete="off"
+                placeholder="Search laptops, mobiles, watches..."
                 value="{{ search }}"
             >
 
+            <select name="sort">
+                <option value="">Sort By</option>
+                <option value="price_low">Price: Low to High</option>
+                <option value="price_high">Price: High to Low</option>
+                <option value="rating">Highest Rated</option>
+                <option value="popular">Most Popular</option>
+                <option value="alphabet">A-Z</option>
+                <option value="alphabet_desc">Z-A</option>
+            </select>
+
             <button type="submit">
-                Search
+                🔍 Search
             </button>
 
-        </form>
+        </div>
 
-        <div id="suggestions"></div>
+    </form>
 
-    </div>
+</div>
 
     <a href="{% url 'cart' %}" class="cart">
         🛒 Cart
@@ -512,7 +746,19 @@ footer{
 
 </nav>
 
-{% if search %}
+{% if request.path == "/" and not search and not selected_category %}
+<div class="offer-wrapper">
+    <div class="offer-bar">
+        🔥 Flat 50% OFF |
+        🚚 Free Delivery |
+        💳 Instant Cashback |
+        🎁 Buy 1 Get 1 Free |
+        ⚡ Limited Time Offer
+    </div>
+</div>
+{% endif %}
+
+{% if search or category %}
 
 <section class="search-results">
 
@@ -584,7 +830,7 @@ footer{
 
             {% else %}
 
-            <a href="?search={{ search }}&page={{ num }}">
+            <a href="?search={{ search }}&category={{ category }}&sort={{ request.GET.sort }}&page={{ num }}">
                 {{ num }}
             </a>
 
@@ -593,7 +839,7 @@ footer{
         {% endfor %}
 
         {% if products.has_next %}
-        <a href="?search={{ search }}&page={{ products.next_page_number }}">
+        <a href="?search={{ search }}&category={{ category }}&page={{ products.next_page_number }}">
             Next
         </a>
         {% endif %}
@@ -617,41 +863,95 @@ footer{
 <section class="hero-slider">
 
     <div class="hero-slide">
-        <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600">
+        <img src="https://images.unsplash.com/photo-1605513524006-063ed6ed31e7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDN8fGUtY29tbWVyY2V8ZW58MHx8MHx8fDA%3D">
     </div>
 
     <div class="hero-slide">
-        <img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=1600">
+        <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2hvcHBpbmd8ZW58MHx8MHx8fDA%3D">
     </div>
 
     <div class="hero-slide">
-        <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1600">
+        <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NjZ8fHNob3BwaW5nfGVufDB8fDB8fHww">
     </div>
-
     <div class="hero-slide">
-        <img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=1600">
+        <img src="https://images.unsplash.com/photo-1580828343064-fde4fc206bc6?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8ODN8fHNob3BwaW5nfGVufDB8fDB8fHww">
     </div>
-
-    <div class="hero-slide">
-        <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=1600">
-    </div>
-
-    <div class="hero-slide">
-        <img src="https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1600">
+        <div class="hero-slide">
+        <img src="https://plus.unsplash.com/premium_photo-1664201889922-66bc3c778c1e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjl8fGUtY29tbWVyY2V8ZW58MHx8MHx8fDA%3D">
     </div>
 
     <div class="hero-content">
+        <h1>Velora</h1>
+        <p>Discover Amazing Products At Best Prices</p>
 
-        <h1>
-            Welcome To ShopKart
-        </h1>
-
-        <p>
-            Discover Amazing Products At Best Prices
-        </p>
-
-        <a href="#products" class="hero-btn">
+        <a href="#featured-products" class="hero-btn">
             Shop Now
+        </a>
+    </div>
+
+</section>
+
+    <!-- <div class="hero-content">
+
+    <h1>🔥 Mega Sale Up To 70% OFF</h1>
+
+    <p>
+        Laptops • Watches • Headphones • TVs • Shoes
+    </p>
+
+    <a href="#featured-products" class="hero-btn">
+        Shop Now
+    </a>
+
+    </div> -->
+
+</section>
+<section class="categories-section">
+
+    <h2 class="category-title">
+        Shop By Category
+    </h2>
+
+    <div class="category-grid">
+
+        <a href="/?category=Laptop" class="category-card">
+            💻
+            <span>Laptops</span>
+        </a>
+
+        <a href="/?category=Headphones" class="category-card">
+            🎧
+            <span>Headphones</span>
+        </a>
+
+        <a href="/?category=Watch" class="category-card">
+            ⌚
+            <span>Watches</span>
+        </a>
+
+        <a href="/?category=Shoes" class="category-card">
+            👟
+            <span>Shoes</span>
+        </a>
+
+        <a href="/?category=TV" class="category-card">
+            📺
+            <span>TV</span>
+        </a>
+
+        <a href="/?category=Keyboard" class="category-card">
+            ⌨
+            <span>Keyboard</span>
+        </a>
+
+        <a href="/?category=Backpack" class="category-card">
+            🎒
+            <span>Bag</span>
+        </a>
+
+        <a href="/?category=Mouse" class="category-card">
+            🖱
+            <span>Mouse</span>
         </a>
 
     </div>
@@ -660,7 +960,7 @@ footer{
 
 <!-- FEATURED PRODUCTS -->
 
-<section class="products-section" id="products">
+<section id="featured-products" class="featured-products">
 
     <h2 class="section-title">
         Featured Products
@@ -748,7 +1048,7 @@ footer{
 
 <footer>
 
-    <h2>ShopKart</h2>
+    <h2>Velora</h2>
 
     <p>Powered by Django & PostgreSQL</p>
 
@@ -902,7 +1202,7 @@ async function loadMoreProducts(){
         const response =
         await fetch(
 
-            `/?search={{ search }}&page=${nextPage}`,
+            `/?search={{ search }}&category={{ category }}&page=${nextPage}`,
 
             {
                 headers:{

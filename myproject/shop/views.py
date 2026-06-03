@@ -7,100 +7,92 @@ from django.shortcuts import (
 from django.http import JsonResponse
 
 from django.core.paginator import Paginator
-
-from django.db.models import Q
-
-from rapidfuzz import fuzz
-
-from .models import (
-    Product,
-    Review
-)
-
-
-# =====================================
-# HOME
-# =====================================
+from django.db.models import Avg, Q
+from .models import Product, Category, Review
 
 def home(request):
 
     search = request.GET.get("search", "").strip()
+    category = request.GET.get("category", "").strip()
+    sort_by = request.GET.get("sort", "")
     page_number = request.GET.get("page", 1)
 
     featured_products = Product.objects.order_by("?")[:20]
 
-    products_queryset = Product.objects.all().order_by("-id")
+    # BASE QUERYSET
+    products_queryset = Product.objects.all()
 
+    # CATEGORY FILTER
+    if category:
+        products_queryset = products_queryset.filter(
+            category_fk__name=category
+        )
+
+    # SEARCH FILTER
     if search:
-
-        exact_products = Product.objects.filter(
+        products_queryset = products_queryset.filter(
             Q(name__icontains=search) |
-            Q(category__icontains=search) |
-            Q(description__icontains=search)
+            Q(category__icontains=search)
         )
 
-        exact_ids = list(
-            exact_products.values_list(
-                "id",
-                flat=True
-            )
-        )
+    # SORTING
+    if sort_by == "price_low":
+        products_queryset = products_queryset.order_by("price")
 
-        fuzzy_scores = {}
+    elif sort_by == "price_high":
+        products_queryset = products_queryset.order_by("-price")
 
-        for product in products_queryset:
+    elif sort_by == "alphabet":
+        products_queryset = products_queryset.order_by("name")
 
-            score_name = fuzz.partial_ratio(
-                search.lower(),
-                product.name.lower()
-            )
+    elif sort_by == "alphabet_desc":
+        products_queryset = products_queryset.order_by("-name")
 
-            score_category = fuzz.partial_ratio(
-                search.lower(),
-                product.category.lower()
-            )
+    elif sort_by == "rating":
+        products_queryset = products_queryset.annotate(
+            avg_rating=Avg("reviews__rating")
+        ).order_by("-avg_rating")
 
-            score_description = fuzz.partial_ratio(
-                search.lower(),
-                product.description.lower()
-            )
+    elif sort_by == "popular":
+        products_queryset = products_queryset.annotate(
+        avg_rating=Avg("reviews__rating")
+    ).order_by("-avg_rating")
 
-            best_score = max(
-                score_name,
-                score_category,
-                score_description
-            )
+    else:
+        products_queryset = products_queryset.order_by("-id")
 
-            if best_score >= 65:
-                fuzzy_scores[product.id] = best_score
-
-        fuzzy_ids = sorted(
-            fuzzy_scores,
-            key=fuzzy_scores.get,
-            reverse=True
-        )
-
-        final_ids = []
-
-        for pid in exact_ids + fuzzy_ids:
-            if pid not in final_ids:
-                final_ids.append(pid)
-
-        products_queryset = Product.objects.filter(
-            id__in=final_ids
-        )
-
-    paginator = Paginator(products_queryset, 10)
+    # PAGINATION
+    paginator = Paginator(products_queryset, 12)
     products = paginator.get_page(page_number)
 
-    # AJAX Infinite Scroll
-    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+    categories = Category.objects.all()
+
+    context = {
+        "products": products,
+        "featured_products": featured_products,
+        "categories": categories,
+        "search": search,
+        "selected_category": category,
+        "sort_by": sort_by,
+    }
+
+    return render(
+        request,
+        "shop/home.html",
+        context
+    )
+
+    # AJAX REQUEST
+    if request.headers.get(
+        "X-Requested-With"
+    ) == "XMLHttpRequest":
 
         product_data = []
 
         for product in products:
 
             product_data.append({
+
                 "id": product.id,
                 "name": product.name,
                 "price": str(product.price),
@@ -108,25 +100,33 @@ def home(request):
                 "image": product.image,
                 "rating": product.average_rating,
                 "reviews": product.total_reviews
+
             })
 
         return JsonResponse({
+
             "products": product_data,
             "has_next": products.has_next(),
             "current_page": products.number
+
         })
 
     return render(
+
         request,
+
         "shop/home.html",
+
         {
+
             "products": products,
             "search": search,
+            "category": category,
             "featured_products": featured_products
+
         }
+
     )
-
-
 # =====================================
 # PRODUCT DETAIL + REVIEWS
 # =====================================
@@ -195,7 +195,6 @@ def product_detail(request, product_id):
         }
 
     )
-
 
 # =====================================
 # SEARCH SUGGESTIONS

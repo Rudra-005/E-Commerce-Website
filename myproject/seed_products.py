@@ -9,7 +9,7 @@ os.environ.setdefault(
 
 django.setup()
 
-from shop.models import Product
+from shop.models import Product , Category
 
 # DELETE OLD PRODUCTS
 Product.objects.all().delete()
@@ -342,19 +342,21 @@ for category_name, data in categories.items():
             data["price"][1]
         )
 
+        category_obj = Category.objects.get(
+            name=category_name
+        )
+
         Product.objects.create(
-
             name=name,
-
             price=price,
-
             image=random.choice(data["images"]),
-
             description=description,
 
-            category=category_name,
+            category=category_name,      # temporary
 
-            stock=random.randint(5, 100)
+            category_fk=category_obj,    # IMPORTANT
+
+            stock=random.randint(5,100)
         )
 
         print(f"{name} Added")
