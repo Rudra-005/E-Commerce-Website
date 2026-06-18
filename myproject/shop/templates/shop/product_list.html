@@ -1,0 +1,907 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - Velora</title>
+    
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap');
+
+    :root {
+        --bg-color: #fcf8f2;
+        --border-color: #000000;
+        --primary-red: #ef476f;
+        --primary-yellow: #ffd166;
+        --primary-blue: #118ab2;
+        --shadow-solid: 6px 6px 0px #000000;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Comic Neue', cursive;
+    }
+
+    body {
+        background: var(--bg-color);
+        overflow-x: hidden;
+        color: #000;
+        background-image: radial-gradient(#d3ccc1 20%, transparent 20%);
+        background-size: 10px 10px;
+    }
+
+    /* COMIC NAVBAR */
+    .comic-navbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px 5%;
+        background: var(--bg-color);
+        border-bottom: 6px solid #000;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        flex-wrap: wrap;
+        gap: 20px;
+        box-shadow: 0 4px 0px rgba(0,0,0,0.05);
+    }
+
+    .comic-logo {
+        text-decoration: none;
+    }
+
+    .comic-logo-box {
+        display: flex;
+        align-items: center;
+        background: var(--primary-yellow);
+        border: 6px solid #000;
+        padding: 10px 20px;
+        transform: rotate(-2deg);
+        box-shadow: 8px 8px 0px #000;
+        color: #000;
+    }
+
+    .comic-logo-icon {
+        font-size: 50px;
+        margin-right: 10px;
+    }
+
+    .comic-logo-text {
+        font-family: 'Bangers', cursive;
+        font-size: 36px;
+        line-height: 0.9;
+        text-transform: uppercase;
+    }
+
+    .comic-nav-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .comic-nav-links {
+        background: #fff;
+        border: 6px solid #000;
+        padding: 15px 30px;
+        display: flex;
+        gap: 30px;
+        transform: rotate(1deg);
+        box-shadow: 8px 8px 0px #000;
+    }
+
+    .comic-nav-links a {
+        font-family: 'Bangers', cursive;
+        font-size: 24px;
+        color: #000;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .comic-nav-links a:hover {
+        color: var(--primary-red);
+    }
+
+    .comic-search {
+        background: #fff;
+        border: 6px solid #000;
+        padding: 5px;
+        transform: rotate(-1deg);
+        box-shadow: 8px 8px 0px #000;
+    }
+
+    .comic-search input {
+        border: none;
+        outline: none;
+        font-size: 20px;
+        font-family: 'Comic Neue', cursive;
+        font-weight: bold;
+        padding: 0 10px;
+    }
+
+    .comic-search button {
+        background: var(--primary-yellow);
+        border: 4px solid #000;
+        font-family: 'Bangers', cursive;
+        font-size: 24px;
+        padding: 5px 15px;
+        cursor: pointer;
+    }
+
+    .comic-search button:hover {
+        background: var(--primary-red);
+        color: #fff;
+    }
+
+    .comic-login-btn {
+        background: #fff;
+        border: 6px solid #000;
+        padding: 15px 25px;
+        font-family: 'Bangers', cursive;
+        font-size: 24px;
+        color: #000;
+        text-decoration: none;
+        transform: rotate(-1deg);
+        box-shadow: 8px 8px 0px #000;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    .comic-cart-circle {
+        background: #000;
+        color: #fff;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Bangers', cursive;
+        font-size: 30px;
+        text-decoration: none;
+        border: 4px solid #fff;
+        box-shadow: 0 0 0 4px #000;
+    }
+
+    /* User Profile Dropdown */
+    .user-profile { position: relative; }
+    .profile-dropdown {
+        position: absolute;
+        top: 70px;
+        right: 0;
+        width: 250px;
+        background: #fff !important;
+        border: 6px solid var(--border-color);
+        box-shadow: 8px 8px 0px #000;
+        display: none;
+        z-index: 9999;
+        height: auto !important;
+    }
+    .profile-dropdown.show { display: block !important; }
+    .profile-header {
+        padding: 18px;
+        background: var(--primary-yellow);
+        border-bottom: 4px solid var(--border-color);
+    }
+    .profile-name { font-family: 'Bangers', cursive; font-size: 22px; color: #000; }
+    .profile-email { font-weight: 700; font-size: 14px; color: #333; }
+    .profile-link {
+        display: block !important;
+        padding: 14px 18px !important;
+        text-decoration: none !important;
+        color: #000 !important;
+        border-bottom: 4px solid var(--border-color) !important;
+        font-weight: 700;
+        font-size: 18px;
+    }
+    .profile-link:hover { background: var(--primary-yellow) !important; }
+    .logout-btn { border: none; cursor: pointer; width: 100%; text-align: left; background: #fff; }
+
+    /* DEDICATED BANNER */
+    .list-title-container {
+        padding: 50px 5% 20px 5%;
+        text-align: center;
+    }
+
+    .list-title-box {
+        background: var(--primary-yellow);
+        border: 6px solid #000;
+        box-shadow: 8px 8px 0px #000;
+        display: inline-block;
+        padding: 25px 50px;
+        transform: rotate(-1deg);
+    }
+
+    .list-title-box span {
+        font-family: 'Bangers', cursive;
+        font-size: 20px;
+        letter-spacing: 2px;
+        color: var(--primary-red);
+        text-shadow: 1px 1px 0px #000;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .list-title-box h1 {
+        font-family: 'Bangers', cursive;
+        font-size: 55px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        text-shadow: 3px 3px 0px #000;
+        color: #fff;
+    }
+
+    /* SORT BAR */
+    .sort-bar-container {
+        padding: 20px 5%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .sort-bar {
+        background: #fff;
+        border: 5px solid #000;
+        box-shadow: 6px 6px 0px #000;
+        padding: 15px 30px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        transform: rotate(0.5deg);
+        flex-wrap: wrap;
+    }
+
+    .sort-label {
+        font-family: 'Bangers', cursive;
+        font-size: 22px;
+        letter-spacing: 1px;
+    }
+
+    .sort-links {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .sort-link {
+        font-family: 'Bangers', cursive;
+        font-size: 18px;
+        color: #000;
+        text-decoration: none;
+        background: #f0f0f0;
+        border: 3px solid #000;
+        padding: 6px 15px;
+        box-shadow: 2px 2px 0px #000;
+        transition: all 0.2s ease;
+    }
+
+    .sort-link:hover, .sort-link.active {
+        background: var(--primary-red);
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 4px 4px 0px #000;
+    }
+
+    .sort-link:active {
+        transform: translateY(1px);
+        box-shadow: 1px 1px 0px #000;
+    }
+
+    /* SEARCH RESULTS & PRODUCTS GRID */
+    .search-results {
+        padding: 40px 5%;
+    }
+
+    .search-products {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .search-card {
+        background: #fff;
+        border: 6px solid #000;
+        box-shadow: 8px 8px 0px #000;
+        display: flex;
+        flex-direction: row;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .search-card:hover {
+        transform: translateY(-8px) scale(1.01);
+        box-shadow: 12px 12px 0px #000;
+    }
+
+    .search-card img {
+        width: 300px;
+        min-width: 300px;
+        object-fit: cover;
+        border-right: 6px solid #000;
+        border-bottom: none;
+    }
+
+    .search-info {
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        justify-content: space-between;
+    }
+
+    .search-info h2 {
+        font-family: 'Bangers', cursive;
+        font-size: 28px;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+    }
+
+    .product-rating {
+        font-weight: 700;
+        color: #555;
+        margin-bottom: 15px;
+        font-size: 16px;
+    }
+
+    .search-price {
+        font-family: 'Bangers', cursive;
+        font-size: 32px;
+        color: var(--primary-red);
+        margin-bottom: 15px;
+        text-shadow: 1px 1px 0px #000;
+    }
+
+    .search-info p {
+        font-size: 15px;
+        line-height: 1.5;
+        color: #333;
+        margin-bottom: 20px;
+        font-weight: 500;
+    }
+
+    .search-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: auto;
+    }
+
+    .cart-btn, .view-btn {
+        font-family: 'Bangers', cursive;
+        font-size: 18px;
+        padding: 10px 15px;
+        border: 4px solid #000;
+        cursor: pointer;
+        text-decoration: none;
+        text-align: center;
+        box-shadow: 3px 3px 0px #000;
+        transition: all 0.2s ease;
+    }
+
+    .cart-btn {
+        background: var(--primary-yellow);
+        color: #000;
+        flex-grow: 1;
+    }
+
+    .cart-btn:hover {
+        background: var(--primary-red);
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 5px 5px 0px #000;
+    }
+
+    .view-btn {
+        background: #fff;
+        color: #000;
+    }
+
+    .view-btn:hover {
+        background: #000;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 5px 5px 0px #000;
+    }
+
+    .cart-btn:active, .view-btn:active {
+        transform: translateY(1px);
+        box-shadow: 1px 1px 0px #000;
+    }
+
+    /* PAGINATION */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 50px auto 20px auto;
+    }
+
+    .pagination a {
+        background: #fff;
+        border: 4px solid #000;
+        padding: 10px 18px;
+        font-family: 'Bangers', cursive;
+        font-size: 20px;
+        color: #000;
+        text-decoration: none;
+        box-shadow: 4px 4px 0px #000;
+        transition: all 0.2s ease;
+    }
+
+    .pagination a.active, .pagination a:hover {
+        background: var(--primary-yellow);
+        transform: translateY(-2px);
+        box-shadow: 6px 6px 0px #000;
+    }
+
+    .pagination a:active {
+        transform: translateY(1px);
+        box-shadow: 1px 1px 0px #000;
+    }
+
+    /* FOOTER */
+    footer {
+        background: var(--primary-blue);
+        border-top: 6px solid #000;
+        padding: 40px 5%;
+        text-align: center;
+        margin-top: 50px;
+    }
+
+    footer h2 {
+        font-family: 'Bangers', cursive;
+        font-size: 50px;
+        color: #fff;
+        text-shadow: 3px 3px 0px #000;
+        margin-bottom: 10px;
+        transform: rotate(-1deg);
+        display: inline-block;
+    }
+
+    footer p {
+        font-family: 'Comic Neue', cursive;
+        font-weight: bold;
+        font-size: 20px;
+        color: #000;
+    }
+
+    /* COMIC BURST ANIMATION */
+    .comic-burst {
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        pointer-events: none;
+    }
+
+    .comic-burst-cloud {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: var(--primary-red);
+        border: 5px solid #000;
+        border-radius: 50%;
+        box-shadow: 6px 6px 0px #000;
+    }
+
+    .comic-burst-cloud::before, .comic-burst-cloud::after {
+        content: '';
+        position: absolute;
+        background: var(--primary-yellow);
+        border: 5px solid #000;
+        width: 80%;
+        height: 80%;
+        top: 10%;
+        left: 10%;
+        z-index: -1;
+        transform: rotate(30deg);
+    }
+
+    .comic-burst-cloud::after {
+        background: var(--primary-blue);
+        transform: rotate(60deg);
+    }
+
+    .comic-burst-text {
+        position: relative;
+        font-family: 'Bangers', cursive;
+        font-size: 32px;
+        color: #fff;
+        text-shadow: 3px 3px 0px #000;
+        transform: rotate(-10deg);
+        z-index: 10;
+        white-space: nowrap;
+    }
+
+    .scroll-follower {
+        filter: drop-shadow(3px 3px 0px #000);
+    }
+
+    /* MOBILE RESPONSIVE */
+    @media(max-width: 1000px) {
+        .comic-navbar { flex-direction: column; gap: 15px; padding: 15px; }
+        .list-title-box h1 { font-size: 40px; }
+        .search-card { flex-direction: column; }
+        .search-card img {
+            width: 100%;
+            min-width: 100%;
+            height: 250px;
+            border-right: none;
+            border-bottom: 6px solid #000;
+        }
+    }
+
+    @media(max-width: 600px) {
+        .sort-bar { flex-direction: column; width: 100%; align-items: stretch; }
+        .sort-links { flex-direction: column; }
+        .sort-link { text-align: center; }
+    }
+    
+    #load-more-trigger { height: 20px; }
+    .loading {
+        text-align: center;
+        font-family: 'Bangers', cursive;
+        font-size: 30px;
+        padding: 40px;
+        color: var(--primary-red);
+        text-shadow: 2px 2px 0px #000;
+        display: none;
+    }
+    .hidden { display: none !important; }
+    </style>
+
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+
+<body>
+
+<nav class="comic-navbar" data-aos="fade-down">
+    <a href="{% url 'home' %}" class="comic-logo">
+        <div class="comic-logo-box">
+            <span class="comic-logo-icon">⚡</span>
+            <span class="comic-logo-text">Velora</span>
+        </div>
+    </a>
+
+    <div class="comic-nav-right">
+        <div class="comic-search">
+            <form method="GET" action="{% url 'products_list' %}" style="display: flex;">
+                <input type="text" name="search" placeholder="Search gear..." value="{{ search }}">
+                <button type="submit">GO</button>
+            </form>
+        </div>
+
+        <div class="comic-nav-links">
+            <a href="{% url 'home' %}#featured-products">SHOP ˅</a>
+            <a href="{% url 'home' %}#customizer">BUILD SETUP</a>
+            <a href="{% url 'home' %}#contact">CONTACT</a>
+        </div>
+
+        {% if user.is_authenticated %}
+        <div class="user-profile">
+            <button class="comic-login-btn" onclick="toggleProfile()">
+                👤 {{ user.first_name|default:user.username }}
+            </button>
+            <div id="profileDropdown" class="profile-dropdown">
+                <div class="profile-header">
+                    <div class="profile-name">Hello, {{ user.first_name|default:user.username }}</div>
+                    <div class="profile-email">{{ user.email }}</div>
+                </div>
+                <a href="/cart/" class="profile-link">🛒 My Cart</a>
+                <a href="{% url 'wishlist' %}" class="profile-link">❤️ My Wishlist</a>
+                <a href="#" class="profile-link">📦 Orders</a>
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="profile-link logout-btn">🚪 Logout</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <div class="user-profile">
+            <a href="/login/" class="comic-login-btn" onclick="toggleProfile(); return false;">
+                👤 Log In
+            </a>
+            <div id="profileDropdown" class="profile-dropdown">
+                <div class="profile-header">
+                    <div class="profile-name">Hello, Sign in</div>
+                </div>
+                <a href="/login/" class="profile-link">🔑 Login</a>
+                <a href="/cart/" class="profile-link">🛒 My Cart</a>
+                <a href="{% url 'wishlist' %}" class="profile-link">❤️ My Wishlist</a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if cart_count %}
+        <a href="/cart/" class="comic-cart-circle">
+            {{ cart_count }}
+        </a>
+        {% else %}
+        <a href="/cart/" class="comic-cart-circle">
+            0
+        </a>
+        {% endif %}
+    </div>
+</nav>
+
+<!-- TITLE SPLASH -->
+<div class="list-title-container" data-aos="zoom-in">
+    <div class="list-title-box">
+        {% if collection_name %}
+        <span>⚡ SPECIAL COLLECTION ⚡</span>
+        {% else %}
+        <span>📦 TECH CATEGORY 📦</span>
+        {% endif %}
+        <h1>{{ title }}</h1>
+    </div>
+</div>
+
+<!-- SORTING BAR -->
+<div class="sort-bar-container" data-aos="fade-up">
+    <div class="sort-bar">
+        <span class="sort-label">SORT GEAR BY:</span>
+        <div class="sort-links">
+            <a href="?{% if category_id %}category={{ category_id }}&{% endif %}{% if collection_name %}collection={{ collection_name }}&{% endif %}{% if search %}search={{ search }}&{% endif %}sort=latest" class="sort-link {% if not sort_by or sort_by == 'latest' %}active{% endif %}">LATEST</a>
+            <a href="?{% if category_id %}category={{ category_id }}&{% endif %}{% if collection_name %}collection={{ collection_name }}&{% endif %}{% if search %}search={{ search }}&{% endif %}sort=price_low" class="sort-link {% if sort_by == 'price_low' %}active{% endif %}">PRICE: LOW-HIGH</a>
+            <a href="?{% if category_id %}category={{ category_id }}&{% endif %}{% if collection_name %}collection={{ collection_name }}&{% endif %}{% if search %}search={{ search }}&{% endif %}sort=price_high" class="sort-link {% if sort_by == 'price_high' %}active{% endif %}">PRICE: HIGH-LOW</a>
+            <a href="?{% if category_id %}category={{ category_id }}&{% endif %}{% if collection_name %}collection={{ collection_name }}&{% endif %}{% if search %}search={{ search }}&{% endif %}sort=popular" class="sort-link {% if sort_by == 'popular' or sort_by == 'rating' %}active{% endif %}">POPULARITY</a>
+        </div>
+    </div>
+</div>
+
+<!-- PRODUCTS LIST SECTION -->
+<section class="search-results" data-aos="fade-up">
+    <div class="search-products" id="products-container">
+        {% for product in products %}
+        <div class="search-card" data-aos="zoom-in-up" data-aos-duration="800" data-aos-delay="{% widthratio forloop.counter0 1 100 %}">
+            <img src="{{ product.image }}">
+            <div class="search-info">
+                <h2>{{ product.name }}</h2>
+                <div class="product-rating">
+                    ⭐ {{ product.average_rating }}/5 ({{ product.total_reviews }} Reviews)
+                </div>
+                <div class="search-price">
+                    ₹{{ product.price }}
+                </div>
+                <p>{{ product.description|truncatewords:20 }}</p>
+                
+                <div class="search-buttons">
+                    <a href="{% url 'add_to_cart' product.id %}" class="cart-btn">
+                        Add To Cart
+                    </a>
+                    <a href="{% url 'product_detail' product.id %}" class="view-btn">
+                        View Product
+                    </a>
+                    {% if product.id in wishlist_product_ids %}
+                    <a href="{% url 'remove_from_wishlist' product.id %}" class="view-btn" style="background:var(--primary-red); color:#fff; border-color:var(--border-color);">
+                        💔
+                    </a>
+                    {% else %}
+                    <a href="{% url 'add_to_wishlist' product.id %}" class="view-btn">
+                        ❤️
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 50px 0;">
+            <h2 style="font-family: 'Bangers', cursive; font-size: 36px;">No products found in this category! 📦</h2>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination">
+        {% if products.has_previous %}
+        <a href="?{% if category_id %}category={{ category_id }}&{% endif %}{% if collection_name %}collection={{ collection_name }}&{% endif %}{% if search %}search={{ search }}&{% endif %}{% if sort_by %}sort={{ sort_by }}&{% endif %}page={{ products.previous_page_number }}">
+            Prev
+        </a>
+        {% endif %}
+
+        {% for num in products.paginator.page_range %}
+            {% if products.number == num %}
+            <a class="active">{{ num }}</a>
+            {% else %}
+            <a href="?{% if category_id %}category={{ category_id }}&{% endif %}{% if collection_name %}collection={{ collection_name }}&{% endif %}{% if search %}search={{ search }}&{% endif %}{% if sort_by %}sort={{ sort_by }}&{% endif %}page={{ num }}">
+                {{ num }}
+            </a>
+            {% endif %}
+        {% endfor %}
+
+        {% if products.has_next %}
+        <a href="?{% if category_id %}category={{ category_id }}&{% endif %}{% if collection_name %}collection={{ collection_name }}&{% endif %}{% if search %}search={{ search }}&{% endif %}{% if sort_by %}sort={{ sort_by }}&{% endif %}page={{ products.next_page_number }}">
+            Next
+        </a>
+        {% endif %}
+    </div>
+
+    <div id="load-more-trigger"></div>
+    <div class="loading" id="loading-text">
+        Loading More Products...
+    </div>
+</section>
+
+<footer data-aos="fade-up">
+    <h2>Velora</h2>
+    <p>Powered by Django & PostgreSQL</p>
+</footer>
+
+<script>
+function toggleProfile(){
+    const dropdown = document.getElementById("profileDropdown");
+    if (dropdown) {
+        dropdown.classList.toggle("show");
+    }
+}
+
+document.addEventListener("click", function(e){
+    if (!e.target.closest(".user-profile")) {
+        const dropdown = document.getElementById("profileDropdown");
+        if (dropdown) {
+            dropdown.classList.remove("show");
+        }
+    }
+});
+
+document.querySelectorAll(".cart-btn").forEach(btn => {
+    btn.addEventListener("click", function(e) {
+        {% if not user.is_authenticated %}
+        e.preventDefault();
+        alert("You have to login to add items to cart!");
+        window.location.href = "{% url 'login' %}";
+        {% endif %}
+    });
+});
+</script>
+
+<script>
+const searchInput = document.getElementById("searchInput");
+const suggestions = document.getElementById("suggestions");
+let debounceTimer;
+
+if(searchInput){
+    searchInput.addEventListener("input", function(){
+        clearTimeout(debounceTimer);
+        const query = this.value.trim();
+
+        if(query.length === 0){
+            suggestions.style.display = "none";
+            return;
+        }
+
+        debounceTimer = setTimeout(()=>{
+            fetch(`/search-suggestions/?term=${encodeURIComponent(query)}`)
+            .then(res=>res.json())
+            .then(data=>{
+                let html = "";
+                data.forEach(product=>{
+                    html += `
+                    <div class="suggestion-item" onclick="window.location='/product/${product.id}/'">
+                        <strong>${product.name}</strong><br>
+                        <span class="suggestion-price">₹${product.price}</span>
+                    </div>`;
+                });
+                suggestions.innerHTML = html;
+                suggestions.style.display = "block";
+            });
+        }, 300);
+    });
+}
+
+document.addEventListener("click", function(e){
+    if(searchInput && suggestions && !searchInput.contains(e.target) && !suggestions.contains(e.target)){
+        suggestions.style.display = "none";
+    }
+});
+
+/* MOBILE INFINITE SCROLL */
+function isMobile(){
+    return window.innerWidth <= 900;
+}
+
+const trigger = document.getElementById("load-more-trigger");
+const loadingText = document.getElementById("loading-text");
+const container = document.getElementById("products-container");
+let currentPage = parseInt("{{ products.number|default:1 }}");
+let loading = false;
+let hasNext = {{ products.has_next|yesno:"true,false" }};
+
+async function loadMoreProducts(){
+    if(loading || !hasNext || !isMobile()){
+        return;
+    }
+    loading = true;
+    loadingText.style.display = "block";
+
+    try {
+        const nextPage = currentPage + 1;
+        const response = await fetch(
+            `/products/?search={{ search }}&category={{ category_id }}&collection={{ collection_name }}&page=${nextPage}`,
+            {
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            }
+        );
+        const data = await response.json();
+        if(!data.products || data.products.length === 0){
+            hasNext = false;
+            loadingText.innerHTML = "No More Products";
+            return;
+        }
+
+        data.products.forEach(product=>{
+            const html = `
+            <div class="search-card" data-aos="slide-up">
+                <img src="${product.image}">
+                <div class="search-info">
+                    <h2>${product.name}</h2>
+                    <div class="product-rating">
+                        ⭐ ${product.rating}/5 (${product.reviews} Reviews)
+                    </div>
+                    <div class="search-price">
+                        ₹${product.price}
+                    </div>
+                    <p>${product.description}</p>
+                    <div class="search-buttons">
+                        <a href="/add-to-cart/${product.id}/" class="cart-btn">Add To Cart</a>
+                        <a href="/product/${product.id}/" class="view-btn">View Product</a>
+                    </div>
+                </div>
+            </div>`;
+            container.insertAdjacentHTML("beforeend", html);
+        });
+
+        currentPage = nextPage;
+        hasNext = data.has_next;
+
+        const url = new URL(window.location);
+        url.searchParams.set("page", currentPage);
+        window.history.replaceState({}, "", url);
+
+        if(!hasNext){
+            loadingText.innerHTML = "No More Products";
+        }
+    } catch(error) {
+        console.log(error);
+    }
+    loading = false;
+}
+
+if(trigger){
+    const observer = new IntersectionObserver(
+        entries => {
+            if(entries[0].isIntersecting){
+                loadMoreProducts();
+            }
+        },
+        { threshold: 0.1 }
+    );
+    observer.observe(trigger);
+}
+</script>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        AOS.init({
+            duration: 800,
+            easing: 'ease-out-back',
+            once: true,
+            offset: 50
+        });
+    });
+</script>
+</body>
+
+</html>

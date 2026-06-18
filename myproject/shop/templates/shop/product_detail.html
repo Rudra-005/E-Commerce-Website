@@ -1,511 +1,296 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ product.name }} - Velora</title>
 
-<title>{{ product.name }}</title>
+<!-- Fonts & Animations -->
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
 <style>
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial,sans-serif;
+:root {
+    --bg-color: #fcf8f2;
+    --border-color: #000000;
+    --primary-red: #ef476f;
+    --primary-yellow: #ffd166;
+    --primary-blue: #118ab2;
+    --shadow-solid: 6px 6px 0px #000000;
 }
 
-body{
-    background:#f4f4f4;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Comic Neue', cursive;
 }
 
-/* NAVBAR */
-
-.navbar{
-    background:#131921;
-    padding:18px 5%;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+body {
+    background: var(--bg-color);
+    overflow-x: hidden;
+    color: #000;
+    background-image: radial-gradient(#d3ccc1 20%, transparent 20%);
+    background-size: 10px 10px;
 }
 
-.logo{
-    color:#ff9900;
-    font-size:36px;
-    font-weight:bold;
-    text-decoration:none;
+/* NAVBAR (Matching home.html) */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    min-height: 85px;
+    background: #fff;
+    border-bottom: 4px solid var(--border-color);
+    position: relative;
+    z-index: 1000;
 }
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo-icon { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: var(--primary-yellow); border: 3px solid var(--border-color); box-shadow: 3px 3px 0px var(--border-color); color: #000; font-size: 24px; font-weight: 800; font-family: 'Bangers', cursive; transform: rotate(-5deg); }
+.logo-text { font-size: 38px; font-family: 'Bangers', cursive; color: #000; line-height: 1; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 0px var(--primary-red); }
+.search-wrapper { display: flex; justify-content: center; align-items: center; width: 100%; max-width: 600px; margin: 0 auto; }
+.search-box { display: flex; align-items: center; background: #fff; border: 3px solid var(--border-color); box-shadow: var(--shadow-solid); overflow: hidden; height: 50px; width: 100%; }
+.search-box input { flex: 1; border: none; outline: none; background: transparent; padding: 0 16px; color: #000; font-size: 18px; font-weight: 700; }
+.search-box button { width: 120px; height: 100%; border: none; border-left: 3px solid var(--border-color); cursor: pointer; font-size: 18px; font-weight: 700; font-family: 'Bangers', cursive; letter-spacing: 1px; color: #000; background: var(--primary-yellow); transition: all 0.1s ease; }
+.search-box button:hover { background: var(--primary-red); color: #fff; }
+.cart { display: flex; align-items: center; gap: 10px; text-decoration: none; font-size: 20px; font-weight: 700; color: #000; background: #fff; border: 3px solid var(--border-color); padding: 8px 16px; box-shadow: 4px 4px 0px var(--border-color); transition: all 0.1s ease; }
+.cart:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--border-color); background: var(--primary-yellow); }
 
-.cart{
-    color:white;
-    text-decoration:none;
-    font-size:22px;
-    font-weight:bold;
-}
-.search-wrapper{
-    flex:1;
-    max-width:700px;
-    margin:0 30px;
-}
+/* PRODUCT CONTAINER */
+.product-wrapper { max-width: 1200px; margin: 60px auto; padding: 0 20px; }
+.product-container { display: flex; gap: 40px; background: #fff; border: 4px solid var(--border-color); padding: 40px; box-shadow: 12px 12px 0px var(--border-color); }
+.product-image { flex: 1; border: 4px solid var(--border-color); box-shadow: 6px 6px 0px var(--primary-red); overflow: hidden; background: #fff; display: flex; align-items: center; justify-content: center; }
+.product-image img { width: 100%; height: 500px; object-fit: contain; display: block; }
+.product-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.product-title { font-family: 'Bangers', cursive; font-size: 54px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 3px 3px 0px var(--primary-yellow); margin-bottom: 20px; line-height: 1.1; }
+.rating { font-size: 24px; font-weight: bold; margin-bottom: 20px; color: #000; background: var(--primary-yellow); display: inline-block; padding: 5px 15px; border: 3px solid var(--border-color); transform: rotate(-2deg); align-self: flex-start; }
+.price { font-family: 'Bangers', cursive; font-size: 48px; color: var(--primary-red); margin-bottom: 20px; text-shadow: 2px 2px 0px var(--border-color); }
+.description { font-size: 20px; line-height: 1.6; margin-bottom: 30px; font-weight: 700; }
+.stock { font-size: 22px; font-weight: bold; color: var(--primary-blue); margin-bottom: 30px; padding: 10px; border: 3px solid var(--border-color); display: inline-block; align-self: flex-start; }
+.cart-btn { display: inline-block; background: var(--primary-yellow); color: #000; padding: 15px 40px; font-family: 'Bangers', cursive; font-size: 28px; text-decoration: none; border: 4px solid var(--border-color); box-shadow: 6px 6px 0px var(--border-color); transition: all 0.1s ease; text-transform: uppercase; letter-spacing: 2px; text-align: center; align-self: flex-start; }
+.cart-btn:hover { background: var(--primary-red); color: #fff; transform: translate(4px, 4px); box-shadow: 2px 2px 0px var(--border-color); }
 
-.search-box{
-    display:flex;
-    width:100%;
-}
-
-.search-box input{
-    flex:1;
-    padding:12px 15px;
-    border:none;
-    border-radius:6px 0 0 6px;
-    font-size:16px;
-}
-
-.search-box button{
-    padding:12px 20px;
-    border:none;
-    background:#ff9900;
-    color:white;
-    font-weight:bold;
-    cursor:pointer;
-    border-radius:0 6px 6px 0;
-}
-
-/* PRODUCT */
-
-.product-container{
-    max-width:1400px;
-    margin:40px auto;
-    background:white;
-    border-radius:20px;
-    padding:40px;
-    display:flex;
-    gap:50px;
-    box-shadow:0 5px 20px rgba(0,0,0,.1);
-}
-
-.product-image{
-    flex:1;
-}
-
-.product-image img{
-    width:100%;
-    height:500px;
-    object-fit:cover;
-    border-radius:20px;
-}
-
-.product-info{
-    flex:1;
-}
-
-.product-title{
-    font-size:48px;
-    margin-bottom:15px;
-}
-
-.rating{
-    color:#ff9900;
-    font-size:24px;
-    margin-bottom:15px;
-}
-
-.price{
-    color:green;
-    font-size:48px;
-    font-weight:bold;
-    margin-bottom:20px;
-}
-
-.description{
-    font-size:20px;
-    line-height:1.8;
-    margin-bottom:20px;
-}
-
-.stock{
-    color:green;
-    font-weight:bold;
-    font-size:20px;
-    margin-bottom:25px;
-}
-
-.cart-btn{
-    display:inline-block;
-    background:#ff9900;
-    color:black;
-    padding:15px 35px;
-    text-decoration:none;
-    border-radius:10px;
-    font-weight:bold;
-    font-size:20px;
-}
-
-.cart-btn:hover{
-    background:#e68a00;
-}
+/* SECTIONS (REVIEWS & RELATED) */
+.section-wrapper { max-width: 1200px; margin: 60px auto; padding: 0 20px; }
+.section-title { font-family: 'Bangers', cursive; font-size: 48px; text-align: center; margin-bottom: 40px; text-transform: uppercase; text-shadow: 3px 3px 0px var(--primary-blue); color: #fff; -webkit-text-stroke: 2px var(--border-color); letter-spacing: 3px; }
 
 /* REVIEW FORM */
+.review-form { background: #fff; border: 4px solid var(--border-color); padding: 40px; box-shadow: 8px 8px 0px var(--border-color); }
+.review-form h2 { font-family: 'Bangers', cursive; font-size: 36px; margin-bottom: 25px; text-transform: uppercase; }
+.review-form input, .review-form textarea, .review-form select { width: 100%; padding: 15px; margin-bottom: 20px; border: 3px solid var(--border-color); font-size: 18px; font-weight: bold; background: #fcf8f2; outline: none; }
+.review-form input:focus, .review-form textarea:focus, .review-form select:focus { background: #fff; box-shadow: 4px 4px 0px var(--primary-yellow); }
+.review-form textarea { height: 150px; resize: none; }
+.review-form button { background: var(--primary-blue); color: #fff; padding: 15px 40px; font-family: 'Bangers', cursive; font-size: 24px; text-decoration: none; border: 4px solid var(--border-color); box-shadow: 6px 6px 0px var(--border-color); transition: all 0.1s ease; text-transform: uppercase; cursor: pointer; }
+.review-form button:hover { background: var(--primary-yellow); color: #000; transform: translate(4px, 4px); box-shadow: 2px 2px 0px var(--border-color); }
 
-.review-form-section{
-    max-width:1400px;
-    margin:40px auto;
-}
-
-.review-form{
-    background:white;
-    padding:30px;
-    border-radius:20px;
-    box-shadow:0 5px 15px rgba(0,0,0,.08);
-}
-
-.review-form h2{
-    margin-bottom:25px;
-}
-
-.review-form input,
-.review-form textarea,
-.review-form select{
-    width:100%;
-    padding:14px;
-    margin-bottom:15px;
-    border:1px solid #ddd;
-    border-radius:8px;
-}
-
-.review-form textarea{
-    height:140px;
-    resize:none;
-}
-
-.review-form button{
-    background:#ff9900;
-    border:none;
-    padding:14px 30px;
-    border-radius:8px;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-/* REVIEWS */
-
-.review-section{
-    max-width:1400px;
-    margin:40px auto;
-}
-
-.review-title{
-    font-size:40px;
-    margin-bottom:30px;
-}
-
-.review-card{
-    background:white;
-    padding:25px;
-    border-radius:15px;
-    margin-bottom:20px;
-    box-shadow:0 5px 15px rgba(0,0,0,.08);
-}
-
-.review-name{
-    font-size:24px;
-    font-weight:bold;
-    margin-bottom:8px;
-}
-
-.review-stars{
-    color:#ff9900;
-    font-size:20px;
-    margin-bottom:10px;
-}
-
-.review-card h4{
-    margin-bottom:10px;
-}
-
-.review-card small{
-    color:gray;
-}
+/* REVIEW CARDS */
+.review-grid { display: grid; gap: 25px; }
+.review-card { background: #fff; border: 4px solid var(--border-color); padding: 25px; box-shadow: 6px 6px 0px var(--border-color); position: relative; }
+.review-card:nth-child(even) { transform: rotate(1deg); }
+.review-card:nth-child(odd) { transform: rotate(-1deg); }
+.review-name { font-family: 'Bangers', cursive; font-size: 28px; margin-bottom: 10px; letter-spacing: 1px; }
+.review-stars { font-size: 22px; font-weight: bold; margin-bottom: 15px; color: var(--primary-red); }
+.review-card h4 { font-size: 22px; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; }
+.review-card p { font-size: 18px; font-weight: 700; line-height: 1.5; margin-bottom: 15px; }
+.review-card small { font-weight: bold; color: var(--primary-blue); }
 
 /* RELATED PRODUCTS */
+.related-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+.product-card { background: #fff; border: 4px solid var(--border-color); box-shadow: 8px 8px 0px var(--border-color); display: flex; flex-direction: column; transition: all 0.1s ease; text-decoration: none; color: #000; }
+.product-card:hover { transform: translate(4px, 4px); box-shadow: 4px 4px 0px var(--border-color); background: var(--bg-color); }
+.product-card img { width: 100%; height: 250px; object-fit: contain; border-bottom: 4px solid var(--border-color); background: #fff; padding: 10px; }
+.product-info-card { padding: 20px; text-align: center; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.product-info-card h3 { font-family: 'Bangers', cursive; font-size: 26px; letter-spacing: 1px; text-transform: uppercase; }
+.product-info-card .price { font-family: 'Bangers', cursive; font-size: 32px; color: var(--primary-red); margin: 0; }
 
-.related-section{
-    max-width:1400px;
-    margin:60px auto;
+/* PAGINATION */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 40px;
 }
-
-.related-title{
-    font-size:40px;
-    margin-bottom:30px;
+.pagination a, .pagination span {
+    background: #fff;
+    border: 3px solid var(--border-color);
+    padding: 10px 18px;
+    font-family: 'Bangers', cursive;
+    font-size: 20px;
+    color: #000;
+    text-decoration: none;
+    box-shadow: 4px 4px 0px var(--border-color);
+    transition: all 0.2s ease;
+    cursor: pointer;
 }
-
-.related-products{
-    display:flex;
-    gap:25px;
-    overflow-x:auto;
-    padding-bottom:15px;
+.pagination a:hover, .pagination span.active {
+    background: var(--primary-yellow);
+    transform: translateY(-2px);
+    box-shadow: 6px 6px 0px var(--border-color);
 }
-
-.related-card{
-    min-width:280px;
-    background:white;
-    border-radius:15px;
-    overflow:hidden;
-    text-decoration:none;
-    color:black;
-    box-shadow:0 5px 15px rgba(0,0,0,.08);
-}
-
-.related-card img{
-    width:100%;
-    height:220px;
-    object-fit:cover;
-}
-
-.related-card h3{
-    padding:15px;
-    text-align:center;
-}
-
-.related-card p{
-    color:green;
-    font-size:26px;
-    font-weight:bold;
-    text-align:center;
-    padding-bottom:20px;
+.pagination a:active {
+    transform: translateY(1px);
+    box-shadow: 1px 1px 0px var(--border-color);
 }
 
 /* MOBILE */
-
-@media(max-width:768px){
-
-    .product-container{
-        flex-direction:column;
-        padding:20px;
-    }
-
-    .product-image img{
-        height:320px;
-    }
-
-    .product-title{
-        font-size:32px;
-    }
-
-    .price{
-        font-size:34px;
-    }
-
-    .review-title,
-    .related-title{
-        font-size:30px;
-    }
-
+@media(max-width: 900px) {
+    .navbar { flex-direction: column; gap: 15px; padding: 15px; }
+    .product-container { flex-direction: column; padding: 20px; border-width: 3px; box-shadow: 6px 6px 0px var(--border-color); }
+    .product-title { font-size: 40px; }
+    .price { font-size: 40px; }
+    .section-title { font-size: 36px; }
+    .search-wrapper { margin: 10px 0; }
+    .product-image img { height: 350px; }
 }
-
 </style>
-
 </head>
-
 <body>
 
 <!-- NAVBAR -->
-
 <nav class="navbar">
-
-    <a href="{% url 'home' %}" class="logo">
-        ShopKart
+    <a href="{% url 'home' %}" class="logo" style="text-decoration: none; color: inherit;">
+        <span class="logo-icon"> ✦ </span>
+        <span class="logo-text">Velora</span>
     </a>
-
     <div class="search-wrapper">
-
-        <form method="GET" action="{% url 'home' %}" class="search-box">
-
-            <input
-                type="text"
-                name="search"
-                placeholder="Search products..."
-                value="{{ search }}"
-            >
-
-            <button type="submit">
-                Search
-            </button>
-
+        <form method="GET" action="{% url 'products_list' %}" class="search-box">
+            <input type="text" name="search" placeholder="Search products..." value="{{ search|default:'' }}">
+            <button type="submit">SEARCH</button>
         </form>
-
     </div>
-
     <a href="{% url 'cart' %}" class="cart">
         🛒 Cart
     </a>
-
 </nav>
 
 <!-- PRODUCT -->
-
-<section class="product-container">
-
-    <div class="product-image">
-        <img src="{{ product.image }}" alt="{{ product.name }}">
+<section class="product-wrapper">
+    <div class="product-container" data-aos="zoom-in">
+        <div class="product-image">
+            <img src="{{ product.image }}" alt="{{ product.name }}">
+        </div>
+        <div class="product-info">
+            <h1 class="product-title">{{ product.name }}</h1>
+            <div class="rating">⭐ {{ product.average_rating }}/5 ({{ product.total_reviews }} Reviews)</div>
+            <div class="price">₹{{ product.price }}</div>
+            <div class="description">{{ product.description }}</div>
+            <div class="stock">IN STOCK: {{ product.stock }}</div>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <a href="{% url 'add_to_cart' product.id %}" class="cart-btn">ADD TO CART!</a>
+                {% if product.id in wishlist_product_ids %}
+                <a href="{% url 'remove_from_wishlist' product.id %}" class="cart-btn" style="background:var(--primary-red); color:#fff;">💔 REMOVE WISHLIST</a>
+                {% else %}
+                <a href="{% url 'add_to_wishlist' product.id %}" class="cart-btn">❤️ ADD TO WISHLIST!</a>
+                {% endif %}
+            </div>
+        </div>
     </div>
-
-    <div class="product-info">
-
-        <h1 class="product-title">
-            {{ product.name }}
-        </h1>
-
-        <div class="rating">
-            ⭐ {{ product.average_rating }}/5
-            ({{ product.total_reviews }} Reviews)
-        </div>
-
-        <div class="price">
-            ₹{{ product.price }}
-        </div>
-
-        <div class="description">
-            {{ product.description }}
-        </div>
-
-        <div class="stock">
-            In Stock : {{ product.stock }}
-        </div>
-
-        <a
-            href="{% url 'add_to_cart' product.id %}"
-            class="cart-btn"
-        >
-            Add To Cart
-        </a>
-
-    </div>
-
 </section>
 
 <!-- REVIEW FORM -->
-
-<section class="review-form-section">
-
+<section class="section-wrapper" data-aos="fade-up">
     <form method="POST" class="review-form">
-
         {% csrf_token %}
-
-        <h2>Write A Review</h2>
-
-        <input
-            type="text"
-            name="customer_name"
-            placeholder="Your Name"
-            required
-        >
-
-        <input
-            type="email"
-            name="email"
-            placeholder="Your Email"
-        >
-
+        <h2>WRITE A REVIEW!</h2>
+        <input type="text" name="customer_name" placeholder="Your Hero Name" required>
+        <input type="email" name="email" placeholder="Your Secret Identity (Email)">
         <select name="rating" required>
-            <option value="5">⭐⭐⭐⭐⭐</option>
-            <option value="4">⭐⭐⭐⭐</option>
-            <option value="3">⭐⭐⭐</option>
-            <option value="2">⭐⭐</option>
-            <option value="1">⭐</option>
+            <option value="5">⭐⭐⭐⭐⭐ EPIC (5)</option>
+            <option value="4">⭐⭐⭐⭐ GREAT (4)</option>
+            <option value="3">⭐⭐⭐ GOOD (3)</option>
+            <option value="2">⭐⭐ MEH (2)</option>
+            <option value="1">⭐ TERRIBLE (1)</option>
         </select>
-
-        <textarea
-            name="review_text"
-            placeholder="Write Your Review"
-            required
-        ></textarea>
-
-        <button type="submit">
-            Submit Review
-        </button>
-
+        <textarea name="review_text" placeholder="Tell us your story..." required></textarea>
+        <button type="submit">BAM! SUBMIT!</button>
     </form>
-
 </section>
 
 <!-- REVIEWS -->
-
-<section class="review-section">
-
-    <h2 class="review-title">
-        Customer Reviews
-    </h2>
-
-    {% for review in reviews %}
-
-    <div class="review-card">
-
-        <div class="review-name">
-            {{ review.customer_name }}
+<section class="section-wrapper" data-aos="fade-up">
+    <h2 class="section-title">WHAT OTHERS SAY!</h2>
+    <div class="review-grid">
+        {% for review in reviews %}
+        <div class="review-card" data-aos="slide-up">
+            <div class="review-name">{{ review.customer_name }}</div>
+            <div class="review-stars">
+                {{ review.rating }} / 5 ⭐
+            </div>
+            {% if review.title %}
+            <h4>{{ review.title }}</h4>
+            {% endif %}
+            <p>{{ review.review_text }}</p>
+            <small>{{ review.created_at|date:"F j, Y" }}</small>
         </div>
-
-        <div class="review-stars">
-            {{ review.rating }} ⭐
+        {% empty %}
+        <div class="review-card">
+            <h3>No Reviews Yet. Be the first hero!</h3>
         </div>
+        {% endfor %}
+    </div>
 
-        {% if review.title %}
-        <h4>{{ review.title }}</h4>
+    <!-- PAGINATION -->
+    {% if reviews.has_other_pages %}
+    <div class="pagination">
+        {% if reviews.has_previous %}
+        <a href="?page={{ reviews.previous_page_number }}">
+            Prev
+        </a>
         {% endif %}
 
-        <p>
-            {{ review.review_text }}
-        </p>
+        {% for num in reviews.paginator.page_range %}
+            {% if reviews.number == num %}
+            <span class="active">{{ num }}</span>
+            {% else %}
+            <a href="?page={{ num }}">
+                {{ num }}
+            </a>
+            {% endif %}
+        {% endfor %}
 
-        <br>
-
-        <small>
-            {{ review.created_at }}
-        </small>
-
+        {% if reviews.has_next %}
+        <a href="?page={{ reviews.next_page_number }}">
+            Next
+        </a>
+        {% endif %}
     </div>
-
-    {% empty %}
-
-    <div class="review-card">
-        <h3>No Reviews Yet</h3>
-    </div>
-
-    {% endfor %}
-
+    {% endif %}
 </section>
 
 <!-- RELATED PRODUCTS -->
-
-<section class="related-section">
-
-    <h2 class="related-title">
-        Related Products
-    </h2>
-
-    <div class="related-products">
-
+{% if related_products %}
+<section class="section-wrapper" data-aos="fade-up">
+    <h2 class="section-title">MORE AWESOME GEAR!</h2>
+    <div class="related-grid">
         {% for item in related_products %}
-
-        <a
-            href="{% url 'product_detail' item.id %}"
-            class="related-card"
-        >
-
-            <img src="{{ item.image }}">
-
-            <h3>{{ item.name }}</h3>
-
-            <p>₹{{ item.price }}</p>
-
+        <a href="{% url 'product_detail' item.id %}" class="product-card" data-aos="zoom-in">
+            <img src="{{ item.image }}" alt="{{ item.name }}">
+            <div class="product-info-card">
+                <h3>{{ item.name }}</h3>
+                <div class="price">₹{{ item.price }}</div>
+            </div>
         </a>
-
         {% endfor %}
-
     </div>
-
 </section>
+{% endif %}
+
+<!-- SCRIPTS -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({ duration: 800, once: true });
+    
+    document.querySelectorAll(".cart-btn").forEach(btn => {
+        btn.addEventListener("click", function(e) {
+            {% if not user.is_authenticated %}
+            e.preventDefault();
+            alert("You have to login to add items to cart!");
+            window.location.href = "{% url 'login' %}";
+            {% endif %}
+        });
+    });
+</script>
 
 </body>
 </html>

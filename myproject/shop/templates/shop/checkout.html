@@ -1,71 +1,562 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Checkout</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout - Velora</title>
 
-    <style>
+<!-- Fonts & Animations -->
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
-        body{
-            font-family:Arial;
-            background:#f4f4f4;
-            margin:0;
-            padding:0;
-        }
+<style>
+:root {
+    --bg-color: #fcf8f2;
+    --border-color: #000000;
+    --primary-red: #ef476f;
+    --primary-yellow: #ffd166;
+    --primary-blue: #118ab2;
+    --shadow-solid: 6px 6px 0px #000000;
+}
 
-        .container{
-            width:80%;
-            max-width:700px;
-            margin:50px auto;
-            background:white;
-            padding:30px;
-            border-radius:10px;
-            box-shadow:0 0 15px rgba(0,0,0,.1);
-        }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Comic Neue', cursive;
+}
 
-        h1{
-            text-align:center;
-        }
+body {
+    background: var(--bg-color);
+    overflow-x: hidden;
+    color: #000;
+    background-image: radial-gradient(#d3ccc1 20%, transparent 20%);
+    background-size: 10px 10px;
+    min-height: 100vh;
+}
 
-        input{
-            width:100%;
-            padding:12px;
-            margin:10px 0;
-        }
+/* NAVBAR */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    min-height: 85px;
+    background: #fff;
+    border-bottom: 4px solid var(--border-color);
+    position: relative;
+    z-index: 1000;
+}
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo-icon { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: var(--primary-yellow); border: 3px solid var(--border-color); box-shadow: 3px 3px 0px var(--border-color); color: #000; font-size: 24px; font-weight: 800; font-family: 'Bangers', cursive; transform: rotate(-5deg); }
+.logo-text { font-size: 38px; font-family: 'Bangers', cursive; color: #000; line-height: 1; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 0px var(--primary-red); }
+.back-btn { display: flex; align-items: center; gap: 10px; text-decoration: none; font-family: 'Bangers', cursive; font-size: 24px; color: #000; background: var(--primary-yellow); border: 3px solid var(--border-color); padding: 8px 24px; box-shadow: 4px 4px 0px var(--border-color); transition: all 0.1s ease; letter-spacing: 1px; }
+.back-btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--border-color); background: var(--primary-red); color: #fff; }
 
-        button{
-            width:100%;
-            padding:12px;
-            background:green;
-            color:white;
-            border:none;
-            cursor:pointer;
-            font-size:18px;
-        }
+/* PAGE TITLE */
+.page-title {
+    text-align: center;
+    font-family: 'Bangers', cursive;
+    font-size: 60px;
+    margin: 40px 0;
+    text-transform: uppercase;
+    text-shadow: 3px 3px 0px var(--primary-blue);
+    color: #fff;
+    -webkit-text-stroke: 2px var(--border-color);
+    letter-spacing: 3px;
+}
 
-    </style>
+/* CHECKOUT CONTAINER */
+.checkout-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 40px;
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto 80px;
+}
 
+.checkout-card {
+    background: #fff;
+    border: 4px solid var(--border-color);
+    box-shadow: 10px 10px 0px var(--border-color);
+    padding: 35px;
+}
+
+.checkout-card h2 {
+    font-family: 'Bangers', cursive;
+    font-size: 36px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 25px;
+    border-bottom: 4px solid var(--border-color);
+    padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* SAVED ADDRESSES */
+.address-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.address-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    background: #fcf8f2;
+    border: 3px solid var(--border-color);
+    padding: 20px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0px var(--border-color);
+    transition: all 0.1s ease;
+}
+
+.address-label:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px var(--border-color);
+    background: #fff;
+}
+
+.address-label input[type="radio"] {
+    margin-top: 5px;
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primary-blue);
+}
+
+.address-text h3 {
+    font-family: 'Bangers', cursive;
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.address-text p {
+    font-weight: bold;
+    font-size: 15px;
+    color: #444;
+}
+
+/* NEW ADDRESS FORM */
+.address-divider {
+    text-align: center;
+    margin: 30px 0;
+    position: relative;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.address-divider::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background: var(--border-color);
+    top: 50%;
+    left: 0;
+    z-index: 1;
+}
+
+.address-divider span {
+    background: #fff;
+    padding: 0 15px;
+    position: relative;
+    z-index: 2;
+    border: 3px solid var(--border-color);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    font-family: 'Bangers', cursive;
+    font-size: 18px;
+    letter-spacing: 1px;
+}
+
+.form-control {
+    border: 3px solid var(--border-color);
+    padding: 12px 15px;
+    font-size: 16px;
+    font-weight: bold;
+    background: #fcf8f2;
+    outline: none;
+    transition: all 0.1s ease;
+}
+
+.form-control:focus {
+    background: #fff;
+    box-shadow: 4px 4px 0px var(--primary-yellow);
+}
+
+/* ORDER SUMMARY */
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 2px dashed var(--border-color);
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.summary-item span:first-child {
+    font-family: 'Bangers', cursive;
+    font-size: 20px;
+    text-transform: uppercase;
+}
+
+.checkout-total-box {
+    margin-top: 30px;
+    background: var(--primary-yellow);
+    border: 4px solid var(--border-color);
+    padding: 25px;
+    text-align: center;
+    box-shadow: 6px 6px 0px var(--border-color);
+}
+
+.checkout-total-box h3 {
+    font-family: 'Bangers', cursive;
+    font-size: 40px;
+    margin-bottom: 15px;
+}
+
+.checkout-btn {
+    width: 100%;
+    background: var(--primary-red);
+    color: #fff;
+    padding: 15px;
+    font-family: 'Bangers', cursive;
+    font-size: 30px;
+    border: 4px solid var(--border-color);
+    box-shadow: 6px 6px 0px var(--border-color);
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    letter-spacing: 1.5px;
+}
+
+.checkout-btn:hover {
+    background: var(--primary-blue);
+    color: #fff;
+    transform: translate(4px, 4px);
+    box-shadow: 2px 2px 0px var(--border-color);
+}
+
+/* MODAL AESTHETIC */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background: #fff;
+    border: 6px solid #000;
+    box-shadow: 12px 12px 0px #000;
+    padding: 50px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    animation: zoomIn 0.3s ease-out;
+}
+
+.modal-content h2 {
+    font-family: 'Bangers', cursive;
+    font-size: 50px;
+    color: var(--primary-yellow);
+    -webkit-text-stroke: 2px #000;
+    text-shadow: 3px 3px 0px var(--primary-red);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.modal-content p {
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 30px;
+}
+
+.modal-btn {
+    display: inline-block;
+    background: var(--primary-blue);
+    color: #fff;
+    padding: 15px 35px;
+    border: 4px solid #000;
+    box-shadow: 6px 6px 0px #000;
+    text-decoration: none;
+    font-family: 'Bangers', cursive;
+    font-size: 26px;
+    text-transform: uppercase;
+    transition: all 0.1s ease;
+    cursor: pointer;
+}
+
+.modal-btn:hover {
+    background: var(--primary-yellow);
+    color: #000;
+    transform: translate(3px, 3px);
+    box-shadow: 3px 3px 0px #000;
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@media(max-width: 900px) {
+    .checkout-grid { grid-template-columns: 1fr; }
+    .navbar { padding: 15px; flex-direction: column; gap: 15px; }
+    .page-title { font-size: 45px; }
+}
+</style>
 </head>
 <body>
 
-<div class="container">
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="{% url 'home' %}" class="logo" style="text-decoration: none; color: inherit;">
+        <span class="logo-icon"> ✦ </span>
+        <span class="logo-text">Velora</span>
+    </a>
+    <a href="{% url 'cart' %}" class="back-btn">
+        ⬅ BACK TO CART
+    </a>
+</nav>
 
-    <h1>Checkout</h1>
+<!-- TITLE -->
+<h1 class="page-title" data-aos="fade-down">SECURE CHECKOUT</h1>
 
-    <form>
+<div class="checkout-grid">
 
-        <input type="text" placeholder="Full Name">
+    <!-- LEFT COLUMN: SHIPPING DETAILS -->
+    <div class="checkout-card" data-aos="fade-right">
+        <h2>📍 Shipping Details</h2>
 
-        <input type="email" placeholder="Email">
+        <form id="checkoutForm">
+            {% csrf_token %}
 
-        <input type="text" placeholder="Address">
+            {% if saved_addresses %}
+                <div class="address-options">
+                    <p style="font-weight: bold; margin-bottom: 10px; font-size: 18px; color: var(--primary-blue);">Select a saved shipping address:</p>
+                    {% for addr in saved_addresses %}
+                        <label class="address-label">
+                            <input type="radio" name="selected_address" value="{{ addr.id }}" {% if forloop.first %}checked{% endif %}>
+                            <div class="address-text">
+                                <h3>{{ addr.full_name }} (📞 {{ addr.phone }})</h3>
+                                <p>{{ addr.address_line_1 }}{% if addr.address_line_2 %}, {{ addr.address_line_2 }}{% endif %}</p>
+                                <p>{{ addr.city }}, {{ addr.state }} - {{ addr.pincode }}</p>
+                            </div>
+                        </label>
+                    {% endfor %}
 
-        <button type="submit">
-            Place Order
-        </button>
+                    <label class="address-label" style="background: #eef7fa;">
+                        <input type="radio" name="selected_address" value="new" id="newAddressRadio">
+                        <div class="address-text">
+                            <h3>➕ Add a new shipping address</h3>
+                            <p>Enter details below to ship to a different coordinates</p>
+                        </div>
+                    </label>
+                </div>
+            {% endif %}
 
-    </form>
+            <!-- Form fields for entering a new address -->
+            <div id="newAddressForm" style="{% if saved_addresses %}display: none;{% endif %}">
+                <div class="form-group">
+                    <label for="full_name">Recipient Name</label>
+                    <input type="text" id="full_name" class="form-control" placeholder="Tony Stark" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="text" id="phone" class="form-control" placeholder="e.g. +91 9999999999" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="address_line_1">Address Line 1</label>
+                    <input type="text" id="address_line_1" class="form-control" placeholder="10880 Malibu Point" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="address_line_2">Address Line 2 (Optional)</label>
+                    <input type="text" id="address_line_2" class="form-control" placeholder="Penthouse / Suite">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" class="form-control" placeholder="Malibu" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="state">State</label>
+                        <input type="text" id="state" class="form-control" placeholder="California" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pincode">Pincode / ZIP</label>
+                    <input type="text" id="pincode" class="form-control" placeholder="90265" required>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- RIGHT COLUMN: ORDER SUMMARY -->
+    <div class="checkout-card" data-aos="fade-left">
+        <h2>📦 Order Summary</h2>
+
+        <div style="margin-bottom: 30px;">
+            {% for item in cart_items %}
+                <div class="summary-item">
+                    <span>{{ item.product.name }} (x{{ item.quantity }})</span>
+                    <span>₹{{ item.subtotal }}</span>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="checkout-total-box">
+            <h3>Grand Total: ₹{{ total }}</h3>
+            <button type="button" id="placeOrderBtn" class="checkout-btn">PLACE ORDER NOW ⚡</button>
+        </div>
+    </div>
 
 </div>
+
+<!-- SUCCESS MODAL overlay -->
+<div class="modal-overlay" id="successModal">
+    <div class="modal-content">
+        <h2>Order Confirmed!</h2>
+        <p>Boom! Your order has been registered in our database. Prepare for delivery, hero!</p>
+        <a href="{% url 'home' %}" class="modal-btn">BACK TO BASE (SHOP) 🚀</a>
+    </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({ duration: 800, once: true });
+
+    // Handle toggling between saved addresses and new address input
+    const radioButtons = document.querySelectorAll('input[name="selected_address"]');
+    const newAddressForm = document.getElementById('newAddressForm');
+
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'new') {
+                newAddressForm.style.display = 'block';
+                toggleNewAddressRequired(true);
+            } else {
+                newAddressForm.style.display = 'none';
+                toggleNewAddressRequired(false);
+            }
+        });
+    });
+
+    function toggleNewAddressRequired(required) {
+        document.getElementById('full_name').required = required;
+        document.getElementById('phone').required = required;
+        document.getElementById('address_line_1').required = required;
+        document.getElementById('city').required = required;
+        document.getElementById('state').required = required;
+        document.getElementById('pincode').required = required;
+    }
+
+    // Set initial validation requirements
+    if (document.querySelector('input[name="selected_address"]:checked')?.value === 'new' || !document.querySelector('input[name="selected_address"]')) {
+        toggleNewAddressRequired(true);
+    } else {
+        toggleNewAddressRequired(false);
+    }
+
+    // Submit Order using JSON API
+    document.getElementById('placeOrderBtn').addEventListener('click', function() {
+        const selectedRadio = document.querySelector('input[name="selected_address"]:checked');
+        const isNew = !selectedRadio || selectedRadio.value === 'new';
+        
+        let payload = {};
+
+        if (!isNew) {
+            payload.address_id = selectedRadio.value;
+        } else {
+            const form = document.getElementById('checkoutForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            payload.full_name = document.getElementById('full_name').value.trim();
+            payload.phone = document.getElementById('phone').value.trim();
+            payload.address_line_1 = document.getElementById('address_line_1').value.trim();
+            payload.address_line_2 = document.getElementById('address_line_2').value.trim();
+            payload.city = document.getElementById('city').value.trim();
+            payload.state = document.getElementById('state').value.trim();
+            payload.pincode = document.getElementById('pincode').value.trim();
+        }
+
+        // Disable button to prevent double submit
+        this.disabled = true;
+        this.innerText = 'PROCESSING ORDER...';
+
+        fetch(window.location.href, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => { throw new Error(data.error || 'Server Error'); });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                document.getElementById('successModal').style.display = 'flex';
+            } else {
+                alert('Checkout failed: ' + data.error);
+                this.disabled = false;
+                this.innerText = 'PLACE ORDER NOW ⚡';
+            }
+        })
+        .catch(error => {
+            alert('Error placing order: ' + error.message);
+            this.disabled = false;
+            this.innerText = 'PLACE ORDER NOW ⚡';
+        });
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
 
 </body>
 </html>

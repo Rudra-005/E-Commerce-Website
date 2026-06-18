@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,745 +10,1551 @@
 <title>Velora</title>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap');
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial,sans-serif;
+:root {
+    --bg-color: #fcf8f2;
+    --border-color: #000000;
+    --primary-red: #ef476f;
+    --primary-yellow: #ffd166;
+    --primary-blue: #118ab2;
+    --shadow-solid: 6px 6px 0px #000000;
 }
 
-body{
-    background:#f4f4f4;
-    overflow-x:hidden;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Comic Neue', cursive;
 }
 
-/* NAVBAR */
-
-.navbar{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-
-    padding:0px 28px;
-    min-height:65px;
-
-    background:linear-gradient(
-        135deg,
-        #071321,
-        #0d1b2a,
-        #071321
-    );
-
-    backdrop-filter:blur(20px);
-
-    border-bottom:
-        1px solid rgba(255,255,255,.08);
-}
-.logo{
-    display:flex;
-    align-items:center;
-    gap:10px;
+body {
+    background: var(--bg-color);
+    overflow-x: hidden;
+    color: #000;
+    background-image: radial-gradient(#d3ccc1 20%, transparent 20%);
+    background-size: 10px 10px;
 }
 
-.logo{
-    display:flex;
-    align-items:center;
-    gap:10px;
+/* COMIC NAVBAR */
+.comic-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 5%;
+    background: var(--bg-color);
+    border-bottom: 6px solid #000;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    flex-wrap: wrap;
+    gap: 20px;
+    box-shadow: 0 4px 0px rgba(0,0,0,0.05);
 }
 
-.logo-icon{
-    width:42px;
-    height:42px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    border-radius:12px;
-
-    background:linear-gradient(
-        135deg,
-        #ffb000,
-        #ff6200
-    );
-
-    color:white;
-    font-size:24px;
-    font-weight:800;
+.comic-logo {
+    text-decoration: none;
 }
 
-.logo-text{
-    font-size:32px;
-    font-weight:800;
-    color:#ffb000;
-    line-height:1;
+.comic-logo-box {
+    display: flex;
+    align-items: center;
+    background: var(--primary-yellow);
+    border: 6px solid #000;
+    padding: 10px 20px;
+    transform: rotate(-2deg);
+    box-shadow: 8px 8px 0px #000;
+    color: #000;
 }
 
-.search-wrapper{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    width:100%;
+.comic-logo-icon {
+    font-size: 50px;
+    margin-right: 10px;
 }
 
-.search-box{
-    width:520px;
-    height:46px;   /* 70px se 55px */
-
-    display:flex;
-    align-items:center;
-
-    background:rgba(255,255,255,0.12);
-    backdrop-filter:blur(20px);
-
-    border:1px solid rgba(255,255,255,0.15);
-
-    border-radius:22px;
-
-    overflow:hidden;
-
-    box-shadow:
-        0 10px 30px rgba(0,0,0,0.25);
-
-    transition:.35s ease;
+.comic-logo-text {
+    font-family: 'Bangers', cursive;
+    font-size: 36px;
+    line-height: 0.9;
+    text-transform: uppercase;
 }
 
-.search-box:hover{
-    transform:translateY(-3px);
-    box-shadow:
-        0 20px 50px rgba(0,0,0,0.35);
+.comic-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
 }
 
-.search-box:focus-within{
-    border:1px solid #ff9800;
-    box-shadow:
-        0 0 0 4px rgba(255,152,0,.18),
-        0 20px 50px rgba(0,0,0,.35);
+.comic-nav-links {
+    background: #fff;
+    border: 6px solid #000;
+    padding: 15px 30px;
+    display: flex;
+    gap: 30px;
+    transform: rotate(1deg);
+    box-shadow: 8px 8px 0px #000;
 }
 
-.search-box input{
-    flex:1;
-
-    border:none;
-    outline:none;
-
-    background:transparent;
-
-    padding:0 16px;
-
-    color:white;
-    font-size:15px;
-    font-weight:500;
+.comic-nav-links a {
+    font-family: 'Bangers', cursive;
+    font-size: 24px;
+    color: #000;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
-.search-box input::placeholder{
-    color:rgba(255,255,255,.65);
+.comic-nav-links a:hover {
+    color: var(--primary-red);
 }
 
-.search-box select{
-    width:140px;
-    height:100%;
-
-    border:none;
-    outline:none;
-
-    background:rgba(255,255,255,.08);
-
-    color:white;
-
-    font-size:14px;
-    padding:0 20px;
-
-    cursor:pointer;
+.comic-search {
+    background: #fff;
+    border: 6px solid #000;
+    padding: 5px;
+    display: flex;
+    transform: rotate(-1deg);
+    box-shadow: 8px 8px 0px #000;
 }
 
-.search-box button{
-    width:120px;
-    height:100%;
-
-    border:none;
-    cursor:pointer;
-
-    font-size:15px;
-    font-weight:700;
-
-    color:white;
-
-    background:linear-gradient(
-        135deg,
-        #ff9d00,
-        #ff5f00
-    );
-
-    transition:.3s ease;
-}
-.search-box select{
-    background:#3f4a5a;
-    color:white;
-    border:none;
-    outline:none;
+.comic-search input {
+    border: none;
+    outline: none;
+    font-size: 20px;
+    font-family: 'Comic Neue', cursive;
+    font-weight: bold;
+    padding: 0 10px;
 }
 
-.search-box select option{
-    background:#1b2430;
-    color:white;
+.comic-search button {
+    background: var(--primary-yellow);
+    border: 4px solid #000;
+    font-family: 'Bangers', cursive;
+    font-size: 24px;
+    padding: 5px 15px;
+    cursor: pointer;
 }
 
-.search-box button:hover{
-    letter-spacing:1px;
-    transform:scale(1.02);
+.comic-search button:hover {
+    background: var(--primary-red);
+    color: #fff;
 }
 
-.cart{
-    color:white;
-    text-decoration:none;
-    font-size:28px;
-    font-weight:bold;
+.comic-login-btn {
+    background: #fff;
+    border: 6px solid #000;
+    padding: 15px 25px;
+    font-family: 'Bangers', cursive;
+    font-size: 24px;
+    color: #000;
+    text-decoration: none;
+    transform: rotate(-1deg);
+    box-shadow: 8px 8px 0px #000;
+    cursor: pointer;
+    display: inline-block;
 }
 
-/* SEARCH SUGGESTIONS */
-
-#suggestions{
-    position:absolute;
-    top:58px;
-    width:100%;
-    background:white;
-    border-radius:10px;
-    overflow:hidden;
-    display:none;
-    box-shadow:0 5px 20px rgba(0,0,0,.2);
-    z-index:9999;
-    max-height:300px;
-    overflow-y:auto;
+.comic-cart-circle {
+    background: #000;
+    color: #fff;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bangers', cursive;
+    font-size: 30px;
+    text-decoration: none;
+    border: 4px solid #fff;
+    box-shadow: 0 0 0 4px #000;
 }
 
-.suggestion-item{
-    padding:14px;
-    cursor:pointer;
-    border-bottom:1px solid #eee;
+/* User Profile Dropdown reused */
+.user-profile { position: relative; }
+.profile-dropdown {
+    position: absolute;
+    top: 70px;
+    right: 0;
+    width: 250px;
+    background: #fff !important;
+    border: 6px solid var(--border-color);
+    box-shadow: 8px 8px 0px #000;
+    display: none;
+    z-index: 9999;
+    height: auto !important;
+}
+.profile-dropdown.show { display: block !important; }
+.profile-header {
+    padding: 18px;
+    background: var(--primary-yellow);
+    border-bottom: 4px solid var(--border-color);
+}
+.profile-name { font-family: 'Bangers', cursive; font-size: 22px; color: #000; }
+.profile-email { font-weight: 700; font-size: 14px; color: #333; }
+.profile-link {
+    display: block !important;
+    padding: 14px 18px !important;
+    text-decoration: none !important;
+    color: #000 !important;
+    border-bottom: 4px solid var(--border-color) !important;
+    font-weight: 700;
+    font-size: 18px;
+    font-family: 'Comic Neue', cursive;
+}
+.profile-link:hover { background: var(--primary-yellow) !important; }
+.logout-btn { border: none; cursor: pointer; width: 100%; text-align: left; background: #fff; }
+
+/* COMIC HERO */
+.comic-hero {
+    display: flex;
+    height: 80vh;
+    min-height: 550px;
+    border: 8px solid #000;
+    margin: 30px auto;
+    max-width: 1400px;
+    position: relative;
+    overflow: hidden;
 }
 
-.suggestion-item:hover{
-    background:#f4f4f4;
+.comic-hero-left {
+    width: 45%;
+    position: relative;
+    overflow: hidden;
+    border-right: 8px solid #000;
 }
 
-/* HERO */
-
-.hero-slider{
-    position:relative;
-    width:100%;
-    height:100vh;
-    overflow:hidden;
+.comic-hero-left img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
-
-.hero-slide img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-}
-.hero-slide::after{
-    content:"";
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,.45);
+.comic-hero-right {
+    width: 55%;
+    background-color: var(--primary-red);
+    background-image: radial-gradient(#000 15%, transparent 16%), radial-gradient(#000 15%, transparent 16%);
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
 }
 
-.hero-slide{
-    position:absolute;
-    width:100%;
-    height:100%;
-    opacity:0;
-    animation:heroSlider 25s infinite;
+.comic-bubble-container {
+    width: 90%;
+    z-index: 2;
 }
 
-.hero-slide:nth-child(1){
-    animation-delay:0s;
+.comic-title-bubble {
+    background: #fff;
+    border: 8px solid #000;
+    padding: 30px 40px;
+    transform: rotate(-2deg);
+    box-shadow: 15px 15px 0px rgba(0,0,0,1);
+    margin-bottom: 20px;
+    position: relative;
 }
 
-.hero-slide:nth-child(2){
-    animation-delay:5s;
+.comic-title-bubble h1 {
+    font-family: 'Bangers', cursive;
+    font-size: 75px;
+    color: #000;
+    line-height: 1;
+    text-transform: uppercase;
+    text-shadow: 3px 3px 0px #fff, -3px -3px 0px #fff, 3px -3px 0px #fff, -3px 3px 0px #fff, 6px 6px 0px var(--primary-blue);
+    -webkit-text-stroke: 2px #000;
+    letter-spacing: 2px;
 }
 
-.hero-slide:nth-child(3){
-    animation-delay:10s;
+.comic-desc-box {
+    background: #fcf8f2;
+    border: 6px solid #000;
+    padding: 25px 30px;
+    margin-left: auto;
+    width: 90%;
+    transform: rotate(1deg);
+    position: relative;
+    top: -15px;
 }
 
-.hero-slide:nth-child(4){
-    animation-delay:15s;
+.comic-desc-box p {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #000;
+    font-family: 'Comic Neue', cursive;
 }
 
-.hero-slide:nth-child(5){
-    animation-delay:20s;
+@media(max-width: 900px) {
+    .comic-hero { flex-direction: column; height: auto; }
+    .comic-hero-left { width: 100%; height: 300px; border-right: none; border-bottom: 8px solid #000; }
+    .comic-hero-right { width: 100%; padding: 30px 20px; }
+    .comic-title-bubble h1 { font-size: 40px; }
+    .comic-desc-box p { font-size: 16px; }
 }
 
-@keyframes heroSlider{
-
-    0%{
-        opacity:0;
-    }
-
-    5%{
-        opacity:1;
-    }
-
-    25%{
-        opacity:1;
-    }
-
-    30%{
-        opacity:0;
-    }
-
-    100%{
-        opacity:0;
-    }
-
-}
-
-.hero-content{
-    position:absolute;
-    top:55%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    text-align:center;
-    color:white;
-
-    z-index:10;   /* ADD THIS */
-}
-
-.hero-content h1{
-    font-size:85px;
-    margin-bottom:20px;
-}
-
-.hero-content p{
-    font-size:28px;
-    margin-bottom:30px;
-}
-
-.hero-btn{
-    display:inline-block;
-    background:#ff9900;
-    color:black;
-    padding:18px 40px;
-    border-radius:10px;
-    text-decoration:none;
-    font-size:22px;
-    font-weight:bold;
-}
 /* CATEGORY SECTION */
-
-.categories-section{
-    padding:70px 5%;
-    background:white;
+.categories-section {
+    padding: 60px 5%;
+    background: var(--primary-blue);
+    border-top: 5px solid var(--border-color);
+    border-bottom: 5px solid var(--border-color);
 }
 
-.category-title{
-    text-align:center;
-    font-size:45px;
-    margin-bottom:40px;
+.category-title {
+    text-align: center;
+    font-family: 'Bangers', cursive;
+    font-size: 60px;
+    color: #fff;
+    margin-bottom: 50px;
+    letter-spacing: 3px;
+    text-shadow: 4px 4px 0px var(--border-color);
+    text-transform: uppercase;
 }
 
-.category-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-    gap:25px;
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 30px;
 }
 
-.category-card{
-    background:white;
-    border-radius:20px;
-    padding:30px 20px;
-    text-align:center;
-    text-decoration:none;
-    color:#111;
-    box-shadow:0 5px 15px rgba(0,0,0,.12);
-    transition:.3s;
-
-    font-size:60px;   /* NEW */
-}
-.category-card{
-    min-height:180px;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
+.category-card {
+    background: #fff;
+    border: 4px solid var(--border-color);
+    box-shadow: 8px 8px 0px var(--border-color);
+    padding: 30px 20px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.1s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.category-card:hover{
-    transform:translateY(-8px);
-    box-shadow:0 10px 25px rgba(0,0,0,.15);
+.category-card:nth-child(even) {
+    transform: rotate(2deg);
 }
 
-.category-card span{
-    display:block;
-    margin-top:15px;
-    font-size:22px;
-    font-weight:bold;
-}
-/* OFFER BAR */
-
-.offer-wrapper{
-    background:#ff9900;
-    overflow:hidden;
+.category-card:nth-child(odd) {
+    transform: rotate(-1deg);
 }
 
-.offer-bar{
-    display:inline-block;
-    white-space:nowrap;
-    padding:12px 0;
-    font-weight:bold;
-    animation:scrollOffer 15s linear infinite;
+.category-card:hover {
+    transform: translate(4px, 4px) rotate(0deg);
+    box-shadow: 4px 4px 0px var(--border-color);
+    background: var(--primary-yellow);
 }
 
-@keyframes scrollOffer{
-    from{
-        transform:translateX(100%);
-    }
-    to{
-        transform:translateX(-100%);
-    }
+.category-card .cat-icon {
+    font-size: 60px;
+    margin-bottom: 15px;
+    filter: drop-shadow(2px 2px 0px var(--border-color));
+}
+
+.category-card span:not(.cat-icon) {
+    font-family: 'Bangers', cursive;
+    font-size: 26px;
+    color: #000;
+    letter-spacing: 1px;
 }
 
 /* FEATURED PRODUCTS */
-
-.products-section{
-    padding:80px 0;
+.featured-products {
+    background: var(--bg-color);
+    padding: 80px 0;
+    border-bottom: 5px solid var(--border-color);
 }
 
-.section-title{
-    text-align:center;
-    font-size:65px;
-    margin-bottom:50px;
+.featured-products .section-title {
+    text-align: center;
+    font-family: 'Bangers', cursive;
+    font-size: 65px;
+    color: #000;
+    margin-bottom: 50px;
+    letter-spacing: 3px;
+    text-shadow: 4px 4px 0px var(--primary-yellow);
+    text-transform: uppercase;
 }
 
-.slider-container{
-    overflow:hidden;
+.slider-container {
+    overflow: hidden;
+    padding: 20px 0 40px 0;
 }
 
-.slider-track{
-    display:flex;
-    gap:30px;
-    width:max-content;
-    animation:autoScroll 45s linear infinite;
-    padding:20px;
+.slider-track {
+    display: flex;
+    gap: 40px;
+    width: max-content;
+    animation: autoScroll 45s linear infinite;
+    padding: 0 40px;
 }
 
-.slider-track:hover{
-    animation-play-state:paused;
+.slider-track:hover {
+    animation-play-state: paused;
 }
 
-@keyframes autoScroll{
-
-    from{
-        transform:translateX(0);
-    }
-
-    to{
-        transform:translateX(-50%);
-    }
+.product-card {
+    min-width: 320px;
+    max-width: 320px;
+    background: #fff;
+    border: 4px solid var(--border-color);
+    box-shadow: 10px 10px 0px var(--border-color);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    flex-direction: column;
 }
 
-.product-card{
-    min-width:320px;
-    max-width:320px;
-    background:white;
-    border-radius:20px;
-    overflow:hidden;
-    box-shadow:0 5px 15px rgba(0,0,0,.15);
+.product-card:hover {
+    transform: translateY(-10px) scale(1.03) rotate(2deg);
+    box-shadow: 15px 15px 0px var(--border-color);
 }
 
-.product-card img{
-    width:100%;
-    height:250px;
-    object-fit:cover;
+.product-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-bottom: 4px solid var(--border-color);
 }
 
-.product-card-content{
-    padding:20px;
+.product-card-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
-.product-card h3{
-    font-size:28px;
-    margin-bottom:15px;
+.product-card h3 {
+    font-family: 'Bangers', cursive;
+    font-size: 26px;
+    color: #000;
+    margin-bottom: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 1px;
 }
 
-.product-card p{
-    color:green;
-    font-size:30px;
-    font-weight:bold;
-    margin-bottom:20px;
+.product-rating {
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 15px;
+    font-size: 16px;
 }
 
-.product-buttons{
-    display:flex;
-    gap:15px;
+.product-card p {
+    font-family: 'Bangers', cursive;
+    color: var(--primary-red);
+    font-size: 32px;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 0px #000;
 }
 
-.product-rating{
-
-    color:#ff9900;
-
-    font-size:22px;
-
-    font-weight:bold;
-
-    margin-bottom:12px;
+.product-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: auto;
 }
 
-.cart-btn{
-    flex:1;
-    text-align:center;
-    background:#ff9900;
-    color:black;
-    padding:12px;
-    border-radius:10px;
-    text-decoration:none;
-    font-weight:bold;
+.cart-btn, .view-btn {
+    flex: 1;
+    text-align: center;
+    font-family: 'Bangers', cursive;
+    font-size: 20px;
+    padding: 10px;
+    border: 3px solid var(--border-color);
+    box-shadow: 4px 4px 0px var(--border-color);
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: all 0.1s ease;
+    color: #000 !important;
 }
 
-.view-btn{
-    flex:1;
-    text-align:center;
-    background:#007bff;
-    color:white;
-    padding:12px;
-    border-radius:10px;
-    text-decoration:none;
-    font-weight:bold;
+.cart-btn {
+    background: var(--primary-yellow);
+}
+
+.view-btn {
+    background: #fff;
+}
+
+.cart-btn:hover, .view-btn:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px var(--border-color);
+}
+.cart-btn:hover { background: var(--primary-red); color: white !important; }
+
+/* OFFER BAR */
+.offer-wrapper {
+    background: var(--primary-red);
+    border-bottom: 5px solid var(--border-color);
+    border-top: 5px solid var(--border-color);
+    overflow: hidden;
+}
+
+.offer-bar {
+    display: inline-block;
+    white-space: nowrap;
+    padding: 15px 0;
+    font-family: 'Bangers', cursive;
+    font-size: 24px;
+    color: #fff;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 0px #000;
+    animation: scrollOffer 15s linear infinite;
+}
+
+@keyframes scrollOffer {
+    from { transform: translateX(100%); }
+    to { transform: translateX(-100%); }
+}
+@keyframes autoScroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
 }
 
 /* SEARCH RESULTS */
-
-.search-results{
-    padding:10px 5% 30px;
+.search-results {
+    padding: 40px 5% 60px;
 }
 
-.search-products{
-    display:flex;
-    flex-direction:column;
-    gap:25px;
+.search-products {
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
 }
 
-.search-card{
-    background:white;
-    display:flex;
-    gap:25px;
-    padding:20px;
-    border-radius:20px;
-    box-shadow:0 5px 15px rgba(0,0,0,.1);
+.search-card {
+    background: #fff;
+    border: 4px solid var(--border-color);
+    box-shadow: 10px 10px 0px var(--border-color);
+    display: flex;
+    gap: 30px;
+    padding: 25px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.search-card img{
-    width:320px;
-    height:250px;
-    object-fit:cover;
-    border-radius:15px;
+.search-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 15px 15px 0px var(--border-color);
 }
 
-.search-info{
-    flex:1;
+.search-card img {
+    width: 320px;
+    height: 250px;
+    object-fit: cover;
+    border: 3px solid var(--border-color);
 }
 
-.search-info h2{
-    font-size:42px;
-    margin-bottom:15px;
+.search-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
-.search-price{
-    color:green;
-    font-size:42px;
-    font-weight:bold;
-    margin-bottom:15px;
+.search-info h2 {
+    font-family: 'Bangers', cursive;
+    font-size: 38px;
+    color: #000;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
 }
 
-.search-buttons{
-    display:flex;
-    gap:15px;
-    margin-top:25px;
+.search-price {
+    font-family: 'Bangers', cursive;
+    color: var(--primary-red);
+    font-size: 42px;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 0px #000;
+}
+
+.search-info p {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.search-buttons {
+    display: flex;
+    gap: 20px;
+    margin-top: auto;
+}
+
+.search-buttons .cart-btn, .search-buttons .view-btn {
+    flex: none;
+    padding: 12px 30px;
 }
 
 /* PAGINATION */
-
-.pagination{
-    display:flex;
-    justify-content:center;
-    gap:10px;
-    margin-top:50px;
-    flex-wrap:wrap;
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 60px;
+    flex-wrap: wrap;
 }
 
-.pagination a{
-    background:#ff9900;
-    color:black;
-    padding:12px 18px;
-    border-radius:8px;
-    text-decoration:none;
-    font-weight:bold;
+.pagination a {
+    background: #fff;
+    color: #000;
+    padding: 12px 20px;
+    border: 3px solid var(--border-color);
+    box-shadow: 4px 4px 0px var(--border-color);
+    text-decoration: none;
+    font-family: 'Bangers', cursive;
+    font-size: 20px;
+    transition: all 0.1s ease;
 }
 
-.pagination .active{
-    background:#131921;
-    color:white;
+.pagination a:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px var(--border-color);
+    background: var(--primary-yellow);
 }
 
-/* MOBILE INFINITE */
-
-#load-more-trigger{
-    height:20px;
-}
-
-.loading{
-    text-align:center;
-    font-size:24px;
-    padding:30px;
-    font-weight:bold;
-    display:none;
+.pagination .active {
+    background: var(--primary-red);
+    color: #fff;
+    transform: translate(4px, 4px);
+    box-shadow: 0px 0px 0px var(--border-color);
 }
 
 /* FOOTER */
+footer {
+    background: var(--primary-blue);
+    color: #fff;
+    text-align: center;
+    padding: 60px 20px;
+    border-top: 5px solid var(--border-color);
+}
 
-footer{
-    background:#131921;
-    color:white;
-    text-align:center;
-    padding:40px;
+footer h2 {
+    font-family: 'Bangers', cursive;
+    font-size: 60px;
+    letter-spacing: 3px;
+    text-shadow: 3px 3px 0px #000;
+    margin-bottom: 15px;
+}
+
+footer p {
+    font-family: 'Bangers', cursive;
+    font-size: 24px;
+    letter-spacing: 1px;
+}
+
+
+/* NEW SECTIONS */
+.explore-shelves {
+    padding: 60px 5%;
+    background: var(--bg-color);
+    border-top: 5px solid var(--border-color);
+    border-bottom: 5px solid var(--border-color);
+}
+.explore-header {
+    display: flex;
+    gap: 40px;
+    align-items: stretch;
+}
+.explore-title-box {
+    flex: 1;
+    position: relative;
+    background: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&q=80') center/cover;
+    border: 5px solid var(--border-color);
+    box-shadow: 10px 10px 0px var(--border-color);
+    min-height: 400px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+}
+.explore-title-box h2 {
+    font-family: 'Bangers', cursive;
+    font-size: 60px;
+    color: #fff;
+    text-shadow: 3px 3px 0px #000;
+    background: var(--bg-color);
+    color: #000;
+    padding: 10px 20px;
+    border: 4px solid var(--border-color);
+    display: inline-block;
+    align-self: flex-start;
+    transform: rotate(-2deg);
+}
+.explore-speech-bubble {
+    background: #fff;
+    border: 4px solid var(--border-color);
+    box-shadow: 6px 6px 0px var(--border-color);
+    padding: 20px;
+    font-size: 22px;
+    font-weight: bold;
+    max-width: 300px;
+    margin-top: 40px;
+    position: relative;
+}
+.explore-speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 40px;
+    border-width: 20px 20px 0 0;
+    border-style: solid;
+    border-color: #fff transparent transparent transparent;
+}
+.explore-speech-bubble::before {
+    content: '';
+    position: absolute;
+    bottom: -26px;
+    left: 38px;
+    border-width: 26px 24px 0 0;
+    border-style: solid;
+    border-color: var(--border-color) transparent transparent transparent;
+    z-index: -1;
+}
+.explore-links {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.explore-link-box {
+    background: #fff;
+    border: 4px solid var(--border-color);
+    box-shadow: 8px 8px 0px var(--border-color);
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    flex: 1;
+}
+.explore-link-box:hover {
+    background: var(--primary-yellow);
+    transform: translate(4px, 4px);
+    box-shadow: 4px 4px 0px var(--border-color);
+}
+.explore-number {
+    font-family: 'Bangers', cursive;
+    font-size: 80px;
+    color: #fff;
+    text-shadow: 3px 3px 0px #000;
+    -webkit-text-stroke: 2px #000;
+}
+.explore-link-box h3 {
+    font-family: 'Bangers', cursive;
+    font-size: 35px;
+    color: #000;
+}
+
+.visit-store {
+    padding: 60px 5%;
+    background: var(--bg-color);
+}
+.visit-title {
+    font-family: 'Bangers', cursive;
+    font-size: 60px;
+    color: #000;
+    margin-bottom: 30px;
+    text-shadow: 3px 3px 0px var(--primary-yellow);
+}
+.visit-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 30px;
+}
+.visit-box {
+    background: #e8ded1;
+    border: 4px solid var(--border-color);
+    box-shadow: 8px 8px 0px var(--border-color);
+    padding: 40px;
+    background-image: radial-gradient(#d3ccc1 20%, transparent 20%);
+    background-size: 10px 10px;
+}
+.visit-box h3 {
+    font-family: 'Bangers', cursive;
+    font-size: 30px;
+    margin-bottom: 15px;
+}
+.visit-box p {
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 1.4;
+    background: #fff;
+    padding: 15px;
+    border: 3px solid var(--border-color);
+    display: inline-block;
+}
+.map-box {
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+}
+.map-marker {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border: 3px solid #000;
+    padding: 10px 20px;
+    font-family: 'Bangers', cursive;
+    font-size: 24px;
+    box-shadow: 4px 4px 0px #000;
+    text-align: center;
+}
+
+/* BATTLESTATION CUSTOMIZER SECTION */
+.battlestation-section {
+    padding: 45px 5% 100px 5%;
+    background: var(--primary-yellow);
+    border-top: 6px solid #000;
+    border-bottom: 6px solid #000;
+    text-align: center;
+}
+
+.battlestation-title {
+    font-family: 'Bangers', cursive;
+    font-size: 50px;
+    margin-bottom: 30px;
+    letter-spacing: 3px;
+    text-shadow: 3px 3px 0px #000;
+    transform: rotate(-1deg);
+    display: inline-block;
+    background: #fff;
+    border: 5px solid #000;
+    padding: 10px 30px;
+    box-shadow: 6px 6px 0px #000;
+}
+
+.battlestation-container {
+    display: flex;
+    gap: 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+    align-items: stretch;
+}
+
+/* Left Canvas Visualizer */
+.station-canvas-container {
+    flex: 1;
+    min-height: 380px;
+    background: #111;
+    border: 6px solid #000;
+    box-shadow: 10px 10px 0px #000;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.station-canvas {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ambient-glow {
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    background: radial-gradient(circle, rgba(239, 71, 111, 0.2) 0%, transparent 60%);
+    transition: all 0.5s ease;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.desk-surface {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 45px;
+    background: #222;
+    border-top: 6px solid #000;
+    z-index: 2;
+    transition: all 0.5s ease;
+}
+
+.monitor-wrapper {
+    position: absolute;
+    bottom: 45px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 3;
+}
+
+.monitor-screen {
+    width: 240px;
+    height: 140px;
+    background: #222;
+    border: 6px solid #000;
+    box-shadow: 5px 5px 0px rgba(0,0,0,0.5);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.5s ease;
+}
+
+.screen-content {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.screen-logo {
+    font-family: 'Bangers', cursive;
+    font-size: 24px;
+    color: #fff;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 0px #000;
+    z-index: 10;
+    opacity: 0.8;
+}
+
+.monitor-stand {
+    width: 20px;
+    height: 25px;
+    background: #333;
+    border-left: 6px solid #000;
+    border-right: 6px solid #000;
+    margin-top: -1px;
+}
+
+.monitor-base {
+    width: 90px;
+    height: 10px;
+    background: #222;
+    border: 6px solid #000;
+    border-radius: 4px 4px 0 0;
+    margin-top: -1px;
+}
+
+.keyboard-wrapper {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+}
+
+.keyboard-body {
+    width: 140px;
+    height: 22px;
+    background: #333;
+    border: 5px solid #000;
+    border-radius: 4px;
+    padding: 2px;
+    box-shadow: 3px 3px 0px rgba(0,0,0,0.5);
+    transition: all 0.5s ease;
+}
+
+.keyboard-keys {
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(90deg, #555 0px, #555 8px, #000 8px, #000 11px);
+    transition: all 0.5s ease;
+}
+
+.mouse-wrapper {
+    position: absolute;
+    bottom: 12px;
+    left: calc(50% + 85px);
+    z-index: 4;
+}
+
+.mouse-body {
+    width: 20px;
+    height: 28px;
+    background: #333;
+    border: 5px solid #000;
+    border-radius: 50% 50% 40% 40%;
+    box-shadow: 3px 3px 0px rgba(0,0,0,0.5);
+    transition: all 0.5s ease;
+}
+
+.headphones-wrapper {
+    position: absolute;
+    bottom: 90px;
+    left: calc(50% - 150px);
+    width: 50px;
+    height: 60px;
+    z-index: 5;
+    transition: all 0.5s ease;
+}
+
+.headphones-band {
+    width: 100%;
+    height: 30px;
+    border: 5px solid #000;
+    border-bottom: none;
+    border-radius: 50% 50% 0 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.headphone-cup {
+    width: 14px;
+    height: 26px;
+    background: #333;
+    border: 5px solid #000;
+    border-radius: 5px;
+    position: absolute;
+    bottom: 0;
+    transition: all 0.5s ease;
+}
+
+.cup-left { left: -5px; }
+.cup-right { right: -5px; }
+
+/* SCREEN BACKGROUND DESIGNS */
+.matrix-rain, .synthwave-sun, .zen-dots {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+/* CYBER GLADIATOR SCHEME */
+.cyber-gladiator .ambient-glow {
+    background: radial-gradient(circle, rgba(239, 71, 111, 0.4) 0%, transparent 60%);
+}
+.cyber-gladiator .desk-surface {
+    background: #ef476f;
+    box-shadow: 0 -10px 20px rgba(239, 71, 111, 0.3);
+}
+.cyber-gladiator .monitor-screen {
+    background: #0d0c1d;
+    box-shadow: 0 0 15px rgba(17, 138, 178, 0.5);
+}
+.cyber-gladiator .synthwave-sun {
+    opacity: 1;
+    background: linear-gradient(180deg, #118ab2 0%, #ef476f 100%);
+    background-image: linear-gradient(180deg, #118ab2 0%, #ef476f 100%), radial-gradient(circle at 50% 50%, #ffd166 20%, transparent 21%);
+}
+.cyber-gladiator .keyboard-body {
+    background: #118ab2;
+    box-shadow: 0 0 8px rgba(17, 138, 178, 0.8);
+}
+.cyber-gladiator .keyboard-keys {
+    background: repeating-linear-gradient(90deg, #ef476f 0px, #ef476f 8px, #000 8px, #000 11px);
+}
+.cyber-gladiator .mouse-body {
+    background: #ef476f;
+    box-shadow: 0 0 8px rgba(239, 71, 111, 0.8);
+}
+.cyber-gladiator .headphone-cup {
+    background: #118ab2;
+}
+
+/* RETRO HACKER SCHEME */
+.retro-hacker .ambient-glow {
+    background: radial-gradient(circle, rgba(0, 255, 100, 0.25) 0%, transparent 60%);
+}
+.retro-hacker .desk-surface {
+    background: #333;
+}
+.retro-hacker .monitor-screen {
+    background: #000;
+    box-shadow: 0 0 15px rgba(0, 255, 100, 0.4);
+}
+.retro-hacker .matrix-rain {
+    opacity: 0.8;
+    background: linear-gradient(rgba(0, 255, 100, 0.1) 50%, transparent 50%), linear-gradient(90deg, rgba(0, 255, 100, 0.1) 50%, transparent 50%);
+    background-size: 4px 4px;
+}
+.retro-hacker .keyboard-body {
+    background: #444;
+}
+.retro-hacker .keyboard-keys {
+    background: repeating-linear-gradient(90deg, #00ff64 0px, #00ff64 8px, #000 8px, #000 11px);
+}
+.retro-hacker .mouse-body {
+    background: #00ff64;
+    box-shadow: 0 0 8px rgba(0, 255, 100, 0.5);
+}
+.retro-hacker .headphone-cup {
+    background: #555;
+}
+
+/* ZEN CODER SCHEME */
+.zen-coder .ambient-glow {
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+}
+.zen-coder .desk-surface {
+    background: #d3ccc1;
+}
+.zen-coder .monitor-screen {
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+.zen-coder .zen-dots {
+    opacity: 0.5;
+    background-image: radial-gradient(#d3ccc1 20%, transparent 20%);
+    background-size: 15px 15px;
+}
+.zen-coder .keyboard-body {
+    background: #fff;
+}
+.zen-coder .keyboard-keys {
+    background: repeating-linear-gradient(90deg, #d3ccc1 0px, #d3ccc1 8px, #000 8px, #000 11px);
+}
+.zen-coder .mouse-body {
+    background: #fff;
+}
+.zen-coder .headphone-cup {
+    background: #d3ccc1;
+}
+
+/* Right Controller Panel */
+.station-controller {
+    flex: 1.2;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.setup-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.setup-tab-btn {
+    background: #fff;
+    border: 5px solid #000;
+    padding: 15px 10px;
+    font-family: 'Bangers', cursive;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0px #000;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.setup-tab-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 6px 6px 0px #000;
+}
+
+.setup-tab-btn.active {
+    background: var(--primary-yellow);
+    transform: translateY(2px);
+    box-shadow: 2px 2px 0px #000;
+}
+
+.setup-tab-btn .tab-icon {
+    font-size: 24px;
+}
+
+.setup-details-card {
+    background: #fff;
+    border: 6px solid #000;
+    box-shadow: 8px 8px 0px #000;
+    padding: 30px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+}
+
+.setup-desc-speech {
+    font-family: 'Comic Neue', cursive;
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 1.5;
+    border: 4px solid #000;
+    padding: 15px;
+    background: #fcf8f2;
+    position: relative;
+    border-radius: 4px;
+    margin-bottom: 25px;
+}
+
+.setup-desc-speech::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 30px;
+    border-width: 15px 15px 0 0;
+    border-style: solid;
+    border-color: #000 transparent transparent transparent;
+}
+
+.setup-desc-speech::before {
+    content: '';
+    position: absolute;
+    bottom: -23px;
+    left: 28px;
+    border-width: 17px 17px 0 0;
+    border-style: solid;
+    border-color: #fcf8f2 transparent transparent transparent;
+    z-index: 1;
+}
+
+.gear-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 25px;
+}
+
+.gear-list li {
+    font-family: 'Comic Neue', cursive;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px dashed #ccc;
+    padding-bottom: 5px;
+}
+
+.gear-list li span.gear-name {
+    color: #111;
+}
+
+.gear-list li span.gear-price {
+    color: var(--primary-red);
+}
+
+.setup-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.setup-total-price {
+    text-align: left;
+}
+
+.setup-total-price span {
+    font-size: 14px;
+    font-weight: bold;
+    color: #666;
+    display: block;
+}
+
+.setup-total-price strong {
+    font-family: 'Bangers', cursive;
+    font-size: 36px;
+    color: #000;
+    text-shadow: 2px 2px 0px var(--primary-yellow);
+}
+
+.stash-loot-btn {
+    background: var(--primary-red);
+    color: #fff;
+    border: 5px solid #000;
+    padding: 15px 25px;
+    font-family: 'Bangers', cursive;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 5px 5px 0px #000;
+    transition: all 0.2s ease;
+    text-shadow: 2px 2px 0px #000;
+}
+
+.stash-loot-btn:hover {
+    background: var(--primary-yellow);
+    color: #000;
+    transform: translateY(-3px);
+    box-shadow: 8px 8px 0px #000;
+    text-shadow: none;
+}
+
+.stash-loot-btn:active {
+    transform: translateY(2px);
+    box-shadow: 2px 2px 0px #000;
 }
 
 /* MOBILE */
-
-@media(max-width:900px){
-
-.navbar{
-    display:flex;
-    align-items:center;
-    gap:20px;
-}
-
-.search-wrapper{
-    flex:1;
-    max-width:700px;
-}
-
-.search-box{
-    display:flex;
-    width:100%;
-}
-
-.search-box input{
-    flex:1;
-    padding:12px;
-}
-
-.search-box button{
-    padding:12px 20px;
-}
-
-    .search-wrapper{
-        width:100%;
+@media(max-width: 1000px) {
+    .navbar { flex-direction: column; gap: 15px; padding: 15px; }
+    .search-wrapper { max-width: 100%; width: 100%; }
+    .hero-section { height: auto; min-height: 60vh; width: 95%; margin: 20px auto; }
+    .hero-text-content { 
+        position: relative;
+        left: 0; bottom: 0; right: 0; 
+        width: 100%; 
+        max-width: 100%;
+        transform: rotate(0); 
+        padding: 20px;
+        box-sizing: border-box;
     }
-
-    .hero-content h1{
-        font-size:52px;
-    }
-
-    .hero-content p{
-        font-size:20px;
-    }
-
-    .section-title{
-        font-size:42px;
-    }
-
-    .search-card{
-        flex-direction:column;
-    }
-
-    .search-card img{
-        width:100%;
-        height:240px;
-    }
-
-    .search-info h2{
-        font-size:32px;
-    }
-
-    .search-price{
-        font-size:34px;
-    }
-
-    .search-buttons{
-        flex-direction:column;
-    }
-
-    .pagination{
-        display:none;
-    }
-
-    .loading{
-        display:block;
+    .hero-text-content h1 { font-size: 36px; }
+    
+    .search-card { flex-direction: column; }
+    .search-card img { width: 100%; height: auto; }
+    .category-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+    .category-card { padding: 15px; }
+    .category-title { font-size: 40px; }
+    .featured-products .section-title { font-size: 40px; }
+    
+    /* New sections */
+    .explore-header { flex-direction: column; }
+    .visit-grid { grid-template-columns: 1fr; }
+    .explore-title-box { min-height: 250px; padding: 20px; }
+    .explore-title-box h2 { font-size: 40px; }
+    
+    /* Customizer responsive */
+    .battlestation-container {
+        flex-direction: column;
     }
 }
 
+@media(max-width: 600px) {
+    .navbar { padding: 10px; }
+    .logo-text { font-size: 28px; }
+    
+    .search-box { 
+        flex-direction: column; 
+        border: none; 
+        box-shadow: none; 
+        background: transparent; 
+        height: auto;
+        gap: 10px;
+    }
+    .search-box input, .search-box select, .search-box button {
+        width: 100%;
+        height: 45px;
+        border: 3px solid var(--border-color);
+        box-shadow: 4px 4px 0px var(--border-color);
+        background: #fff;
+    }
+    .search-box button { background: var(--primary-yellow); border-left: 3px solid var(--border-color); }
+    .search-box select { border-left: 3px solid var(--border-color); }
+    
+    .right-menu { width: 100%; justify-content: center; margin-left: 0; gap: 20px; }
+    
+    .hero-text-content h1 { font-size: 28px; }
+    .hero-btn { font-size: 16px; padding: 10px; width: 100%; text-align: center; }
+    .hero-btn-container { flex-direction: column; width: 100%; }
+    
+    .category-grid { grid-template-columns: 1fr; }
+    
+    .setup-tabs {
+        grid-template-columns: 1fr;
+    }
+    
+    .setup-tab-btn {
+        padding: 10px;
+        font-size: 16px;
+    }
+    
+    .station-canvas-container {
+        min-height: 350px;
+    }
+    
+    .monitor-screen {
+        width: 220px;
+        height: 130px;
+    }
+    
+    .keyboard-body {
+        width: 120px;
+    }
+    
+    .mouse-wrapper {
+        left: calc(50% + 75px);
+    }
+    
+    .headphones-wrapper {
+        left: calc(50% - 145px);
+        width: 50px;
+        height: 60px;
+    }
+    
+    footer h2 { font-size: 40px; }
+    footer p { font-size: 18px; }
+}
+
+/* MISC */
+#load-more-trigger { height: 20px; }
+.loading {
+    text-align: center;
+    font-family: 'Bangers', cursive;
+    font-size: 30px;
+    padding: 40px;
+    color: var(--primary-red);
+    text-shadow: 2px 2px 0px #000;
+    display: none;
+}
+.hidden { display: none !important; }
+
+/* COMIC BURST ANIMATION */
+.comic-burst {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    pointer-events: none;
+}
+
+.comic-burst-cloud {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: var(--primary-red);
+    border: 5px solid #000;
+    border-radius: 50%;
+    box-shadow: 6px 6px 0px #000;
+}
+
+.comic-burst-cloud::before, .comic-burst-cloud::after {
+    content: '';
+    position: absolute;
+    background: var(--primary-yellow);
+    border: 5px solid #000;
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+    z-index: -1;
+    transform: rotate(30deg);
+}
+
+.comic-burst-cloud::after {
+    background: var(--primary-blue);
+    transform: rotate(60deg);
+}
+
+.comic-burst-text {
+    position: relative;
+    font-family: 'Bangers', cursive;
+    font-size: 32px;
+    color: #fff;
+    text-shadow: 3px 3px 0px #000;
+    transform: rotate(-10deg);
+    z-index: 10;
+    white-space: nowrap;
+}
+
+/* Scroll Follower */
+.scroll-follower {
+    filter: drop-shadow(3px 3px 0px #000);
+}
 </style>
 
+
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 
 <body>
 
-<nav class="navbar">
-
-    <div class="logo">
-        <span class="logo-icon"> ✦ </span>
-        <span class="logo-text">Velora</span>
-    </div>
-
-<div class="search-wrapper">
-
-    <form method="GET" class="search-form">
-
-        <div class="search-box">
-
-            <input
-                type="text"
-                name="search"
-                placeholder="Search laptops, mobiles, watches..."
-                value="{{ search }}"
-            >
-
-            <select name="sort">
-                <option value="">Sort By</option>
-                <option value="price_low">Price: Low to High</option>
-                <option value="price_high">Price: High to Low</option>
-                <option value="rating">Highest Rated</option>
-                <option value="popular">Most Popular</option>
-                <option value="alphabet">A-Z</option>
-                <option value="alphabet_desc">Z-A</option>
-            </select>
-
-            <button type="submit">
-                🔍 Search
-            </button>
-
+<nav class="comic-navbar" data-aos="fade-down">
+    <a href="{% url 'home' %}" class="comic-logo">
+        <div class="comic-logo-box">
+            <span class="comic-logo-icon">⚡</span>
+            <span class="comic-logo-text">Velora</span>
         </div>
-
-    </form>
-
-</div>
-
-    <a href="{% url 'cart' %}" class="cart">
-        🛒 Cart
     </a>
 
+    <div class="comic-nav-right">
+        
+        <div class="comic-search">
+            <form method="GET" action="{% url 'products_list' %}" style="display: flex;">
+                <input type="text" name="search" placeholder="Search gear..." value="{{ search }}">
+                <button type="submit">GO</button>
+            </form>
+        </div>
+
+        <div class="comic-nav-links">
+            <a href="#featured-products">SHOP ˅</a>
+            <a href="#customizer">BUILD SETUP</a>
+            <a href="#contact">CONTACT</a>
+        </div>
+
+        {% if user.is_authenticated %}
+        <div class="user-profile">
+            <button class="comic-login-btn" onclick="toggleProfile()">
+                👤 {{ user.first_name|default:user.username }}
+            </button>
+            <div id="profileDropdown" class="profile-dropdown">
+                <div class="profile-header">
+                    <div class="profile-name">Hello, {{ user.first_name|default:user.username }}</div>
+                    <div class="profile-email">{{ user.email }}</div>
+                </div>
+
+                <a href="{% url 'profile' %}" class="profile-link">
+                    👤 My Profile
+                </a>
+
+                <a href="/cart/" class="profile-link">
+                    🛒 My Cart
+                </a>
+
+                <a href="{% url 'wishlist' %}" class="profile-link">
+                    ❤️ My Wishlist
+                </a>
+
+                <a href="#" class="profile-link">
+                    📦 Orders
+                </a>
+
+                <form action="{% url 'logout' %}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="profile-link logout-btn">
+        🚪 Logout
+    </button>
+</form>
+            </div>
+        </div>
+        {% else %}
+        <div class="user-profile">
+            <a href="/login/" class="comic-login-btn" onclick="toggleProfile(); return false;">
+                👤 Log In
+            </a>
+            <div id="profileDropdown" class="profile-dropdown">
+                <div class="profile-header">
+                    <div class="profile-name">Hello, Sign in</div>
+                </div>
+                <a href="/login/" class="profile-link">🔑 Login</a>
+                <a href="/cart/" class="profile-link">🛒 My Cart</a>
+                <a href="{% url 'wishlist' %}" class="profile-link">❤️ My Wishlist</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <a href="{% url 'cart' %}" class="comic-cart-circle">
+            {{ cart_count }}
+        </a>
+    </div>
 </nav>
 
+{% block content %}
+
 {% if request.path == "/" and not search and not selected_category %}
-<div class="offer-wrapper">
+<div class="offer-wrapper" data-aos="fade-left">
     <div class="offer-bar">
         🔥 Flat 50% OFF |
         🚚 Free Delivery |
@@ -760,13 +1567,13 @@ footer{
 
 {% if search or category %}
 
-<section class="search-results">
+<section class="search-results" data-aos="fade-up">
 
     <div class="search-products" id="products-container">
 
         {% for product in products %}
 
-        <div class="search-card">
+        <div class="search-card" data-aos="zoom-in-up" data-aos-duration="800" data-aos-delay="{% widthratio forloop.counter0 1 100 %}">
 
             <img src="{{ product.image }}">
 
@@ -799,6 +1606,16 @@ footer{
                     <a href="{% url 'product_detail' product.id %}" class="view-btn">
                         View Product
                     </a>
+
+                    {% if product.id in wishlist_product_ids %}
+                    <a href="{% url 'remove_from_wishlist' product.id %}" class="view-btn" style="background:var(--primary-red); color:#fff; border-color:var(--border-color);">
+                        💔
+                    </a>
+                    {% else %}
+                    <a href="{% url 'add_to_wishlist' product.id %}" class="view-btn">
+                        ❤️
+                    </a>
+                    {% endif %}
 
                 </div>
 
@@ -858,102 +1675,65 @@ footer{
 
 {% else %}
 
-<!-- HERO -->
+<!-- COMIC HERO -->
 
-<section class="hero-slider">
-
-    <div class="hero-slide">
-        <img src="https://images.unsplash.com/photo-1605513524006-063ed6ed31e7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDN8fGUtY29tbWVyY2V8ZW58MHx8MHx8fDA%3D">
+<section class="comic-hero" data-aos="zoom-in">
+    <div class="comic-hero-left">
+        <img src="{% static 'shop/images/tech_store_owner.png' %}" alt="Velora Tech Store">
     </div>
-
-    <div class="hero-slide">
-        <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2hvcHBpbmd8ZW58MHx8MHx8fDA%3D">
+    
+    <div class="comic-hero-right">
+        <div class="comic-bubble-container" data-aos="fade-left" data-aos-delay="300">
+            <div class="comic-title-bubble">
+                <h1>THE MAN<br>BEHIND THE<br>GEAR</h1>
+            </div>
+            
+            <div class="comic-desc-box">
+                <p>
+                    For decades, Velora has been the heartbeat of the tech scene. More than just a shop, we curate the finest gear and setups. From high-performance laptops to the latest smart accessories, we bring a personal touch to every discovery, ensuring every visitor leaves with gear to cherish.
+                </p>
+            </div>
+        </div>
     </div>
-
-    <div class="hero-slide">
-        <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NjZ8fHNob3BwaW5nfGVufDB8fDB8fHww">
-    </div>
-    <div class="hero-slide">
-        <img src="https://images.unsplash.com/photo-1580828343064-fde4fc206bc6?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8ODN8fHNob3BwaW5nfGVufDB8fDB8fHww">
-    </div>
-        <div class="hero-slide">
-        <img src="https://plus.unsplash.com/premium_photo-1664201889922-66bc3c778c1e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjl8fGUtY29tbWVyY2V8ZW58MHx8MHx8fDA%3D">
-    </div>
-
-    <div class="hero-content">
-        <h1>Velora</h1>
-        <p>Discover Amazing Products At Best Prices</p>
-
-        <a href="#featured-products" class="hero-btn">
-            Shop Now
-        </a>
-    </div>
-
 </section>
 
-    <!-- <div class="hero-content">
+<!-- CATEGORY SECTION -->
 
-    <h1>🔥 Mega Sale Up To 70% OFF</h1>
-
-    <p>
-        Laptops • Watches • Headphones • TVs • Shoes
-    </p>
-
-    <a href="#featured-products" class="hero-btn">
-        Shop Now
-    </a>
-
-    </div> -->
-
-</section>
-<section class="categories-section">
+<section class="categories-section" data-aos="fade-up" id="categories">
 
     <h2 class="category-title">
-        Shop By Category
+        {% if collection_name %}
+            Filter {{ collection_title }} By Category
+        {% else %}
+            Shop By Category
+        {% endif %}
     </h2>
 
     <div class="category-grid">
-
-        <a href="/?category=Laptop" class="category-card">
-            💻
-            <span>Laptops</span>
+        {% for cat in categories %}
+        <a href="{% url 'products_list' %}?category={{ cat.id }}" class="category-card cat-{{ cat.slug|lower }}">
+            <span class="cat-icon">
+                {% if cat.name == "Laptop" %}💻
+                {% elif cat.name == "Mobile" %}📱
+                {% elif cat.name == "Headphones" %}🎧
+                {% elif cat.name == "Watch" %}⌚
+                {% elif cat.name == "Speaker" %}🔊
+                {% elif cat.name == "Camera" %}📷
+                {% elif cat.name == "TV" %}📺
+                {% elif cat.name == "Keyboard" %}⌨
+                {% elif cat.name == "Mouse" %}🖱
+                {% elif cat.name == "Shoes" %}👟
+                {% elif cat.name == "Electronics" %}🔌
+                {% elif cat.name == "Fashion" %}👗
+                {% elif cat.name == "Books" %}📚
+                {% elif cat.name == "Home" %}🏠
+                {% elif cat.name == "Sports" %}⚽
+                {% else %}📦
+                {% endif %}
+            </span>
+            <span>{{ cat.name }}</span>
         </a>
-
-        <a href="/?category=Headphones" class="category-card">
-            🎧
-            <span>Headphones</span>
-        </a>
-
-        <a href="/?category=Watch" class="category-card">
-            ⌚
-            <span>Watches</span>
-        </a>
-
-        <a href="/?category=Shoes" class="category-card">
-            👟
-            <span>Shoes</span>
-        </a>
-
-        <a href="/?category=TV" class="category-card">
-            📺
-            <span>TV</span>
-        </a>
-
-        <a href="/?category=Keyboard" class="category-card">
-            ⌨
-            <span>Keyboard</span>
-        </a>
-
-        <a href="/?category=Backpack" class="category-card">
-            🎒
-            <span>Bag</span>
-        </a>
-
-        <a href="/?category=Mouse" class="category-card">
-            🖱
-            <span>Mouse</span>
-        </a>
-
+        {% endfor %}
     </div>
 
 </section>
@@ -972,7 +1752,7 @@ footer{
 
             {% for product in featured_products %}
 
-            <div class="product-card">
+            <div class="product-card" data-aos="zoom-in-up" data-aos-duration="1000" data-aos-delay="{% widthratio forloop.counter0 1 150 %}">
 
                 <img src="{{ product.image }}">
 
@@ -1000,6 +1780,16 @@ footer{
                             View Product
                         </a>
 
+                        {% if product.id in wishlist_product_ids %}
+                        <a href="{% url 'remove_from_wishlist' product.id %}" class="view-btn" style="background:var(--primary-red); color:#fff; border-color:var(--border-color);">
+                            💔
+                        </a>
+                        {% else %}
+                        <a href="{% url 'add_to_wishlist' product.id %}" class="view-btn">
+                            ❤️
+                        </a>
+                        {% endif %}
+
                     </div>
 
                 </div>
@@ -1010,13 +1800,21 @@ footer{
 
             {% for product in featured_products %}
 
-            <div class="product-card">
+            <div class="product-card" data-aos="flip-up" data-aos-delay="200">
 
                 <img src="{{ product.image }}">
 
                 <div class="product-card-content">
 
                     <h3>{{ product.name }}</h3>
+
+                    <div class="product-rating">
+
+                        ⭐ {{ product.average_rating }}/5
+
+                        ({{ product.total_reviews }})
+
+                    </div>
 
                     <p>₹{{ product.price }}</p>
 
@@ -1029,6 +1827,16 @@ footer{
                         <a href="{% url 'product_detail' product.id %}" class="view-btn">
                             View Product
                         </a>
+
+                        {% if product.id in wishlist_product_ids %}
+                        <a href="{% url 'remove_from_wishlist' product.id %}" class="view-btn" style="background:var(--primary-red); color:#fff; border-color:var(--border-color);">
+                            💔
+                        </a>
+                        {% else %}
+                        <a href="{% url 'add_to_wishlist' product.id %}" class="view-btn">
+                            ❤️
+                        </a>
+                        {% endif %}
 
                     </div>
 
@@ -1046,13 +1854,202 @@ footer{
 
 {% endif %}
 
-<footer>
+
+<!-- EXPLORE THE SHELVES -->
+<section class="explore-shelves" data-aos="fade-up">
+    <div class="explore-header">
+        <div class="explore-title-box" data-aos="slide-right">
+            <h2>EXPLORE THE SHELVES</h2>
+            <div class="explore-speech-bubble">
+                A tour through our curated universe of rare finds and classic gear.
+            </div>
+        </div>
+        <div class="explore-links">
+            <a href="{% url 'products_list' %}?collection=new-arrivals" style="text-decoration:none; color:inherit;" class="explore-link-box" data-aos="slide-left" data-aos-delay="200">
+                <span class="explore-number">01</span>
+                <h3>New Arrivals</h3>
+            </a>
+            <a href="{% url 'products_list' %}?collection=collectors-editions" style="text-decoration:none; color:inherit;" class="explore-link-box" data-aos="slide-left" data-aos-delay="200">
+                <span class="explore-number">02</span>
+                <h3>Collector's Editions</h3>
+            </a>
+            <a href="{% url 'products_list' %}?collection=best-sellers" style="text-decoration:none; color:inherit;" class="explore-link-box" data-aos="slide-left" data-aos-delay="200">
+                <span class="explore-number">03</span>
+                <h3>Best Sellers</h3>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- VISIT THE STORE -->
+<section class="visit-store" data-aos="fade-up" id="contact">
+    <h2 class="visit-title">VISIT THE STORE</h2>
+    <div class="visit-grid">
+        <div class="visit-box" data-aos="zoom-in" data-aos-delay="200">
+            <h3>Address:</h3>
+            <p>Connaught Place<br>New Delhi, DL 110001</p>
+        </div>
+        <div class="visit-box" data-aos="zoom-in" data-aos-delay="200">
+            <h3>Opening Hours:</h3>
+            <p>Mon - Fri: 8am - 8pm<br>Saturday: 9am - 7pm</p>
+        </div>
+        <a href="https://www.google.com/maps/dir/?api=1&destination=Connaught+Place,+New+Delhi,+Delhi+110001" target="_blank" rel="noopener noreferrer" class="visit-box map-box" data-aos="zoom-in" data-aos-delay="400" style="display:block; padding:0; text-decoration:none; position:relative; overflow:hidden;">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3501.999778278274!2d77.2167211!3d28.6304561!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfd37e2f5b9d3%3A0x6d908b98eb6f4bb4!2sConnaught+Place%2C%20New%20Delhi%2C%20Delhi%20110001!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" 
+                style="border:0; width:100%; height:100%; min-height:220px; display:block; pointer-events:none;" 
+                allowfullscreen="" 
+                loading="lazy">
+            </iframe>
+            <div class="map-marker" style="pointer-events:none; white-space:nowrap; z-index:10;">📍 Velora Delhi (Get Directions)</div>
+        </a>
+        <div class="visit-box directions-finder-box" data-aos="zoom-in" data-aos-delay="500" style="grid-column: span 3; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 30px; background: var(--primary-yellow); position: relative; border: 4px solid #000; box-shadow: 8px 8px 0px #000; margin-top: 10px;">
+            <h3 style="font-family: 'Bangers', cursive; font-size: 32px; margin: 0 0 15px 0; text-shadow: 2px 2px 0px #fff; letter-spacing: 1px;">GET ROUTE TO THE STORE ⚡</h3>
+            <div class="directions-input-group" style="display: flex; gap: 15px; width: 100%; max-width: 650px; flex-wrap: wrap; justify-content: center; align-items: center;">
+                <div class="input-container" style="position: relative; flex: 1; min-width: 250px; display: flex; align-items: center;">
+                    <input type="text" id="route-start" placeholder="Enter starting city/location (e.g. Noida, Delhi Airport)..." style="width: 100%; padding: 12px 50px 12px 20px; border: 4px solid #000; box-shadow: 4px 4px 0px #000; font-family: 'Comic Neue', sans-serif; font-weight: bold; font-size: 16px; border-radius: 0; outline: none; background: #fff;">
+                    <button onclick="getUserGpsLocation()" title="Use Current GPS Location" style="position: absolute; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; padding: 5px; z-index: 5; line-height: 1; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">📍</button>
+                </div>
+                <button onclick="openDirectionsRoute()" style="background: var(--primary-red); color: #fff; border: 4px solid #000; padding: 12px 25px; font-family: 'Bangers', cursive; font-size: 20px; box-shadow: 4px 4px 0px #000; cursor: pointer; transition: all 0.2s ease; text-shadow: 2px 2px 0px #000;" onmouseover="this.style.background='var(--primary-yellow)'; this.style.color='#000'; this.style.textShadow='none'; this.style.transform='translateY(-2px)'; this.style.boxShadow='6px 6px 0px #000';" onmouseout="this.style.background='var(--primary-red)'; this.style.color='#fff'; this.style.textShadow='2px 2px 0px #000'; this.style.transform='translateY(0)'; this.style.boxShadow='4px 4px 0px #000';">
+                    LAUNCH ROUTE ⚡
+                </button>
+            </div>
+            <p style="margin-top: 15px; font-size: 16px; font-weight: bold; line-height: 1.4; border: none; background: transparent; padding: 0; display: inline-block;">
+                Click "LAUNCH ROUTE ⚡" to open navigation route directly in Google Maps.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- BUILD YOUR BATTLESTATION -->
+<section class="battlestation-section" data-aos="fade-up" id="customizer">
+    <h2 class="battlestation-title">BUILD YOUR BATTLESTATION</h2>
+    <div class="battlestation-container">
+        <!-- Left Visualizer Canvas -->
+        <div class="station-canvas-container" data-aos="zoom-in" data-aos-delay="100">
+            <div class="station-canvas cyber-gladiator" id="stationCanvas">
+                <div class="ambient-glow"></div>
+                <div class="desk-surface"></div>
+                
+                <!-- Headphones hanging -->
+                <div class="headphones-wrapper">
+                    <div class="headphones-band"></div>
+                    <div class="headphone-cup cup-left"></div>
+                    <div class="headphone-cup cup-right"></div>
+                </div>
+
+                <!-- Monitor -->
+                <div class="monitor-wrapper">
+                    <div class="monitor-screen">
+                        <div class="screen-content">
+                            <div class="matrix-rain"></div>
+                            <div class="synthwave-sun"></div>
+                            <div class="zen-dots"></div>
+                            <div class="screen-logo">VELORA</div>
+                        </div>
+                    </div>
+                    <div class="monitor-stand"></div>
+                    <div class="monitor-base"></div>
+                </div>
+
+                <!-- Keyboard -->
+                <div class="keyboard-wrapper">
+                    <div class="keyboard-body">
+                        <div class="keyboard-keys"></div>
+                    </div>
+                </div>
+
+                <!-- Mouse -->
+                <div class="mouse-wrapper">
+                    <div class="mouse-body"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Controller -->
+        <div class="station-controller" data-aos="fade-left" data-aos-delay="200">
+            <!-- Tabs -->
+            <div class="setup-tabs">
+                <button class="setup-tab-btn active" data-setup="cyber-gladiator">
+                    <span class="tab-icon">⚡</span>
+                    CYBER GLADIATOR
+                </button>
+                <button class="setup-tab-btn" data-setup="retro-hacker">
+                    <span class="tab-icon">📟</span>
+                    RETRO HACKER
+                </button>
+                <button class="setup-tab-btn" data-setup="zen-coder">
+                    <span class="tab-icon">🌸</span>
+                    ZEN CODER
+                </button>
+            </div>
+
+            <!-- Details Card -->
+            <div class="setup-details-card">
+                <div class="setup-desc-speech" id="setupSpeech">
+                    FORTIFY YOUR ZONE! High-octane power matched with bleeding-edge neon RGB gears. Built for the ultimate gladiators of the virtual arenas.
+                </div>
+                
+                <ul class="gear-list" id="gearList">
+                    <li><span class="gear-name">💻 LG Notebook Intel i9</span><span class="gear-price">₹2,18,349</span></li>
+                    <li><span class="gear-name">⌨️ Redragon Keyboard Premium</span><span class="gear-price">₹5,686</span></li>
+                    <li><span class="gear-name">🖱️ Razer RGB Mouse Premium</span><span class="gear-price">₹5,841</span></li>
+                    <li><span class="gear-name">🎧 Noise Noise Cancelling ANC</span><span class="gear-price">₹22,476</span></li>
+                </ul>
+
+                <div class="setup-footer">
+                    <div class="setup-total-price">
+                        <span>ESTIMATED LOOT STASH</span>
+                        <strong id="setupTotalPrice">₹2,52,352</strong>
+                    </div>
+                    <button class="stash-loot-btn" id="stashLootBtn">
+                        ACQUIRE STASH ⚡
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+<footer data-aos="fade-up">
+
 
     <h2>Velora</h2>
 
     <p>Powered by Django & PostgreSQL</p>
 
 </footer>
+
+<script>
+
+function toggleProfile(){
+    const dropdown = document.getElementById("profileDropdown");
+    if (dropdown) {
+        dropdown.classList.toggle("show");
+    }
+}
+
+document.addEventListener("click", function(e){
+    if (!e.target.closest(".user-profile")) {
+        const dropdown = document.getElementById("profileDropdown");
+        if (dropdown) {
+            dropdown.classList.remove("show");
+        }
+    }
+});
+
+document.querySelectorAll(".cart-btn").forEach(btn => {
+    btn.addEventListener("click", function(e) {
+        {% if not user.is_authenticated %}
+        e.preventDefault();
+        alert("You have to login to add items to cart!");
+        window.location.href = "{% url 'login' %}";
+        {% endif %}
+    });
+});
+
+</script>
 
 <script>
 
@@ -1110,7 +2107,7 @@ if(searchInput){
 
                             <br>
 
-                            ₹${product.price}
+                            <span class="suggestion-price">₹${product.price}</span>
 
                         </div>
 
@@ -1233,7 +2230,7 @@ async function loadMoreProducts(){
 
             const html = `
 
-            <div class="search-card">
+            <div class="search-card" data-aos="slide-up">
 
                 <img src="${product.image}">
 
@@ -1355,7 +2352,388 @@ if(trigger){
 
 }
 
+// ========== HERO SLIDESHOW ==========
+(function() {
+    const slides = document.querySelectorAll('.hero-slide');
+    if (!slides.length) return;
+
+    let current = 0;
+    let interval;
+
+    function goToSlide(index) {
+        slides[current].classList.remove('active');
+        current = index;
+        slides[current].classList.add('active');
+    }
+
+    function nextSlide() {
+        goToSlide((current + 1) % slides.length);
+    }
+
+    function startAutoPlay() {
+        interval = setInterval(nextSlide, 1500);
+    }
+
+    startAutoPlay();
+})();
+
+// ========== COMIC ANIMATED SCROLL PATH ==========
+function showComicBurst(x, y) {
+    const burst = document.createElement("div");
+    const words = ["BOOM!", "ZIP!", "POW!", "WHAM!", "ZAP!", "KABOOM!", "BOOST!"];
+    const word = words[Math.floor(Math.random() * words.length)];
+    
+    burst.className = "comic-burst";
+    burst.innerHTML = `
+        <div class="comic-burst-cloud"></div>
+        <div class="comic-burst-text">${word}</div>
+    `;
+    
+    burst.style.position = "absolute";
+    burst.style.left = x + "px";
+    burst.style.top = y + "px";
+    burst.style.transform = "translate(-50%, -50%) scale(0)";
+    burst.style.zIndex = "10000";
+    burst.style.pointerEvents = "none";
+    
+    document.body.appendChild(burst);
+    
+    requestAnimationFrame(() => {
+        burst.style.transition = "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+        burst.style.transform = "translate(-50%, -50%) scale(1) rotate(" + (Math.random() * 20 - 10) + "deg)";
+    });
+    
+    setTimeout(() => {
+        burst.style.transition = "all 0.3s ease";
+        burst.style.transform = "translate(-50%, -50%) scale(0) rotate(0deg)";
+        burst.style.opacity = "0";
+        setTimeout(() => burst.remove(), 300);
+    }, 1000);
+}
+
+function animateScrollWithPath(targetId, triggerElement) {
+    let targetElement;
+    if (targetId === "top") {
+        targetElement = document.body;
+    } else {
+        targetElement = document.getElementById(targetId);
+    }
+    if (!targetElement) return;
+
+    const startY = window.pageYOffset || document.documentElement.scrollTop;
+    const targetY = targetId === "top" ? 0 : targetElement.getBoundingClientRect().top + startY - 80;
+    const distance = targetY - startY;
+
+    if (Math.abs(distance) < 20) return;
+
+    // Create dynamic SVG container
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.id = "scroll-path-svg";
+    svg.style.position = "absolute";
+    svg.style.top = "0";
+    svg.style.left = "0";
+    svg.style.width = "100%";
+    
+    const scrollHeight = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.offsetHeight,
+        document.body.clientHeight,
+        document.documentElement.clientHeight
+    );
+    svg.style.height = scrollHeight + "px";
+    svg.style.pointerEvents = "none";
+    svg.style.zIndex = "9999";
+    document.body.appendChild(svg);
+
+    // Starting points
+    const triggerRect = triggerElement.getBoundingClientRect();
+    const startX = triggerRect.left + triggerRect.width / 2 + (window.pageXOffset || document.documentElement.scrollLeft);
+    const startYAbsolute = triggerRect.top + triggerRect.height / 2 + startY;
+
+    // Target points
+    const targetX = window.innerWidth / 2;
+    const targetYAbsolute = targetY + window.innerHeight / 3;
+
+    // Draw path
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    let d = `M ${startX} ${startYAbsolute}`;
+    const steps = 8;
+    const yStep = (targetYAbsolute - startYAbsolute) / steps;
+    
+    for (let i = 1; i <= steps; i++) {
+        const currentY = startYAbsolute + i * yStep;
+        const progress = i / steps;
+        const wiggle = Math.sin(progress * Math.PI * 2) * 80;
+        const currentX = startX + (targetX - startX) * progress + wiggle;
+        
+        if (i === steps) {
+            d += ` L ${targetX} ${targetYAbsolute}`;
+        } else {
+            const prevY = startYAbsolute + (i - 1) * yStep;
+            const prevX = startX + (targetX - startX) * (progress - 1/steps) + Math.sin((progress - 1/steps) * Math.PI * 2) * 80;
+            const cpX = (prevX + currentX) / 2 + (i % 2 === 0 ? 40 : -40);
+            const cpY = (prevY + currentY) / 2;
+            d += ` Q ${cpX} ${cpY}, ${currentX} ${currentY}`;
+        }
+    }
+
+    path.setAttribute("d", d);
+    path.setAttribute("stroke", "var(--primary-yellow)");
+    path.setAttribute("stroke-width", "8");
+    path.setAttribute("stroke-dasharray", "15, 10");
+    path.setAttribute("fill", "none");
+    path.setAttribute("stroke-linecap", "round");
+    path.setAttribute("filter", "drop-shadow(3px 3px 0px #000)");
+
+    const borderPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    borderPath.setAttribute("d", d);
+    borderPath.setAttribute("stroke", "#000");
+    borderPath.setAttribute("stroke-width", "16");
+    borderPath.setAttribute("fill", "none");
+    borderPath.setAttribute("stroke-linecap", "round");
+
+    svg.appendChild(borderPath);
+    svg.appendChild(path);
+
+    // Follower element (lightning bolt)
+    const follower = document.createElement("div");
+    follower.className = "scroll-follower";
+    follower.innerHTML = "⚡";
+    follower.style.position = "absolute";
+    follower.style.fontSize = "40px";
+    follower.style.zIndex = "10000";
+    follower.style.pointerEvents = "none";
+    follower.style.textShadow = "3px 3px 0px #000";
+    follower.style.transform = "translate(-50%, -50%)";
+    document.body.appendChild(follower);
+
+    const duration = 1000;
+    let startTime = null;
+    const pathLength = path.getTotalLength();
+
+    path.style.strokeDasharray = pathLength;
+    path.style.strokeDashoffset = pathLength;
+    borderPath.style.strokeDasharray = pathLength;
+    borderPath.style.strokeDashoffset = pathLength;
+
+    function scrollStep(timestamp) {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        const ease = progress < 0.5 
+            ? 4 * progress * progress * progress 
+            : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+        window.scrollTo(0, startY + distance * ease);
+
+        path.style.strokeDashoffset = pathLength * (1 - ease);
+        borderPath.style.strokeDashoffset = pathLength * (1 - ease);
+
+        try {
+            const point = path.getPointAtLength(pathLength * ease);
+            follower.style.left = point.x + "px";
+            follower.style.top = point.y + "px";
+        } catch (err) {}
+
+        if (progress < 1) {
+            requestAnimationFrame(scrollStep);
+        } else {
+            setTimeout(() => {
+                svg.remove();
+                follower.remove();
+            }, 300);
+
+            showComicBurst(targetX, targetYAbsolute);
+        }
+    }
+
+    requestAnimationFrame(scrollStep);
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const navLinks = document.querySelectorAll(".comic-nav-links a, .comic-logo");
+    navLinks.forEach(link => {
+        link.addEventListener("click", function(e) {
+            if (window.location.pathname !== "/" && window.location.pathname !== "{% url 'home' %}") {
+                return;
+            }
+
+            let targetId = "";
+            if (this.classList.contains("comic-logo")) {
+                targetId = "top";
+            } else {
+                const href = this.getAttribute("href");
+                if (href && href.startsWith("#")) {
+                    targetId = href.substring(1);
+                }
+            }
+
+            if (!targetId) return;
+            e.preventDefault();
+            animateScrollWithPath(targetId, this);
+        });
+    });
+});
+
+// ========== BATTLESTATION CUSTOMIZER SCRIPT ==========
+document.addEventListener("DOMContentLoaded", function() {
+    const setupsData = {
+        'cyber-gladiator': {
+            speech: "FORTIFY YOUR ZONE! High-octane power matched with bleeding-edge neon RGB gears. Built for the ultimate gladiators of the virtual arenas.",
+            ids: [4, 481, 541, 121],
+            price: "₹2,52,352",
+            gear: [
+                { name: "💻 LG Notebook Intel i9", price: "₹2,18,349" },
+                { name: "⌨️ Redragon Keyboard Premium", price: "₹5,686" },
+                { name: "🖱️ Razer RGB Mouse Premium", price: "₹5,841" },
+                { name: "🎧 Noise Noise Cancelling ANC", price: "₹22,476" }
+            ]
+        },
+        'retro-hacker': {
+            speech: "BOOTING TERMINAL... Command line comfort meets classic hardware aesthetics. Perfect for coding scripts in green-glow terminal windows.",
+            ids: [2, 482, 543, 122],
+            price: "₹64,677",
+            gear: [
+                { name: "💻 Lenovo M2 Notebook", price: "₹48,844" },
+                { name: "⌨️ Dell Mechanical Keyboard", price: "₹11,293" },
+                { name: "🖱️ Dell RGB Ergonomic Mouse", price: "₹2,257" },
+                { name: "🎧 Bose Bluetooth Bass Boost", price: "₹2,283" }
+            ]
+        },
+        'zen-coder': {
+            speech: "FIND YOUR INNER CODING ZEN. A clean, silent, clutter-free setup in mint and white colors to clear your head and debug in peace.",
+            ids: [1, 483, 542, 124],
+            price: "₹85,824",
+            gear: [
+                { name: "💻 MSI Ultra Intel i7", price: "₹67,646" },
+                { name: "⌨️ Logitech Wireless Fast", price: "₹5,901" },
+                { name: "🖱️ HP RGB Premium Mouse", price: "₹9,686" },
+                { name: "🎧 Bose Noise Cancelling ANC", price: "₹2,591" }
+            ]
+        }
+    };
+
+    const tabBtns = document.querySelectorAll(".setup-tab-btn");
+    const canvas = document.getElementById("stationCanvas");
+    const speech = document.getElementById("setupSpeech");
+    const gearList = document.getElementById("gearList");
+    const totalPrice = document.getElementById("setupTotalPrice");
+    const stashBtn = document.getElementById("stashLootBtn");
+
+    if (!tabBtns.length || !canvas) return;
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener("click", function() {
+            // Tab activation
+            tabBtns.forEach(b => b.classList.remove("active"));
+            this.classList.add("active");
+
+            // Change canvas class
+            const setupName = this.getAttribute("data-setup");
+            canvas.className = "station-canvas " + setupName;
+
+            // Load data
+            const data = setupsData[setupName];
+            speech.innerText = data.speech;
+            totalPrice.innerText = data.price;
+
+            // Render gear list
+            let listHtml = "";
+            data.gear.forEach(item => {
+                listHtml += `<li><span class="gear-name">${item.name}</span><span class="gear-price">${item.price}</span></li>`;
+            });
+            gearList.innerHTML = listHtml;
+        });
+    });
+
+    if (stashBtn) {
+        stashBtn.addEventListener("click", async function() {
+            const activeBtn = document.querySelector(".setup-tab-btn.active");
+            if (!activeBtn) return;
+            const setupName = activeBtn.getAttribute("data-setup");
+            const data = setupsData[setupName];
+
+            stashBtn.innerHTML = "STASHING GEAR... 📦";
+            stashBtn.style.pointerEvents = "none";
+            stashBtn.style.opacity = "0.7";
+
+            try {
+                for (const id of data.ids) {
+                    await fetch(`/add-to-cart/${id}/`);
+                }
+                window.location.href = "/cart/";
+            } catch (err) {
+                console.error(err);
+                stashBtn.innerHTML = "ACQUIRE STASH ⚡";
+                stashBtn.style.pointerEvents = "auto";
+                stashBtn.style.opacity = "1";
+                alert("Could not add bundle to cart. Please check your network connection.");
+            }
+        });
+    }
+});
+
+// ========== DIRECTIONS ROUTE FINDER SCRIPT ==========
+window.getUserGpsLocation = function() {
+    const input = document.getElementById('route-start');
+    if (navigator.geolocation) {
+        input.placeholder = "Locating you... ⏳";
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                input.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                input.placeholder = "Enter starting city/location (e.g. Noida, Delhi Airport)...";
+            },
+            (error) => {
+                input.placeholder = "Enter starting city/location (e.g. Noida, Delhi Airport)...";
+                alert("GPS access denied or unavailable. Please type your starting point manually.");
+            }
+        );
+    } else {
+        alert("Geolocation is not supported by your browser.");
+    }
+};
+
+window.openDirectionsRoute = function() {
+    const startVal = document.getElementById('route-start').value.trim();
+    const destination = "Connaught Place, New Delhi, Delhi 110001";
+    let url = "";
+    if (startVal) {
+        url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(startVal)}&destination=${encodeURIComponent(destination)}`;
+    } else {
+        url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
+    }
+    window.open(url, '_blank');
+};
+
+document.addEventListener("DOMContentLoaded", function() {
+    const routeInput = document.getElementById('route-start');
+    if (routeInput) {
+        routeInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                window.openDirectionsRoute();
+            }
+        });
+    }
+});
 </script>
 
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        AOS.init({
+            duration: 800,
+            easing: 'ease-out-back',
+            once: true,
+            offset: 50
+        });
+    });
+</script>
 </body>
+
 </html>

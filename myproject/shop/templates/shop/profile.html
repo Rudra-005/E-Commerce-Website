@@ -1,0 +1,250 @@
+{% extends 'shop/home.html' %}
+
+{% block content %}
+<style>
+    .profile-container {
+        max-width: 1200px;
+        margin: 50px auto;
+        padding: 0 20px;
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 40px;
+    }
+    
+    .profile-card, .address-card {
+        background: #fff;
+        border: 6px solid #000;
+        box-shadow: 10px 10px 0px #000;
+        padding: 40px;
+        position: relative;
+    }
+    
+    .profile-card {
+        transform: rotate(-1deg);
+        align-self: start;
+    }
+    
+    .address-card {
+        transform: rotate(1deg);
+    }
+    
+    .profile-card h1, .address-card h2 {
+        font-family: 'Bangers', cursive;
+        font-size: 42px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        background: var(--primary-yellow);
+        padding: 10px 20px;
+        border: 4px solid #000;
+        display: inline-block;
+        margin-bottom: 30px;
+        box-shadow: 4px 4px 0px #000;
+    }
+    
+    .profile-card h1 {
+        transform: rotate(-2deg);
+    }
+    
+    .address-card h2 {
+        transform: rotate(1deg);
+        background: var(--primary-blue);
+        color: #fff;
+    }
+    
+    .profile-info {
+        font-size: 20px;
+        font-weight: bold;
+        line-height: 1.6;
+        margin-bottom: 30px;
+    }
+    
+    .profile-info p {
+        margin-bottom: 15px;
+        border-bottom: 2px dashed #000;
+        padding-bottom: 8px;
+    }
+    
+    .profile-info strong {
+        color: var(--primary-blue);
+    }
+    
+    .comic-btn {
+        display: inline-block;
+        background: var(--primary-red);
+        color: #fff;
+        padding: 12px 30px;
+        border: 4px solid #000;
+        box-shadow: 6px 6px 0px #000;
+        text-decoration: none;
+        font-family: 'Bangers', cursive;
+        font-size: 24px;
+        transition: all 0.1s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        text-align: center;
+    }
+    
+    .comic-btn:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 4px 4px 0px #000;
+        background: var(--primary-yellow);
+        color: #000;
+    }
+    
+    .comic-btn-blue {
+        background: var(--primary-blue);
+    }
+    
+    .comic-btn-blue:hover {
+        background: var(--primary-yellow);
+        color: #000;
+    }
+    
+    .address-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+        margin-top: 25px;
+    }
+    
+    .address-box {
+        background: #fcf8f2;
+        border: 4px solid #000;
+        box-shadow: 6px 6px 0px #000;
+        padding: 20px;
+        position: relative;
+        transition: all 0.1s ease;
+    }
+    
+    .address-box:nth-child(even) {
+        transform: rotate(-0.5deg);
+    }
+    
+    .address-box:nth-child(odd) {
+        transform: rotate(0.5deg);
+    }
+    
+    .address-box:hover {
+        transform: scale(1.02);
+        box-shadow: 8px 8px 0px #000;
+    }
+    
+    .address-box h3 {
+        font-family: 'Bangers', cursive;
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: #000;
+        letter-spacing: 1px;
+        border-bottom: 3px solid #000;
+        padding-bottom: 5px;
+        display: inline-block;
+    }
+    
+    .address-box p {
+        font-size: 16px;
+        font-weight: bold;
+        line-height: 1.4;
+        margin-bottom: 5px;
+    }
+    
+    .empty-address-msg {
+        font-size: 18px;
+        font-weight: bold;
+        color: #555;
+        margin: 20px 0;
+        padding: 20px;
+        border: 3px dashed #000;
+        background: #fcf8f2;
+        text-align: center;
+    }
+    
+    @media (max-width: 900px) {
+        .profile-container {
+            grid-template-columns: 1fr;
+            margin: 30px auto;
+        }
+        .profile-card, .address-card {
+            transform: none !important;
+            padding: 20px;
+        }
+        .address-box {
+            transform: none !important;
+        }
+    }
+</style>
+
+<div class="profile-container">
+
+    <div class="profile-card" data-aos="fade-right">
+
+        <h1>👤 My Profile</h1>
+
+        <div style="text-align: center; margin-bottom: 25px;">
+            {% if profile.profile_image %}
+                <img src="{{ profile.profile_image.url }}" alt="Profile Picture" style="width: 150px; height: 150px; border-radius: 50%; border: 6px solid #000; box-shadow: 6px 6px 0px #000; object-fit: cover; display: block; margin: 0 auto;">
+            {% else %}
+                <div style="width: 150px; height: 150px; border-radius: 50%; border: 6px solid #000; box-shadow: 6px 6px 0px #000; background: var(--primary-yellow); display: flex; align-items: center; justify-content: center; font-size: 64px; margin: 0 auto;">
+                    👤
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="profile-info">
+            <p><strong>First Name:</strong> {{ request.user.first_name|default:request.user.username }}</p>
+            <p><strong>Username:</strong> {{ request.user.username }}</p>
+            <p><strong>Email:</strong> {{ request.user.email }}</p>
+            <p><strong>Phone:</strong> {{ profile.phone|default:"Not Provided" }}</p>
+            <p><strong>Date of Birth:</strong> {{ profile.date_of_birth|default:"Not Provided" }}</p>
+        </div>
+
+        <a href="{% url 'edit_profile' %}" class="comic-btn">
+            Edit Profile
+        </a>
+
+    </div>
+
+    <div class="address-card" data-aos="fade-left">
+
+        <h2>📍 My Addresses</h2>
+
+        <div style="margin-bottom: 25px;">
+            <a href="{% url 'add_address' %}" class="comic-btn comic-btn-blue">
+                ➕ Add New Address
+            </a>
+        </div>
+
+        <div class="address-grid">
+            {% for address in addresses %}
+
+            <div class="address-box">
+
+                <h3>{{ address.full_name }}</h3>
+
+                <p>📞 {{ address.phone }}</p>
+                <p>🏠 {{ address.address_line_1 }}</p>
+                {% if address.address_line_2 %}
+                <p>{{ address.address_line_2 }}</p>
+                {% endif %}
+                <p>🏙️ {{ address.city }}, {{ address.state }} - {{ address.pincode }}</p>
+
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <a href="{% url 'edit_address' address.id %}" class="comic-btn comic-btn-blue" style="font-size: 16px; padding: 6px 12px; box-shadow: 2px 2px 0px #000; border: 2px solid #000; text-decoration: none;">Edit ✏️</a>
+                    <a href="{% url 'delete_address' address.id %}" class="comic-btn" style="font-size: 16px; padding: 6px 12px; box-shadow: 2px 2px 0px #000; border: 2px solid #000; background: var(--primary-red); text-decoration: none;" onclick="return confirm('Are you sure you want to delete this address?');">Delete 🗑️</a>
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="empty-address-msg">
+                💥 No address found. Add your shipping coordinates above!
+            </div>
+
+            {% endfor %}
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Your Cart - Velora</title>
+<title>Your Wishlist - Velora</title>
 
 <!-- Fonts & Animations -->
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
@@ -65,15 +65,15 @@ body {
     letter-spacing: 3px;
 }
 
-/* CART CONTAINER */
-.cart-container {
+/* WISHLIST CONTAINER */
+.wishlist-container {
     width: 90%;
     max-width: 1200px;
     margin: 0 auto 80px;
 }
 
-/* CART ITEM */
-.cart-item {
+/* WISHLIST ITEM */
+.wishlist-item {
     background: #fff;
     display: flex;
     gap: 30px;
@@ -84,9 +84,9 @@ body {
     align-items: center;
     position: relative;
 }
-.cart-item:nth-child(even) { transform: rotate(1deg); }
-.cart-item:nth-child(odd) { transform: rotate(-1deg); }
-.cart-item img {
+.wishlist-item:nth-child(even) { transform: rotate(1deg); }
+.wishlist-item:nth-child(odd) { transform: rotate(-1deg); }
+.wishlist-item img {
     width: 220px;
     height: 220px;
     object-fit: contain;
@@ -94,8 +94,8 @@ body {
     background: #fff;
     padding: 10px;
 }
-.cart-info { flex: 1; }
-.cart-info h2 {
+.wishlist-info { flex: 1; }
+.wishlist-info h2 {
     font-family: 'Bangers', cursive;
     font-size: 40px;
     margin-bottom: 15px;
@@ -106,31 +106,16 @@ body {
     font-family: 'Bangers', cursive;
     font-size: 34px;
     color: var(--primary-red);
-    margin-bottom: 15px;
-}
-.quantity {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-.subtotal {
-    font-size: 26px;
-    font-weight: bold;
     margin-bottom: 25px;
-    color: var(--primary-blue);
-    background: var(--primary-yellow);
-    display: inline-block;
-    padding: 5px 15px;
-    border: 3px solid var(--border-color);
 }
 .button-group {
     display: flex;
     gap: 15px;
     flex-wrap: wrap;
 }
-.qty-btn {
-    background: var(--primary-blue);
-    color: #fff;
+.cart-btn {
+    background: var(--primary-yellow);
+    color: #000;
     padding: 10px 25px;
     border: 3px solid var(--border-color);
     box-shadow: 4px 4px 0px var(--border-color);
@@ -138,8 +123,9 @@ body {
     font-family: 'Bangers', cursive;
     font-size: 24px;
     transition: all 0.1s ease;
+    text-transform: uppercase;
 }
-.qty-btn:hover { background: var(--primary-yellow); color: #000; transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--border-color); }
+.cart-btn:hover { background: var(--primary-blue); color: #fff; transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--border-color); }
 .remove-btn {
     background: var(--primary-red);
     color: #fff;
@@ -153,64 +139,15 @@ body {
 }
 .remove-btn:hover { background: #000; color: #fff; transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--border-color); }
 
-/* TOTAL BOX */
-.total-section {
-    background: #fff;
-    margin-top: 50px;
-    padding: 40px;
-    border: 4px solid var(--border-color);
-    box-shadow: 12px 12px 0px var(--border-color);
-    text-align: right;
-}
-.total-section h2 {
-    font-family: 'Bangers', cursive;
-    font-size: 55px;
-    margin-bottom: 30px;
-    color: #000;
-    text-shadow: 2px 2px 0px var(--primary-yellow);
-}
-.total-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-.checkout-btn {
-    background: var(--primary-yellow);
-    color: #000;
-    padding: 15px 40px;
-    border: 4px solid var(--border-color);
-    box-shadow: 6px 6px 0px var(--border-color);
-    text-decoration: none;
-    font-family: 'Bangers', cursive;
-    font-size: 28px;
-    transition: all 0.1s ease;
-    text-transform: uppercase;
-}
-.checkout-btn:hover { background: var(--primary-blue); color: #fff; transform: translate(4px, 4px); box-shadow: 2px 2px 0px var(--border-color); }
-.clear-btn {
-    background: var(--primary-red);
-    color: #fff;
-    padding: 15px 40px;
-    border: 4px solid var(--border-color);
-    box-shadow: 6px 6px 0px var(--border-color);
-    text-decoration: none;
-    font-family: 'Bangers', cursive;
-    font-size: 28px;
-    transition: all 0.1s ease;
-    text-transform: uppercase;
-}
-.clear-btn:hover { background: #000; color: #fff; transform: translate(4px, 4px); box-shadow: 2px 2px 0px var(--border-color); }
-
-/* EMPTY CART */
-.empty-cart {
+/* EMPTY WISHLIST */
+.empty-wishlist {
     text-align: center;
     background: #fff;
     padding: 80px 40px;
     border: 4px solid var(--border-color);
     box-shadow: 10px 10px 0px var(--border-color);
 }
-.empty-cart h2 {
+.empty-wishlist h2 {
     font-family: 'Bangers', cursive;
     font-size: 55px;
     margin-bottom: 40px;
@@ -236,13 +173,11 @@ body {
 /* MOBILE */
 @media(max-width: 900px) {
     .navbar { flex-direction: column; gap: 15px; padding: 15px; }
-    .cart-item { flex-direction: column; text-align: center; }
-    .cart-item img { width: 100%; height: 300px; }
-    .cart-info h2 { font-size: 34px; }
+    .wishlist-item { flex-direction: column; text-align: center; }
+    .wishlist-item img { width: 100%; height: 300px; }
+    .wishlist-info h2 { font-size: 34px; }
     .price { font-size: 32px; }
     .page-title { font-size: 45px; }
-    .total-section { text-align: center; }
-    .total-actions { justify-content: center; }
     .button-group { justify-content: center; }
 }
 </style>
@@ -261,42 +196,35 @@ body {
 </nav>
 
 <!-- TITLE -->
-<h1 class="page-title" data-aos="fade-down">YOUR GEAR STASH</h1>
+<h1 class="page-title" data-aos="fade-down">YOUR WISHLIST</h1>
 
-<div class="cart-container">
+<div class="wishlist-container">
 
-{% if cart_items %}
+{% if wishlist_items %}
 
-    {% for item in cart_items %}
-    <div class="cart-item" data-aos="fade-right">
-        <img src="{{ item.product.image }}" alt="{{ item.product.name }}">
-        <div class="cart-info">
-            <h2>{{ item.product.name }}</h2>
+    {% for item in wishlist_items %}
+    <div class="wishlist-item" data-aos="fade-right">
+        <a href="{% url 'product_detail' item.product.id %}">
+            <img src="{{ item.product.image }}" alt="{{ item.product.name }}">
+        </a>
+        <div class="wishlist-info">
+            <a href="{% url 'product_detail' item.product.id %}" style="text-decoration:none; color:inherit;">
+                <h2>{{ item.product.name }}</h2>
+            </a>
             <div class="price">₹{{ item.product.price }}</div>
-            <div class="quantity">QUANTITY: <strong>{{ item.quantity }}</strong></div>
-            <div class="subtotal">SUBTOTAL: ₹{{ item.subtotal }}</div>
             <div class="button-group">
-                <a href="{% url 'decrease_quantity' item.product.id %}" class="qty-btn">➖ LESS</a>
-                <a href="{% url 'increase_quantity' item.product.id %}" class="qty-btn">➕ MORE</a>
-                <a href="{% url 'remove_from_cart' item.product.id %}" class="remove-btn">🗑️ REMOVE</a>
+                <a href="{% url 'add_to_cart' item.product.id %}" class="cart-btn">🛒 ADD TO CART</a>
+                <a href="{% url 'remove_from_wishlist' item.product.id %}" class="remove-btn">💔 REMOVE</a>
             </div>
         </div>
     </div>
     {% endfor %}
 
-    <div class="total-section" data-aos="fade-up">
-        <h2>TOTAL AMOUNT: ₹{{ total }}</h2>
-        <div class="total-actions">
-            <a href="{% url 'checkout' %}" class="checkout-btn">PROCEED TO CHECKOUT 🚀</a>
-            <a href="{% url 'clear_cart' %}" class="clear-btn">CLEAR CART 💥</a>
-        </div>
-    </div>
-
 {% else %}
 
-    <div class="empty-cart" data-aos="zoom-in">
-        <h2>YOUR STASH IS EMPTY!</h2>
-        <a href="{% url 'home' %}" class="shop-btn">SHOP NOW HERO!</a>
+    <div class="empty-wishlist" data-aos="zoom-in">
+        <h2>YOUR WISHLIST IS EMPTY!</h2>
+        <a href="{% url 'home' %}" class="shop-btn">DISCOVER GEAR!</a>
     </div>
 
 {% endif %}

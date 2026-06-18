@@ -1,0 +1,207 @@
+{% load i18n %}
+{% load socialaccount %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Sign Up - Velora</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg-color: #fcf8f2;
+    --border-color: #000000;
+    --primary-red: #ef476f;
+    --primary-yellow: #ffd166;
+    --primary-blue: #118ab2;
+    --shadow-solid: 6px 6px 0px #000000;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Comic Neue', cursive; }
+body {
+    background: var(--bg-color);
+    overflow-x: hidden;
+    color: #000;
+    background-image: radial-gradient(#d3ccc1 20%, transparent 20%);
+    background-size: 10px 10px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+/* NAVBAR */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    min-height: 85px;
+    background: #fff;
+    border-bottom: 4px solid var(--border-color);
+    position: relative;
+    z-index: 1000;
+}
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo-icon { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: var(--primary-yellow); border: 3px solid var(--border-color); box-shadow: 3px 3px 0px var(--border-color); color: #000; font-size: 24px; font-weight: 800; font-family: 'Bangers', cursive; transform: rotate(-5deg); }
+.logo-text { font-size: 38px; font-family: 'Bangers', cursive; color: #000; line-height: 1; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 0px var(--primary-red); }
+
+/* AUTH CONTAINER */
+.auth-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+}
+.auth-card {
+    background: #fff;
+    width: 100%;
+    max-width: 450px;
+    border: 4px solid var(--border-color);
+    box-shadow: 12px 12px 0px var(--border-color);
+    padding: 40px;
+}
+.auth-card h2 {
+    font-family: 'Bangers', cursive;
+    font-size: 48px;
+    text-align: center;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 0px var(--primary-yellow);
+    text-transform: uppercase;
+}
+.subtitle {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 30px;
+    color: #444;
+    line-height: 1.5;
+}
+.input-group { margin-bottom: 20px; }
+.input-group label {
+    display: block;
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+.input-group input {
+    width: 100%;
+    padding: 15px;
+    border: 3px solid var(--border-color);
+    font-size: 18px;
+    font-weight: bold;
+    background: #fcf8f2;
+    outline: none;
+    transition: all 0.1s ease;
+}
+.input-group input:focus {
+    background: #fff;
+    box-shadow: 4px 4px 0px var(--primary-yellow);
+}
+.field-errors {
+    color: var(--primary-red);
+    font-weight: bold;
+    font-size: 15px;
+    margin-top: 5px;
+    list-style: none;
+}
+.auth-btn {
+    width: 100%;
+    background: var(--primary-blue);
+    color: #fff;
+    padding: 15px;
+    font-family: 'Bangers', cursive;
+    font-size: 28px;
+    text-decoration: none;
+    border: 4px solid var(--border-color);
+    box-shadow: 6px 6px 0px var(--border-color);
+    transition: all 0.1s ease;
+    text-transform: uppercase;
+    cursor: pointer;
+    letter-spacing: 2px;
+}
+.auth-btn:hover {
+    background: var(--primary-yellow);
+    color: #000;
+    transform: translate(4px, 4px);
+    box-shadow: 2px 2px 0px var(--border-color);
+}
+.messages .alert {
+    padding: 15px;
+    border: 3px solid var(--border-color);
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-align: center;
+    background: var(--primary-red);
+    color: #fff;
+}
+@media(max-width: 600px) {
+    .navbar { padding: 15px; justify-content: center; flex-wrap: wrap; gap: 15px; }
+    .auth-card { padding: 25px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="{% url 'home' %}" class="logo">
+        <span class="logo-icon"> ✦ </span>
+        <span class="logo-text">Velora</span>
+    </a>
+</nav>
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <h2>Google Sign Up</h2>
+        <p class="subtitle">
+            You are about to use your Google account to login to Velora. As a final step, please complete the following form:
+        </p>
+
+        {% if form.non_field_errors %}
+            <div class="messages">
+                {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form class="signup" id="signup_form" method="post" action="{% url 'socialaccount_signup' %}">
+            {% csrf_token %}
+            
+            <div class="input-group">
+                <label for="{{ form.email.id_for_label }}">Email</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <ul class="field-errors">
+                        {% for error in form.email.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="input-group">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <ul class="field-errors">
+                        {% for error in form.username.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            {% endif %}
+
+            <button type="submit" class="auth-btn">Sign Up</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
