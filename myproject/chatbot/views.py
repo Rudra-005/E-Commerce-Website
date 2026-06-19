@@ -1,0 +1,246 @@
+"""
+REST API views for the AI Shopping Assistant.
+Completely isolated — no modifications to existing views.
+"""
+
+import json
+import logging
+from django.http import JsonResponse, StreamingHttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+
+from .models import ChatSession, ChatMessage
+
+logger = logging.getLogger(__name__)
+
+
+def _get_or_create_session(request):
+    """Get or create a chat session for the current user/session."""
+    if request.user.is_authenticated:
+        session, created = ChatSession.objects.get_or_create(
+            user=request.user,
+            defaults={'session_key': ''}
+        )
+    else:
+        session_key = request.session.session_key
+        if not session_key:
+            request.session.create()
+            session_key = request.session.session_key
+        session, created = ChatSession.objects.get_or_create(
+            session_key=session_key,
+            user=None,
+            defaults={}
+        )
+    return session
+
+
+def _get_chat_history(session, limit=10):
+    """Get recent chat history for context."""
+    messages = ChatMessage.objects.filter(session=session).order_by('-created_at')[:limit]
+    history = []
+    for msg in reversed(messages):
+        history.append({
+            'role': msg.role,
+            'content': msg.content,
+        })
+    return history
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def chat_api(request):
+    """
+    POST /api/chat/
+
+    Request: { "message": "..." }
+    Response: SSE Stream of products and text chunks
+    """
+    try:
+        data = json.loads(request.body)
+        user_message = data.get('message', '').strip()
+
+        if not user_message:
+            return JsonResponse({'error': 'Message is required.'}, status=400)
+
+        # 1. Get/create session
+        session = _get_or_create_session(request)
+
+        # 2. Save user message
+        ChatMessage.objects.create(
+            session=session,
+            role='user',
+            content=user_message,
+            products_data=[]
+        )
+
+        # 3. Get chat history for context
+        chat_history = _get_chat_history(session, limit=10)
+
+        # 4. Bypass vector search if the query is a greeting, or relates to cart, orders, or user profile/account
+        greetings = {'hi', 'hii', 'hello', 'hey', 'yo', 'greetings', 'sup', 'hola', 'test', 'help', 'thanks', 'thank you', 'bye', 'goodbye'}
+        msg_lower = user_message.lower().strip()
+        is_greeting = msg_lower.strip('?.! ') in greetings
+        
+        is_cart_query = any(kw in msg_lower for kw in ['cart', 'basket', 'bag', 'subtotal', 'checkout'])
+        is_order_query = any(kw in msg_lower for kw in ['track', 'delivery', 'status', 'shipped', 'shipping', 'purchase', 'history']) or 'orders' in msg_lower or 'my order' in msg_lower or 'recent order' in msg_lower
+        is_account_query = any(kw in msg_lower for kw in ['account', 'profile', 'my info', 'who am i', 'email', 'username'])
+        is_address_query = any(kw in msg_lower for kw in ['address', 'addresses', 'location', 'pincode'])
+        
+        bypass_search = is_greeting or is_cart_query or is_order_query or is_account_query or is_address_query
+
+        if bypass_search:
+            products, filters = [], {}
+            logger.info("Non-product query detected (greeting/cart/order/profile/address), skipping vector search")
+        else:
+            # Vector search for relevant products
+            from .services.vector_search import search_products
+            products, filters = search_products(user_message, top_k=8)
+
+        # Generate user account, cart, and order context
+        from .services.groq_service import build_user_context
+        user_context_str = build_user_context(request.user)
+
+        def event_stream():
+            full_text = []
+            final_products = products
+            try:
+                # Call Groq LLM with streaming enabled
+                from .services.groq_service import get_client, build_context, build_messages
+                client = get_client()
+                product_context = build_context(products, filters)
+                messages = build_messages(chat_history[:-1], user_message, product_context, user_context_str)
+
+                completion = client.chat.completions.create(
+                    model="llama-3.3-70b-versatile",
+                    messages=messages,
+                    temperature=0.7,
+                    max_tokens=1024,
+                    top_p=0.9,
+                    stream=True,
+                )
+
+                for chunk in completion:
+                    text_chunk = chunk.choices[0].delta.content or ""
+                    if text_chunk:
+                        full_text.append(text_chunk)
+                        yield f"event: content\ndata: {json.dumps(text_chunk)}\n\n"
+
+                # Filter and re-rank products based on LLM response
+                ai_response = "".join(full_text)
+                ai_response_lower = ai_response.lower()
+                mentioned_products = []
+                
+                for p in products:
+                    p_name_lower = p['name'].lower()
+                    if p_name_lower in ai_response_lower:
+                        mentioned_products.append(p)
+                    else:
+                        words = p_name_lower.split()
+                        matched = False
+                        if len(words) >= 3:
+                            prefix_3 = " ".join(words[:3])
+                            if prefix_3 in ai_response_lower:
+                                mentioned_products.append(p)
+                                matched = True
+                        if not matched and len(words) >= 2:
+                            prefix_2 = " ".join(words[:2])
+                            if prefix_2 in ai_response_lower:
+                                mentioned_products.append(p)
+                                matched = True
+
+                def get_appearance_index(p):
+                    p_name_lower = p['name'].lower()
+                    idx = ai_response_lower.find(p_name_lower)
+                    if idx != -1:
+                        return idx
+                    words = p_name_lower.split()
+                    if len(words) >= 3:
+                        idx = ai_response_lower.find(" ".join(words[:3]))
+                        if idx != -1:
+                            return idx
+                    if len(words) >= 2:
+                        idx = ai_response_lower.find(" ".join(words[:2]))
+                        if idx != -1:
+                            return idx
+                    return 999999
+
+                if mentioned_products:
+                    mentioned_products.sort(key=get_appearance_index)
+                    final_products = mentioned_products
+
+                # Send products after text streaming is complete
+                yield f"event: products\ndata: {json.dumps(final_products)}\n\n"
+
+                yield "event: done\ndata: {}\n\n"
+            except Exception as stream_err:
+                logger.error(f"Streaming error: {stream_err}", exc_info=True)
+                yield f"event: error\ndata: {json.dumps({'message': 'I encountered an issue processing your request.'})}\n\n"
+            finally:
+                # Save assistant response to database
+                ai_response = "".join(full_text)
+                if ai_response:
+                    ChatMessage.objects.create(
+                        session=session,
+                        role='assistant',
+                        content=ai_response,
+                        products_data=final_products
+                    )
+
+        response = StreamingHttpResponse(event_stream(), content_type='text/event-stream')
+        response['Cache-Control'] = 'no-cache'
+        response['X-Accel-Buffering'] = 'no'
+        return response
+
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON payload.'}, status=400)
+    except Exception as e:
+        logger.error(f"Chat API error: {e}", exc_info=True)
+        return JsonResponse({
+            'message': "I'm having a small issue right now. Please try again!",
+            'products': [],
+        })
+
+
+@require_http_methods(["GET"])
+def chat_history_api(request):
+    """
+    GET /api/chat/history/
+
+    Returns the current session's chat messages.
+    """
+    try:
+        session = _get_or_create_session(request)
+        messages = ChatMessage.objects.filter(session=session).order_by('created_at')
+
+        history = []
+        for msg in messages:
+            history.append({
+                'role': msg.role,
+                'content': msg.content,
+                'products': msg.products_data or [],
+                'timestamp': msg.created_at.isoformat(),
+            })
+
+        return JsonResponse({'history': history})
+
+    except Exception as e:
+        logger.error(f"Chat history error: {e}", exc_info=True)
+        return JsonResponse({'history': []})
+
+
+@csrf_exempt
+@require_http_methods(["DELETE"])
+def chat_history_delete_api(request):
+    """
+    DELETE /api/chat/history/
+
+    Clears the current session's chat history.
+    """
+    try:
+        session = _get_or_create_session(request)
+        ChatMessage.objects.filter(session=session).delete()
+        return JsonResponse({'status': 'ok', 'message': 'Chat history cleared.'})
+
+    except Exception as e:
+        logger.error(f"Chat history delete error: {e}", exc_info=True)
+        return JsonResponse({'error': str(e)}, status=500)

@@ -259,3 +259,5 @@ def register(request):
     return Response({
         "message": "User registered successfully"
     })
+
+

@@ -11,8 +11,13 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 
+
 from pathlib import Path
 import site
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,6 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-4^94*kk=$1)4ck99noug%fdfg&li3da=vkr0xm4ersh*prk*nu')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -45,6 +51,7 @@ INSTALLED_APPS = [
 
     'shop',
     'accounts',
+    'chatbot',
 ]
 SITE_ID = 1
 LOGIN_REDIRECT_URL = "/"
@@ -61,8 +68,10 @@ load_dotenv()
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 GOOGLE_REDIRECT_URI = "http://127.0.0.1:8000/auth/google/callback/"
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

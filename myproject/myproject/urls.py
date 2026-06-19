@@ -23,4 +23,7 @@ urlpatterns = [
     path('', include('shop.urls')),
 
     path('auth/', include('accounts.urls')),
+
+    # AI Shopping Assistant API
+    path('api/', include('chatbot.urls')),
 ]

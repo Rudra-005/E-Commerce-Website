@@ -152,20 +152,33 @@
         display: inline-block;
     }
 
-    .comic-cart-circle {
-        background: #000;
-        color: #fff;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .comic-cart-btn {
+        background: var(--primary-yellow);
+        border: 6px solid #000;
+        padding: 15px 25px;
         font-family: 'Bangers', cursive;
-        font-size: 30px;
+        font-size: 24px;
+        color: #000;
         text-decoration: none;
-        border: 4px solid #fff;
-        box-shadow: 0 0 0 4px #000;
+        transform: rotate(2deg);
+        box-shadow: 8px 8px 0px #000;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .comic-cart-btn:hover {
+        background: var(--primary-red);
+        color: #fff;
+        transform: translateY(-2px) rotate(2deg);
+        box-shadow: 10px 10px 0px #000;
+    }
+
+    .comic-cart-btn:active {
+        transform: translateY(2px) rotate(2deg);
+        box-shadow: 4px 4px 0px #000;
     }
 
     /* User Profile Dropdown */
@@ -621,15 +634,9 @@
         </div>
         {% endif %}
 
-        {% if cart_count %}
-        <a href="/cart/" class="comic-cart-circle">
-            {{ cart_count }}
+        <a href="{% url 'cart' %}" class="comic-cart-btn">
+            🛒 CART ({{ cart_count|default:0 }})
         </a>
-        {% else %}
-        <a href="/cart/" class="comic-cart-circle">
-            0
-        </a>
-        {% endif %}
     </div>
 </nav>
 
@@ -660,6 +667,12 @@
 
 <!-- PRODUCTS LIST SECTION -->
 <section class="search-results" data-aos="fade-up">
+    {% if semantic_search_used %}
+    <div style="margin: -20px auto 30px auto; max-width: 1400px; background: #ef476f; border: 4px solid #000; box-shadow: 4px 4px 0px #000; padding: 15px; display: flex; align-items: center; gap: 10px; font-family: 'Bangers', cursive; font-size: 20px; color: #fff; letter-spacing: 1px; transform: rotate(-0.5deg);">
+        <span>🔍</span>
+        <span>Showing smart search results matching your description</span>
+    </div>
+    {% endif %}
     <div class="search-products" id="products-container">
         {% for product in products %}
         <div class="search-card" data-aos="zoom-in-up" data-aos-duration="800" data-aos-delay="{% widthratio forloop.counter0 1 100 %}">
@@ -902,6 +915,7 @@ if(trigger){
         });
     });
 </script>
+{% include "chatbot/widget.html" %}
 </body>
 
 </html>

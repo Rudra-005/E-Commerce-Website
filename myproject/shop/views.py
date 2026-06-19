@@ -23,18 +23,73 @@ from .models import Address
 from .decorators import jwt_login_required
 
 def get_fuzzy_search_results(query_str, queryset, limit=None):
+    import logging
+    logger = logging.getLogger(__name__)
+
     query_str = query_str.strip()
     if not query_str:
         return list(queryset)
 
-    queryset = queryset.annotate(
-        similarity=TrigramSimilarity('name', query_str) + TrigramSimilarity('category', query_str)
-    ).filter(similarity__gt=0.1).order_by('-similarity', '-id')
+    # 1. Detect if the query is a natural language detailed query
+    words = query_str.split()
+    nl_keywords = {
+        'under', 'above', 'between', 'for', 'in', 'with', 'cheap', 'best', 
+        'chahiye', 'wala', 'wale', 'me', 'ke', 'liye', 'sasta', 'achha', 'good', 'bad', 'gaming', 'office', 'student'
+    }
+    is_natural_language = len(words) > 2 or any(w.lower().strip('?.!,') in nl_keywords for w in words)
 
-    matched_products = list(queryset)
+    matched_products = []
+    is_semantic = False
+
+    # 2. If it's not a clear natural language description, try fuzzy matching first
+    if not is_natural_language:
+        try:
+            fuzzy_qs = queryset.annotate(
+                similarity=TrigramSimilarity('name', query_str) + TrigramSimilarity('category', query_str)
+            ).filter(similarity__gt=0.1).order_by('-similarity', '-id')
+            matched_products = list(fuzzy_qs)
+        except Exception as e:
+            logger.error(f"Fuzzy search failed: {e}")
+
+    # 3. If fuzzy search returned few results, or it's a natural language query, run semantic search
+    if len(matched_products) < 3:
+        try:
+            from chatbot.services.vector_search import search_products
+            top_k = limit if limit else 30
+            semantic_results, _ = search_products(query_str, top_k=top_k)
+            
+            if semantic_results:
+                product_ids = [p['id'] for p in semantic_results]
+                
+                # Fetch Django Product objects preserving the similarity order
+                from django.db.models import Case, When
+                preserved_order = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(product_ids)])
+                
+                semantic_qs = queryset.filter(id__in=product_ids).order_by(preserved_order)
+                matched_products = list(semantic_qs)
+                is_semantic = True
+                logger.info(f"Triggered semantic search for query: '{query_str}', found {len(matched_products)} products.")
+        except Exception as sem_err:
+            logger.error(f"Semantic search failed fallback: {sem_err}", exc_info=True)
+            
+            # Fallback to fuzzy search if not already run
+            if is_natural_language:
+                try:
+                    fuzzy_qs = queryset.annotate(
+                        similarity=TrigramSimilarity('name', query_str) + TrigramSimilarity('category', query_str)
+                    ).filter(similarity__gt=0.1).order_by('-similarity', '-id')
+                    matched_products = list(fuzzy_qs)
+                except Exception as e:
+                    logger.error(f"Fuzzy fallback failed: {e}")
 
     if limit:
         matched_products = matched_products[:limit]
+
+    # Tag the list to indicate if semantic search was used
+    try:
+        matched_products.is_semantic = is_semantic
+    except AttributeError:
+        pass
 
     return matched_products
 
@@ -84,8 +139,10 @@ def home(request):
             )
 
     # SEARCH & SORTING FILTER
+    semantic_search_used = False
     if search:
         matched_list = get_fuzzy_search_results(search, products_queryset)
+        semantic_search_used = getattr(matched_list, 'is_semantic', False)
         products_queryset = sort_products_list(matched_list, sort_by)
     else:
         # SORTING on QuerySet level
@@ -156,6 +213,7 @@ def home(request):
         "featured_products": featured_products,
         "categories": categories,
         "search": search,
+        "semantic_search_used": semantic_search_used,
         "selected_category": category_id,
         "category": category_id,
         "collection_name": collection_name,
@@ -195,8 +253,10 @@ def products_list(request):
         title = category.name
 
     # Search & Sorting Filter
+    semantic_search_used = False
     if search:
         matched_list = get_fuzzy_search_results(search, products_queryset)
+        semantic_search_used = getattr(matched_list, 'is_semantic', False)
         products_queryset = sort_products_list(matched_list, sort_by)
     else:
         # SORTING on QuerySet level
@@ -247,6 +307,7 @@ def products_list(request):
         "products": products,
         "categories": categories,
         "search": search,
+        "semantic_search_used": semantic_search_used,
         "title": title,
         "selected_category": category_id,
         "category_id": category_id,
