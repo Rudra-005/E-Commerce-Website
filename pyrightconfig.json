@@ -1,0 +1,10 @@
+{
+    "executionEnvironments": [
+        {
+            "root": "myproject",
+            "extraPaths": ["myproject"]
+        }
+    ],
+    "reportMissingImports": "warning",
+    "reportMissingModuleSource": "none"
+}

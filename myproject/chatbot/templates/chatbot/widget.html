@@ -588,7 +588,11 @@
         >
         <button class="velora-chat-send" id="veloraChatSend">
             ➤
-       <script>
+        </button>
+    </div>
+</div>
+
+<script>
 (function() {
     'use strict';
 
@@ -606,7 +610,18 @@
 
     let isOpen = false;
     let isSending = false;
-    let historyLoaded = false;
+
+    // ── User-aware session tracking ──
+    // Track which user the chat was last loaded for.
+    // On every panel open, we compare with the backend's current_user.
+    // If different (login/logout happened), clear the DOM and re-fetch.
+    let loadedForUser = '__not_loaded__';
+
+    function clearChatDOM() {
+        const msgs = messagesEl.querySelectorAll('.velora-msg, .velora-chat-products');
+        msgs.forEach(function(m) { m.remove(); });
+        welcomeEl.style.display = 'block';
+    }
 
     // ── Toggle Panel ──
     fab.addEventListener('click', function() {
@@ -615,10 +630,7 @@
         fab.classList.toggle('open', isOpen);
         if (isOpen) {
             input.focus();
-            if (!historyLoaded) {
-                loadHistory();
-                historyLoaded = true;
-            }
+            loadHistory();
         }
     });
 
@@ -652,10 +664,7 @@
             method: 'DELETE',
             headers: { 'X-CSRFToken': getCSRFToken() }
         }).then(function() {
-            // Remove all messages except welcome and typing
-            const msgs = messagesEl.querySelectorAll('.velora-msg, .velora-chat-products');
-            msgs.forEach(function(m) { m.remove(); });
-            welcomeEl.style.display = 'block';
+            clearChatDOM();
         });
     });
 
@@ -847,6 +856,24 @@
         fetch('/api/chat/history/')
         .then(function(res) { return res.json(); })
         .then(function(data) {
+            // Determine the current user from the API response
+            const serverUser = data.current_user || '__anonymous__';
+
+            // If the user changed since last load, clear old messages from DOM
+            if (loadedForUser !== '__not_loaded__' && loadedForUser !== serverUser) {
+                clearChatDOM();
+            }
+
+            // Update the tracked user
+            loadedForUser = serverUser;
+
+            // Only populate if the DOM is currently empty (welcome visible)
+            const existingMsgs = messagesEl.querySelectorAll('.velora-msg');
+            if (existingMsgs.length > 0) {
+                // Already have messages for this user, no need to re-render
+                return;
+            }
+
             if (data.history && data.history.length > 0) {
                 welcomeEl.style.display = 'none';
                 data.history.forEach(function(msg) {

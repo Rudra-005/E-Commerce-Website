@@ -4,26 +4,30 @@ Generates and stores product embeddings in PostgreSQL via pgvector.
 """
 
 import logging
+import threading
 from sentence_transformers import SentenceTransformer
 
 logger = logging.getLogger(__name__)
 
 # Lazy-loaded singleton model instance
 _model = None
+_model_lock = threading.Lock()
 
 
 def get_model():
     """Load the embedding model (singleton, loaded once)."""
     global _model
     if _model is None:
-        logger.info("Loading BAAI/bge-small-en-v1.5 embedding model...")
-        try:
-            # Load from local cache, avoiding network checks and potential hangs
-            _model = SentenceTransformer('BAAI/bge-small-en-v1.5', local_files_only=True)
-        except Exception as e:
-            logger.warning(f"Could not load model locally from cache, falling back to online load: {e}")
-            _model = SentenceTransformer('BAAI/bge-small-en-v1.5')
-        logger.info("Embedding model loaded successfully.")
+        with _model_lock:
+            if _model is None:
+                logger.info("Loading BAAI/bge-small-en-v1.5 embedding model...")
+                try:
+                    # Load from local cache, avoiding network checks and potential hangs
+                    _model = SentenceTransformer('BAAI/bge-small-en-v1.5', local_files_only=True, device='cpu')
+                except Exception as e:
+                    logger.warning(f"Could not load model locally from cache, falling back to online load: {e}")
+                    _model = SentenceTransformer('BAAI/bge-small-en-v1.5', device='cpu')
+                logger.info("Embedding model loaded successfully.")
     return _model
 
 

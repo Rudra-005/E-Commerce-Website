@@ -139,10 +139,10 @@ def search_products(query, top_k=8):
 
     filtered_product_ids = set(product_qs.values_list('id', flat=True))
 
-    # If filtering gave us nothing, fall back to all products
+    # If filtering gave us nothing, we should not fall back (it ignores user filters)
     if len(filtered_product_ids) == 0:
-        logger.info("No products matched filters, falling back to full catalog.")
-        filtered_product_ids = None
+        logger.info("No products matched filters, returning empty list.")
+        return [], filters
 
     # ── Step 2: Generate query embedding ──
     query_embedding = generate_embedding(query)

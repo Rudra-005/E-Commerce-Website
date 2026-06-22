@@ -6,177 +6,179 @@ urlpatterns = [
     # Home
     path(
         "",
-        views.home,
+        views.HomeView.as_view(),
         name="home"
     ),
 
     # Product Detail
     path(
         "product/<int:product_id>/",
-        views.product_detail,
+        views.ProductDetailView.as_view(),
         name="product_detail"
     ),
-
 
     # Search
     path(
         "search-suggestions/",
-        views.search_suggestions,
+        views.SearchSuggestionsView.as_view(),
         name="search_suggestions"
     ),
 
     # Dedicated Products List Page
     path(
         "products/",
-        views.products_list,
+        views.ProductListView.as_view(),
         name="products_list"
     ),
 
     # Cart
     path(
         "cart/",
-        views.cart,
+        views.CartView.as_view(),
         name="cart"
     ),
 
     path(
         "add-to-cart/<int:product_id>/",
-        views.add_to_cart,
+        views.AddToCartView.as_view(),
         name="add_to_cart"
     ),
 
     path(
         "remove-from-cart/<int:product_id>/",
-        views.remove_from_cart,
+        views.RemoveFromCartView.as_view(),
         name="remove_from_cart"
     ),
 
     path(
         "increase-quantity/<int:product_id>/",
-        views.increase_quantity,
+        views.IncreaseQuantityView.as_view(),
         name="increase_quantity"
     ),
 
     path(
         "decrease-quantity/<int:product_id>/",
-        views.decrease_quantity,
+        views.DecreaseQuantityView.as_view(),
         name="decrease_quantity"
     ),
 
     path(
         "clear-cart/",
-        views.clear_cart,
+        views.ClearCartView.as_view(),
         name="clear_cart"
     ),
 
     # Checkout
     path(
         "checkout/",
-        views.checkout_view,
+        views.CheckoutView.as_view(),
         name="checkout"
     ),
 
     # Login
     path(
-    "login/",
-    views.login_view,
-    name="login"
+        "login/",
+        views.LoginView.as_view(),
+        name="login"
     ),
 
     # Signup
     path(
         "signup/",
-        views.signup_page,
+        views.SignupView.as_view(),
         name="signup"
     ),
+
     path(
-    "logout/",
-    views.logout_view,
-    name="logout"
+        "logout/",
+        views.LogoutView.as_view(),
+        name="logout"
     ),
 
     # OTP
     path(
         "send-otp/",
-        views.send_otp_test,
+        views.SendOTPTestView.as_view(),
         name="send_otp"
     ),
 
     path(
         "verify-otp/",
-        views.verify_otp,
+        views.VerifyOTPView.as_view(),
         name="verify_otp"
     ),
 
     # Wishlist
     path(
         "wishlist/",
-        views.wishlist,
+        views.WishlistView.as_view(),
         name="wishlist"
     ),
 
     path(
         "add-to-wishlist/<int:product_id>/",
-        views.add_to_wishlist,
+        views.AddToWishlistView.as_view(),
         name="add_to_wishlist"
     ),
 
     path(
         "remove-from-wishlist/<int:product_id>/",
-        views.remove_from_wishlist,
+        views.RemoveFromWishlistView.as_view(),
         name="remove_from_wishlist"
     ),
+
     path(
-    "google-success/",
-    views.google_success,
-    name="google_success"
+        "google-success/",
+        views.GoogleSuccessView.as_view(),
+        name="google_success"
     ),
+
     path(
         "profile/",
-        views.profile,
+        views.ProfileView.as_view(),
         name="profile"
     ),
 
     path(
         "profile/edit/",
-        views.edit_profile,
+        views.EditProfileView.as_view(),
         name="edit_profile"
     ),
 
     path(
         "address/add/",
-        views.add_address,
+        views.AddAddressView.as_view(),
         name="add_address"
     ),
 
     path(
         "address/edit/<int:address_id>/",
-        views.edit_address,
+        views.EditAddressView.as_view(),
         name="edit_address"
     ),
 
     path(
         "address/delete/<int:address_id>/",
-        views.delete_address,
+        views.DeleteAddressView.as_view(),
         name="delete_address"
     ),
 
     # Forgot Password Flow
     path(
         "forgot-password/",
-        views.forgot_password,
+        views.ForgotPasswordView.as_view(),
         name="forgot_password"
     ),
 
     path(
         "forgot-password/verify/",
-        views.forgot_password_verify_otp,
+        views.ForgotPasswordVerifyOTPView.as_view(),
         name="forgot_password_verify_otp"
     ),
 
     path(
         "reset-password/",
-        views.reset_password,
+        views.ResetPasswordView.as_view(),
         name="reset_password"
     ),
 ]

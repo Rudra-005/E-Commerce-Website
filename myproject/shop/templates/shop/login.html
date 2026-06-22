@@ -215,11 +215,31 @@ body {
             </div>
         {% endif %}
 
-        <!-- Google Sign-In Redirect Button -->
-        <a href="{% url 'google_login' %}" class="google-btn">
-            <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" alt="Google Logo">
-            Continue with Google
-        </a>
+        <!-- Real-time Google Sign-In Button and One Tap -->
+        <div id="g_id_onload"
+             data-client_id="638655157320-kb62hj2vckv9e0sfdk1vjbmfbhmsue35.apps.googleusercontent.com"
+             data-context="signin"
+             data-ux_mode="redirect"
+             data-login_uri="http://localhost:8000/auth/google/callback/"
+             data-auto_select="false"
+             data-itp_support="true">
+        </div>
+        <div style="display: flex; justify-content: center; margin-bottom: 20px; width: 100%;">
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-shape="rectangular"
+                 data-theme="outline"
+                 data-text="signin_with"
+                 data-size="large"
+                 data-logo_alignment="left"
+                 data-width="366">
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: -10px; margin-bottom: 20px;">
+            <a href="{% url 'google_login' %}" style="font-size: 15px; font-weight: bold; color: var(--primary-blue); text-decoration: none; border-bottom: 2px dashed var(--primary-blue); padding-bottom: 2px; transition: all 0.1s ease;" onmouseover="this.style.color='var(--primary-red)'; this.style.borderColor='var(--primary-red)'" onmouseout="this.style.color='var(--primary-blue)'; this.style.borderColor='var(--primary-blue)'">
+                Popup blocked? Try standard Google redirect
+            </a>
+        </div>
 
         <div class="divider">
             <span>OR</span>
