@@ -1,0 +1,9 @@
+{
+    "epochs": 20,
+    "batch_size": 512,
+    "final_training_loss": 1807.3988037109375,
+    "final_validation_loss": 2901.673828125,
+    "recall_at_10": 0.034609414637088776,
+    "recall_at_20": 0.06610023975372314,
+    "recall_at_50": 0.15911737084388733
+}

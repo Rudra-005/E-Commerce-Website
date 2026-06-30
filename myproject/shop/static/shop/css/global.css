@@ -1,0 +1,169 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap');
+
+:root {
+    /* Existing Colors */
+    --bg-color: #fcf8f2;
+    --border-color: #000000;
+    --primary-red: #ef476f;
+    --primary-yellow: #ffd166;
+    --primary-blue: #118ab2;
+    --shadow-solid: 6px 6px 0px #000000;
+    
+    /* Typography System */
+    --font-heading: 'Poppins', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    
+    /* Text Colors */
+    --text-dark: #1F2937;
+    --text-muted: #4B5563;
+    --text-light: #9CA3AF;
+}
+
+body {
+    font-family: var(--font-body);
+    color: var(--text-dark);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Heading Typography Reset */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    color: var(--text-dark);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.01em; 
+    text-shadow: none !important; 
+    -webkit-text-stroke: 0 !important;
+}
+
+h1 { font-size: 3rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 1rem; }
+h2 { font-size: 2.25rem; font-weight: 700; margin-bottom: 0.75rem; }
+h3 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+h4 { font-size: 1.25rem; font-weight: 600; }
+
+/* Text overrides for elements that commonly used decorative fonts */
+button, input, select, textarea, .btn, .comic-login-btn, .comic-cart-btn, .checkout-btn, .clear-btn, .shop-btn, .qty-btn, .remove-btn, .action-btn {
+    font-family: var(--font-heading) !important;
+    font-weight: 600 !important;
+    text-shadow: none !important;
+    -webkit-text-stroke: 0 !important;
+    letter-spacing: 0.02em;
+}
+
+/* Ensure buttons use clean text colors */
+button, .btn {
+    color: var(--text-dark);
+}
+.checkout-btn, .clear-btn, .shop-btn, .qty-btn, .remove-btn, .action-btn {
+    color: #fff;
+}
+.checkout-btn, .shop-btn { color: #000; } /* Yellow buttons usually have black text */
+
+/* Scale down font sizes because Poppins is larger than Bangers */
+.comic-login-btn, .comic-cart-btn { font-size: 16px !important; padding: 10px 15px !important; }
+.checkout-btn, .clear-btn, .shop-btn { font-size: 18px !important; padding: 10px 20px !important; }
+.qty-btn, .remove-btn { font-size: 14px !important; }
+
+/* Form labels */
+label {
+    font-family: var(--font-body);
+    font-weight: 500;
+    color: var(--text-dark);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+p {
+    margin-bottom: 1rem;
+    color: var(--text-muted);
+}
+
+/* General link styling */
+a {
+    color: var(--text-dark);
+    transition: all 0.2s ease;
+}
+
+/* Fix remaining pure black text and shadows on common classes */
+.price {
+    font-family: var(--font-heading) !important;
+    font-weight: 700 !important;
+    text-shadow: none !important;
+}
+
+.profile-name {
+    font-family: var(--font-heading) !important;
+    font-weight: 600 !important;
+    text-shadow: none !important;
+    font-size: 18px !important;
+}
+
+.profile-link, .suggestion-item {
+    font-family: var(--font-body) !important;
+    font-weight: 500 !important;
+    font-size: 16px !important;
+}
+
+.suggestion-price {
+    font-family: var(--font-heading) !important;
+    font-weight: 600 !important;
+    text-shadow: none !important;
+}
+
+.comic-nav-links a {
+    font-family: var(--font-heading) !important;
+    font-weight: 600 !important;
+    font-size: 16px !important;
+    text-shadow: none !important;
+    letter-spacing: 0;
+}
+
+.comic-logo-text {
+    font-family: var(--font-heading) !important;
+    font-weight: 800 !important;
+    font-size: 26px !important;
+    letter-spacing: -0.02em !important;
+    text-shadow: none !important;
+    line-height: 1 !important;
+}
+
+.comic-logo-icon {
+    font-size: 32px !important;
+    width: 40px !important;
+    height: 40px !important;
+}
+
+/* Clean up card/item titles */
+.product-title, .cart-info h2, .order-card h2, .address-card h3 {
+    font-family: var(--font-heading) !important;
+    font-weight: 600 !important;
+    text-shadow: none !important;
+    -webkit-text-stroke: 0 !important;
+    text-transform: none !important;
+}
+
+.subtotal, .quantity {
+    font-family: var(--font-body) !important;
+    text-shadow: none !important;
+}
+
+/* Remove text stroke globally from everything just to be safe */
+* {
+    -webkit-text-stroke: 0 !important;
+}
+
+/* Fix elements that had white text with black strokes making them invisible when stroke was removed */
+.page-title {
+    color: var(--text-dark) !important;
+    font-size: 40px !important;
+    margin: 30px 0 !important;
+}
+
+@media(max-width: 900px) {
+    .page-title {
+        font-size: 32px !important;
+    }
+}

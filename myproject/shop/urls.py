@@ -75,6 +75,40 @@ urlpatterns = [
         name="checkout"
     ),
 
+    # Verify Payment
+    path(
+        "verify-payment/",
+        views.VerifyPaymentView.as_view(),
+        name="verify_payment"
+    ),
+
+    # Order Confirmation
+    path(
+        "order-confirmation/<int:order_id>/",
+        views.OrderConfirmationView.as_view(),
+        name="order_confirmation"
+    ),
+
+    # Orders History
+    path(
+        "orders/",
+        views.OrdersView.as_view(),
+        name="orders"
+    ),
+
+    path(
+        "order/<int:order_id>/request-refund/",
+        views.RequestRefundView.as_view(),
+        name="request_refund"
+    ),
+
+    # Stock Notification
+    path(
+        "notify-stock/<int:product_id>/",
+        views.NotifyStockView.as_view(),
+        name="notify_stock"
+    ),
+
     # Login
     path(
         "login/",
@@ -134,6 +168,12 @@ urlpatterns = [
     ),
 
     path(
+        "addresses/",
+        views.AddressesView.as_view(),
+        name="addresses"
+    ),
+
+    path(
         "profile/",
         views.ProfileView.as_view(),
         name="profile"
@@ -163,6 +203,12 @@ urlpatterns = [
         name="delete_address"
     ),
 
+    path(
+        "address/set-default/<int:address_id>/",
+        views.SetDefaultAddressView.as_view(),
+        name="set_default_address"
+    ),
+
     # Forgot Password Flow
     path(
         "forgot-password/",
@@ -180,5 +226,12 @@ urlpatterns = [
         "reset-password/",
         views.ResetPasswordView.as_view(),
         name="reset_password"
+    ),
+
+    # Recommendations API
+    path(
+        "api/recommendations/",
+        views.RecommendationAPIView.as_view(),
+        name="api_recommendations"
     ),
 ]

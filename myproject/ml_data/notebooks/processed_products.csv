@@ -1,0 +1,601 @@
+id,name,category_fk_id
+2,Huawei Slim Laptop Intel i7,1
+3,Acer Ultra Laptop Intel i9,1
+4,MSI Business Laptop Ryzen 7,1
+5,MSI Ultra Laptop Ryzen 7,1
+6,Dell Ultra Laptop Ryzen 7,1
+7,Samsung Ultra Laptop Ryzen 5,1
+8,Samsung Notebook Laptop Apple M2,1
+9,Acer Ultra Laptop Ryzen 7,1
+10,Samsung Gaming Laptop Ryzen 7,1
+11,Acer Gaming Laptop Apple M2,1
+12,Asus Ultra Laptop Apple M2,1
+13,Dell Ultra Laptop Intel i7,1
+14,LG Gaming Laptop Intel i9,1
+15,Asus Business Laptop Ryzen 7,1
+16,Lenovo Ultra Laptop Apple M2,1
+17,Apple Ultra Laptop Intel i5,1
+18,Asus Professional Laptop Intel i5,1
+19,Samsung Professional Laptop Ryzen 5,1
+20,Apple Business Laptop Intel i5,1
+21,LG Ultra Laptop Intel i9,1
+22,Huawei Professional Laptop Intel i9,1
+23,LG Notebook Laptop Apple M2,1
+24,Acer Slim Laptop Ryzen 7,1
+25,MSI Notebook Laptop Apple M2,1
+26,HP Ultra Laptop Ryzen 7,1
+27,Lenovo Slim Laptop Ryzen 5,1
+28,Samsung Slim Laptop Ryzen 7,1
+29,Acer Ultra Laptop Intel i9,1
+30,Lenovo Business Laptop Ryzen 7,1
+31,Apple Gaming Laptop Intel i5,1
+32,LG Ultra Laptop Intel i5,1
+33,Dell Professional Laptop Intel i9,1
+34,HP Slim Laptop Intel i7,1
+35,MSI Slim Laptop Intel i5,1
+36,Huawei Ultra Laptop Apple M2,1
+37,Acer Professional Laptop Apple M2,1
+38,Huawei Professional Laptop Ryzen 5,1
+39,Samsung Business Laptop Ryzen 7,1
+40,Apple Gaming Laptop Apple M2,1
+41,MSI Gaming Laptop Intel i5,1
+42,Dell Ultra Laptop Ryzen 7,1
+43,Lenovo Gaming Laptop Intel i9,1
+44,Dell Notebook Laptop Apple M2,1
+45,Samsung Gaming Laptop Ryzen 7,1
+46,Acer Notebook Laptop Ryzen 7,1
+47,Acer Business Laptop Intel i7,1
+48,Asus Business Laptop Ryzen 7,1
+49,Samsung Ultra Laptop Intel i7,1
+50,HP Ultra Laptop Intel i5,1
+51,Apple Professional Laptop Apple M2,1
+52,Acer Professional Laptop Intel i5,1
+53,Huawei Business Laptop Intel i7,1
+54,Asus Slim Laptop Intel i7,1
+55,HP Business Laptop Intel i5,1
+56,LG Gaming Laptop Intel i7,1
+57,Huawei Gaming Laptop Intel i5,1
+58,Lenovo Notebook Laptop Intel i7,1
+59,Dell Slim Laptop Apple M2,1
+60,HP Professional Laptop Intel i7,1
+61,Dell Gaming Laptop Ryzen 7,1
+62,Vivo Pro Mobile 8GB RAM,2
+63,Realme Plus Mobile 128GB,2
+64,Vivo Plus Mobile 128GB,2
+65,Apple Ultra Mobile 12GB RAM,2
+66,Samsung Ultra Mobile 128GB,2
+67,Samsung Max Mobile 128GB,2
+68,Apple Plus Mobile 12GB RAM,2
+69,Vivo Max Mobile 512GB,2
+70,Oppo Plus Mobile 256GB,2
+71,Oppo Max Mobile 12GB RAM,2
+72,Motorola Plus Mobile 128GB,2
+73,Motorola Pro Mobile 128GB,2
+74,Realme Max Mobile 128GB,2
+75,Xiaomi 5G Mobile 512GB,2
+76,Motorola Note Mobile 512GB,2
+77,Oppo 5G Mobile 256GB,2
+78,OnePlus Max Mobile 128GB,2
+79,Realme Note Mobile 12GB RAM,2
+80,Motorola Note Mobile 12GB RAM,2
+81,OnePlus Note Mobile 256GB,2
+82,Realme Max Mobile 8GB RAM,2
+83,Realme Max Mobile 256GB,2
+84,Samsung 5G Mobile 12GB RAM,2
+85,Realme Plus Mobile 512GB,2
+86,Xiaomi Note Mobile 512GB,2
+87,Samsung Max Mobile 12GB RAM,2
+88,Oppo Pro Mobile 256GB,2
+89,Oppo Max Mobile 12GB RAM,2
+90,Oppo Ultra Mobile 256GB,2
+91,OnePlus Note Mobile 128GB,2
+92,Oppo Ultra Mobile 12GB RAM,2
+93,Vivo Max Mobile 256GB,2
+94,Vivo Max Mobile 256GB,2
+95,Xiaomi Max Mobile 512GB,2
+96,Samsung Ultra Mobile 128GB,2
+97,Xiaomi Note Mobile 128GB,2
+98,Apple Ultra Mobile 256GB,2
+99,OnePlus Ultra Mobile 8GB RAM,2
+100,Xiaomi Plus Mobile 128GB,2
+101,Motorola Pro Mobile 128GB,2
+102,Samsung Pro Mobile 256GB,2
+103,Samsung Pro Mobile 128GB,2
+104,OnePlus 5G Mobile 512GB,2
+105,Samsung Max Mobile 256GB,2
+106,Vivo Note Mobile 8GB RAM,2
+107,Apple Pro Mobile 512GB,2
+108,Motorola Note Mobile 12GB RAM,2
+109,Apple Note Mobile 256GB,2
+110,Vivo Ultra Mobile 12GB RAM,2
+111,Xiaomi Pro Mobile 128GB,2
+112,Oppo 5G Mobile 128GB,2
+113,Apple Pro Mobile 512GB,2
+114,Motorola 5G Mobile 256GB,2
+115,Vivo Ultra Mobile 512GB,2
+116,Realme Max Mobile 256GB,2
+117,Motorola Note Mobile 128GB,2
+118,Vivo Plus Mobile 12GB RAM,2
+119,Realme Pro Mobile 12GB RAM,2
+120,Oppo Ultra Mobile 128GB,2
+121,Samsung Ultra Mobile 256GB,2
+122,Sony Bluetooth Headphones ANC,3
+123,JBL Noise Cancelling Headphones ANC,3
+124,Boat Bluetooth Headphones Premium,3
+125,JBL Noise Cancelling Headphones RGB,3
+126,Boat Gaming Headphones ANC,3
+127,Apple Bluetooth Headphones ANC,3
+128,Boat Bluetooth Headphones ANC,3
+129,Bose Noise Cancelling Headphones Premium,3
+130,Sony Gaming Headphones ANC,3
+131,Boat Gaming Headphones RGB,3
+132,Noise Bluetooth Headphones ANC,3
+133,Boat Gaming Headphones ANC,3
+134,Noise Wireless Headphones ANC,3
+135,Bose Noise Cancelling Headphones Premium,3
+136,Boat Bluetooth Headphones RGB,3
+137,Noise Wireless Headphones RGB,3
+138,JBL Noise Cancelling Headphones Premium,3
+139,Apple Noise Cancelling Headphones RGB,3
+140,Apple Gaming Headphones ANC,3
+141,Apple Noise Cancelling Headphones RGB,3
+142,Apple Wireless Headphones Premium,3
+143,Noise Bluetooth Headphones ANC,3
+144,Noise Gaming Headphones ANC,3
+145,Bose Noise Cancelling Headphones Bass Boost,3
+146,JBL Noise Cancelling Headphones Bass Boost,3
+147,JBL Gaming Headphones ANC,3
+148,Noise Gaming Headphones Premium,3
+149,JBL Wireless Headphones ANC,3
+150,Noise Gaming Headphones ANC,3
+151,Noise Noise Cancelling Headphones RGB,3
+152,Sony Noise Cancelling Headphones Premium,3
+153,Noise Bluetooth Headphones Bass Boost,3
+154,Sony Noise Cancelling Headphones ANC,3
+155,JBL Bluetooth Headphones RGB,3
+156,Bose Bluetooth Headphones Bass Boost,3
+157,Sony Noise Cancelling Headphones RGB,3
+158,Bose Bluetooth Headphones RGB,3
+159,Noise Noise Cancelling Headphones Bass Boost,3
+160,Apple Gaming Headphones RGB,3
+161,Boat Gaming Headphones RGB,3
+162,Apple Gaming Headphones RGB,3
+163,Sony Noise Cancelling Headphones ANC,3
+164,Apple Noise Cancelling Headphones RGB,3
+165,Sony Noise Cancelling Headphones RGB,3
+166,Bose Gaming Headphones ANC,3
+167,Noise Noise Cancelling Headphones RGB,3
+168,Boat Bluetooth Headphones ANC,3
+169,Bose Noise Cancelling Headphones Premium,3
+170,Apple Gaming Headphones RGB,3
+171,JBL Gaming Headphones ANC,3
+172,Noise Noise Cancelling Headphones Bass Boost,3
+173,Bose Wireless Headphones RGB,3
+174,Noise Wireless Headphones ANC,3
+175,Noise Gaming Headphones Premium,3
+176,Bose Noise Cancelling Headphones RGB,3
+177,Sony Noise Cancelling Headphones Bass Boost,3
+178,JBL Gaming Headphones Bass Boost,3
+179,Sony Gaming Headphones RGB,3
+180,Noise Wireless Headphones Bass Boost,3
+181,JBL Noise Cancelling Headphones RGB,3
+182,Puma Sports Shoes Comfort,4
+183,Puma Running Shoes Comfort,4
+184,Nike Sneakers Shoes Women,4
+185,Reebok Sneakers Shoes Women,4
+186,Nike Running Shoes Comfort,4
+187,Puma Running Shoes Premium,4
+188,Adidas Casual Shoes Premium,4
+189,Skechers Running Shoes Men,4
+190,Skechers Sports Shoes Men,4
+191,Nike Running Shoes Comfort,4
+192,Adidas Casual Shoes Premium,4
+193,Reebok Running Shoes Women,4
+194,Puma Sports Shoes Comfort,4
+195,Reebok Casual Shoes Men,4
+196,Puma Sneakers Shoes Women,4
+197,Nike Sports Shoes Comfort,4
+198,Adidas Casual Shoes Women,4
+199,Puma Sneakers Shoes Men,4
+200,Adidas Sneakers Shoes Women,4
+201,Adidas Casual Shoes Women,4
+202,Adidas Sports Shoes Men,4
+203,Reebok Sports Shoes Women,4
+204,Nike Casual Shoes Men,4
+205,Skechers Sneakers Shoes Premium,4
+206,Adidas Running Shoes Women,4
+207,Nike Sports Shoes Premium,4
+208,Nike Running Shoes Comfort,4
+209,Nike Sports Shoes Premium,4
+210,Nike Running Shoes Women,4
+211,Nike Sports Shoes Premium,4
+212,Puma Casual Shoes Women,4
+213,Puma Sneakers Shoes Comfort,4
+214,Reebok Running Shoes Premium,4
+215,Puma Casual Shoes Men,4
+216,Puma Sports Shoes Women,4
+217,Skechers Sneakers Shoes Premium,4
+218,Puma Casual Shoes Comfort,4
+219,Reebok Sneakers Shoes Men,4
+220,Reebok Sneakers Shoes Women,4
+221,Reebok Casual Shoes Men,4
+222,Reebok Running Shoes Men,4
+223,Adidas Casual Shoes Women,4
+224,Adidas Sneakers Shoes Men,4
+225,Nike Casual Shoes Premium,4
+226,Adidas Sports Shoes Men,4
+227,Puma Running Shoes Comfort,4
+228,Puma Sneakers Shoes Men,4
+229,Skechers Sneakers Shoes Men,4
+230,Adidas Running Shoes Premium,4
+231,Reebok Running Shoes Women,4
+232,Nike Sneakers Shoes Men,4
+233,Nike Sports Shoes Women,4
+234,Adidas Casual Shoes Women,4
+235,Adidas Sports Shoes Premium,4
+236,Puma Casual Shoes Women,4
+237,Adidas Casual Shoes Premium,4
+238,Nike Casual Shoes Women,4
+239,Puma Running Shoes Women,4
+240,Reebok Running Shoes Comfort,4
+241,Nike Sports Shoes Women,4
+242,Fastrack Sports Watch Premium,5
+243,Noise Fitness Watch Premium,5
+244,Fastrack Fitness Watch Premium,5
+245,Boat Smart Watch Waterproof,5
+246,Noise Smart Watch Waterproof,5
+247,Noise Fitness Watch Waterproof,5
+248,Samsung Sports Watch Bluetooth,5
+249,Samsung Sports Watch Bluetooth,5
+250,Fastrack Smart Watch Waterproof,5
+251,Apple Classic Watch Waterproof,5
+252,Noise Smart Watch Premium,5
+253,Boat Sports Watch Premium,5
+254,Samsung Sports Watch Waterproof,5
+255,Boat Sports Watch Bluetooth,5
+256,Noise Fitness Watch Premium,5
+257,Fastrack Classic Watch AMOLED,5
+258,Noise Sports Watch Premium,5
+259,Fastrack Sports Watch AMOLED,5
+260,Fastrack Smart Watch Waterproof,5
+261,Fastrack Sports Watch AMOLED,5
+262,Boat Fitness Watch Bluetooth,5
+263,Boat Sports Watch AMOLED,5
+264,Noise Sports Watch Premium,5
+265,Boat Classic Watch AMOLED,5
+266,Noise Classic Watch Bluetooth,5
+267,Boat Classic Watch Waterproof,5
+268,Noise Fitness Watch Waterproof,5
+269,Boat Sports Watch Bluetooth,5
+270,Samsung Smart Watch Premium,5
+271,Apple Sports Watch Premium,5
+272,Apple Fitness Watch Bluetooth,5
+273,Noise Sports Watch Bluetooth,5
+274,Apple Sports Watch AMOLED,5
+275,Samsung Classic Watch Bluetooth,5
+276,Samsung Smart Watch Waterproof,5
+277,Boat Smart Watch AMOLED,5
+278,Noise Smart Watch Waterproof,5
+279,Samsung Fitness Watch AMOLED,5
+280,Apple Fitness Watch Bluetooth,5
+281,Apple Fitness Watch Waterproof,5
+282,Fastrack Smart Watch AMOLED,5
+283,Samsung Sports Watch Waterproof,5
+284,Noise Classic Watch Waterproof,5
+285,Samsung Smart Watch Premium,5
+286,Boat Smart Watch AMOLED,5
+287,Fastrack Classic Watch Waterproof,5
+288,Samsung Sports Watch Bluetooth,5
+289,Samsung Smart Watch Bluetooth,5
+290,Fastrack Classic Watch AMOLED,5
+291,Samsung Fitness Watch Waterproof,5
+292,Fastrack Sports Watch Waterproof,5
+293,Samsung Classic Watch Premium,5
+294,Apple Classic Watch Waterproof,5
+295,Fastrack Fitness Watch Bluetooth,5
+296,Apple Fitness Watch Waterproof,5
+297,Noise Sports Watch AMOLED,5
+298,Apple Classic Watch AMOLED,5
+299,Noise Fitness Watch AMOLED,5
+300,Fastrack Fitness Watch AMOLED,5
+301,Apple Smart Watch Waterproof,5
+302,Sony Wireless Speaker Mini,6
+303,JBL Portable Speaker Premium,6
+304,Marshall Party Speaker Bass,6
+305,Marshall Portable Speaker RGB,6
+306,Marshall Bluetooth Speaker RGB,6
+307,Marshall Portable Speaker Premium,6
+308,Boat Bluetooth Speaker Bass,6
+309,JBL Party Speaker Premium,6
+310,Boat Party Speaker Mini,6
+311,JBL Wireless Speaker RGB,6
+312,JBL Wireless Speaker Mini,6
+313,Marshall Wireless Speaker Mini,6
+314,Boat Bluetooth Speaker Mini,6
+315,Sony Bluetooth Speaker Premium,6
+316,JBL Party Speaker Bass,6
+317,Boat Portable Speaker Mini,6
+318,Sony Party Speaker RGB,6
+319,JBL Party Speaker RGB,6
+320,Marshall Party Speaker RGB,6
+321,Boat Party Speaker RGB,6
+322,Marshall Wireless Speaker RGB,6
+323,Sony Wireless Speaker Mini,6
+324,Boat Party Speaker Mini,6
+325,Sony Wireless Speaker Mini,6
+326,Sony Bluetooth Speaker Bass,6
+327,Sony Wireless Speaker RGB,6
+328,JBL Bluetooth Speaker Mini,6
+329,Boat Wireless Speaker Premium,6
+330,JBL Party Speaker Bass,6
+331,Marshall Portable Speaker Mini,6
+332,Marshall Wireless Speaker Bass,6
+333,Marshall Portable Speaker Mini,6
+334,Marshall Party Speaker Premium,6
+335,Marshall Wireless Speaker Bass,6
+336,Sony Portable Speaker Bass,6
+337,Boat Portable Speaker Mini,6
+338,Marshall Party Speaker Mini,6
+339,Marshall Wireless Speaker Mini,6
+340,JBL Party Speaker Premium,6
+341,Sony Portable Speaker Bass,6
+342,Marshall Bluetooth Speaker Mini,6
+343,Marshall Portable Speaker RGB,6
+344,Sony Wireless Speaker Mini,6
+345,JBL Bluetooth Speaker Mini,6
+346,JBL Bluetooth Speaker RGB,6
+347,Marshall Bluetooth Speaker Bass,6
+348,JBL Bluetooth Speaker Premium,6
+349,JBL Party Speaker Premium,6
+350,Marshall Bluetooth Speaker RGB,6
+351,JBL Bluetooth Speaker Premium,6
+352,Marshall Bluetooth Speaker Bass,6
+353,JBL Wireless Speaker RGB,6
+354,Boat Party Speaker RGB,6
+355,Marshall Party Speaker Premium,6
+356,JBL Portable Speaker Premium,6
+357,Sony Portable Speaker Mini,6
+358,Boat Bluetooth Speaker Mini,6
+359,JBL Portable Speaker Mini,6
+360,Marshall Wireless Speaker RGB,6
+361,Sony Party Speaker Premium,6
+362,Nikon DSLR Camera Premium,7
+363,Fujifilm Mirrorless Camera Lens Kit,7
+364,Sony DSLR Camera Photography,7
+365,Canon Mirrorless Camera Photography,7
+366,Sony DSLR Camera Video,7
+367,Fujifilm Professional Camera Premium,7
+368,Sony DSLR Camera Photography,7
+369,Sony 4K Camera Premium,7
+370,Sony Professional Camera Premium,7
+371,Fujifilm Mirrorless Camera Lens Kit,7
+372,Fujifilm DSLR Camera Video,7
+373,Canon Mirrorless Camera Premium,7
+374,Canon Mirrorless Camera Photography,7
+375,Canon Mirrorless Camera Photography,7
+376,Nikon DSLR Camera Video,7
+377,Fujifilm DSLR Camera Premium,7
+378,Nikon DSLR Camera Lens Kit,7
+379,Sony Mirrorless Camera Video,7
+380,Nikon Mirrorless Camera Lens Kit,7
+381,Canon DSLR Camera Photography,7
+382,Nikon Professional Camera Video,7
+383,Nikon DSLR Camera Premium,7
+384,Nikon DSLR Camera Video,7
+385,Sony Mirrorless Camera Premium,7
+386,Canon Mirrorless Camera Photography,7
+387,Nikon Mirrorless Camera Video,7
+388,Fujifilm DSLR Camera Photography,7
+389,Fujifilm Mirrorless Camera Photography,7
+390,Sony DSLR Camera Photography,7
+391,Nikon Professional Camera Photography,7
+392,Canon DSLR Camera Premium,7
+393,Sony 4K Camera Photography,7
+394,Sony Professional Camera Video,7
+395,Fujifilm 4K Camera Video,7
+396,Canon 4K Camera Premium,7
+397,Fujifilm Mirrorless Camera Video,7
+398,Fujifilm Mirrorless Camera Lens Kit,7
+399,Sony Professional Camera Video,7
+400,Fujifilm 4K Camera Premium,7
+401,Fujifilm Mirrorless Camera Premium,7
+402,Fujifilm 4K Camera Lens Kit,7
+403,Fujifilm Mirrorless Camera Premium,7
+404,Fujifilm 4K Camera Premium,7
+405,Nikon Professional Camera Photography,7
+406,Sony Mirrorless Camera Video,7
+407,Fujifilm 4K Camera Photography,7
+408,Canon 4K Camera Premium,7
+409,Nikon Professional Camera Video,7
+410,Fujifilm DSLR Camera Video,7
+411,Sony Professional Camera Premium,7
+412,Fujifilm DSLR Camera Video,7
+413,Nikon 4K Camera Photography,7
+414,Nikon Mirrorless Camera Lens Kit,7
+415,Nikon DSLR Camera Photography,7
+416,Fujifilm Professional Camera Premium,7
+417,Fujifilm Mirrorless Camera Photography,7
+418,Canon Professional Camera Video,7
+419,Nikon DSLR Camera Premium,7
+420,Sony Professional Camera Premium,7
+421,Sony Professional Camera Lens Kit,7
+422,Samsung 4K TV Android,8
+423,Samsung 4K TV 55 Inch,8
+424,Sony OLED TV 65 Inch,8
+425,Xiaomi Ultra HD TV Android,8
+426,Sony Ultra HD TV Premium,8
+427,Xiaomi 4K TV Android,8
+428,LG Smart TV Premium,8
+429,LG OLED TV 55 Inch,8
+430,Samsung 4K TV Android,8
+431,Sony Smart TV Premium,8
+432,Samsung OLED TV 55 Inch,8
+433,Samsung 4K TV Premium,8
+434,Samsung Ultra HD TV Android,8
+435,LG Smart TV Android,8
+436,Samsung OLED TV Android,8
+437,Xiaomi Ultra HD TV Premium,8
+438,Xiaomi Smart TV 55 Inch,8
+439,Xiaomi OLED TV Android,8
+440,LG OLED TV 55 Inch,8
+441,Xiaomi Ultra HD TV Premium,8
+442,Xiaomi Smart TV 65 Inch,8
+443,LG 4K TV 65 Inch,8
+444,Samsung OLED TV Premium,8
+445,Sony OLED TV 65 Inch,8
+446,Samsung OLED TV Android,8
+447,LG OLED TV Premium,8
+448,Samsung OLED TV 65 Inch,8
+449,LG 4K TV Premium,8
+450,Sony OLED TV 65 Inch,8
+451,Xiaomi Ultra HD TV 65 Inch,8
+452,Samsung Ultra HD TV Android,8
+453,LG OLED TV Premium,8
+454,Sony Smart TV Premium,8
+455,Samsung OLED TV 55 Inch,8
+456,LG 4K TV 55 Inch,8
+457,Sony OLED TV Premium,8
+458,LG OLED TV 55 Inch,8
+459,Xiaomi 4K TV 65 Inch,8
+460,Sony OLED TV Premium,8
+461,Sony Ultra HD TV 55 Inch,8
+462,Sony OLED TV 65 Inch,8
+463,Xiaomi Ultra HD TV 65 Inch,8
+464,Xiaomi Ultra HD TV Premium,8
+465,Samsung OLED TV Premium,8
+466,LG 4K TV Premium,8
+467,Sony 4K TV Android,8
+468,Sony 4K TV Premium,8
+469,Samsung Smart TV 65 Inch,8
+470,Samsung Ultra HD TV Android,8
+471,Sony OLED TV Android,8
+472,Samsung Ultra HD TV 55 Inch,8
+473,Xiaomi 4K TV Premium,8
+474,Xiaomi OLED TV Android,8
+475,Xiaomi Smart TV 65 Inch,8
+476,Sony 4K TV Premium,8
+477,Samsung OLED TV Android,8
+478,Sony Smart TV 65 Inch,8
+479,LG Smart TV Android,8
+480,LG 4K TV 55 Inch,8
+481,LG Ultra HD TV 55 Inch,8
+482,Dell Gaming Keyboard Premium,9
+483,Redragon Wireless Keyboard Fast,9
+484,Logitech RGB Keyboard Premium,9
+485,Dell Gaming Keyboard Premium,9
+486,Dell RGB Keyboard Blue Switch,9
+487,HP Wireless Keyboard Blue Switch,9
+488,Redragon Gaming Keyboard Premium,9
+489,Logitech Mechanical Keyboard Blue Switch,9
+490,HP RGB Keyboard Fast,9
+491,Redragon RGB Keyboard Fast,9
+492,Redragon Wireless Keyboard Fast,9
+493,Logitech Wireless Keyboard Fast,9
+494,Redragon RGB Keyboard Fast,9
+495,Logitech Mechanical Keyboard Fast,9
+496,Redragon Mechanical Keyboard Compact,9
+497,Dell RGB Keyboard Premium,9
+498,Dell Mechanical Keyboard Fast,9
+499,HP Mechanical Keyboard Compact,9
+500,HP Gaming Keyboard Fast,9
+501,Dell Mechanical Keyboard Blue Switch,9
+502,Redragon Wireless Keyboard Fast,9
+503,Redragon Gaming Keyboard Compact,9
+504,Logitech Wireless Keyboard Premium,9
+505,Redragon Mechanical Keyboard Compact,9
+506,Redragon RGB Keyboard Premium,9
+507,HP RGB Keyboard Compact,9
+508,Redragon Gaming Keyboard Blue Switch,9
+509,HP RGB Keyboard Fast,9
+510,Redragon Gaming Keyboard Premium,9
+511,HP Mechanical Keyboard Fast,9
+512,Redragon RGB Keyboard Fast,9
+513,HP RGB Keyboard Fast,9
+514,Redragon RGB Keyboard Blue Switch,9
+515,Logitech Mechanical Keyboard Compact,9
+516,Dell Wireless Keyboard Premium,9
+517,HP Wireless Keyboard Premium,9
+518,Logitech Gaming Keyboard Compact,9
+519,Dell Mechanical Keyboard Fast,9
+520,Redragon RGB Keyboard Compact,9
+521,Redragon RGB Keyboard Premium,9
+522,Dell Wireless Keyboard Fast,9
+523,Redragon Mechanical Keyboard Compact,9
+524,Redragon Mechanical Keyboard Fast,9
+525,HP Mechanical Keyboard Compact,9
+526,Logitech Gaming Keyboard Fast,9
+527,Dell RGB Keyboard Blue Switch,9
+528,Dell RGB Keyboard Premium,9
+529,Logitech RGB Keyboard Fast,9
+530,Redragon RGB Keyboard Blue Switch,9
+531,Logitech Gaming Keyboard Premium,9
+532,HP Gaming Keyboard Premium,9
+533,HP Wireless Keyboard Blue Switch,9
+534,Dell Gaming Keyboard Blue Switch,9
+535,HP Wireless Keyboard Fast,9
+536,Redragon Mechanical Keyboard Compact,9
+537,Dell Wireless Keyboard Premium,9
+538,Logitech Wireless Keyboard Premium,9
+539,Redragon Mechanical Keyboard Blue Switch,9
+540,Logitech RGB Keyboard Compact,9
+541,Redragon Gaming Keyboard Premium,9
+542,Razer Wireless Mouse Fast,10
+543,Dell RGB Mouse Rechargeable,10
+544,Logitech Wireless Mouse Premium,10
+545,Razer Gaming Mouse Premium,10
+546,HP Gaming Mouse Premium,10
+547,Logitech Gaming Mouse Fast,10
+548,Razer Bluetooth Mouse Premium,10
+549,Razer Wireless Mouse Fast,10
+550,Dell Wireless Mouse Ergonomic,10
+551,HP Wireless Mouse Premium,10
+552,Razer Wireless Mouse Fast,10
+553,Dell Gaming Mouse Rechargeable,10
+554,Razer RGB Mouse Fast,10
+555,Dell Bluetooth Mouse Premium,10
+556,HP Wireless Mouse Fast,10
+557,Dell RGB Mouse Ergonomic,10
+558,HP Wireless Mouse Premium,10
+559,Dell Gaming Mouse Ergonomic,10
+560,Dell Bluetooth Mouse Ergonomic,10
+561,Dell Gaming Mouse Premium,10
+562,Razer Gaming Mouse Rechargeable,10
+563,Logitech Wireless Mouse Ergonomic,10
+564,HP Wireless Mouse Rechargeable,10
+565,Dell Gaming Mouse Rechargeable,10
+566,HP Wireless Mouse Premium,10
+567,Logitech Gaming Mouse Rechargeable,10
+568,Logitech RGB Mouse Premium,10
+569,Logitech Bluetooth Mouse Rechargeable,10
+570,HP Gaming Mouse Ergonomic,10
+571,HP Wireless Mouse Premium,10
+572,Dell RGB Mouse Fast,10
+573,Razer Wireless Mouse Fast,10
+574,HP Gaming Mouse Fast,10
+575,HP Gaming Mouse Rechargeable,10
+576,Dell Bluetooth Mouse Ergonomic,10
+577,HP Wireless Mouse Fast,10
+578,Logitech Wireless Mouse Ergonomic,10
+579,Logitech Gaming Mouse Rechargeable,10
+580,Dell Bluetooth Mouse Fast,10
+581,Logitech Wireless Mouse Fast,10
+582,Dell RGB Mouse Premium,10
+583,HP Bluetooth Mouse Premium,10
+584,Logitech Gaming Mouse Fast,10
+585,HP Bluetooth Mouse Premium,10
+586,Logitech RGB Mouse Fast,10
+587,Logitech Gaming Mouse Ergonomic,10
+588,HP Gaming Mouse Fast,10
+589,Razer Wireless Mouse Fast,10
+590,Logitech Gaming Mouse Rechargeable,10
+591,HP Gaming Mouse Fast,10
+592,Dell RGB Mouse Ergonomic,10
+593,Dell Gaming Mouse Premium,10
+594,Razer Bluetooth Mouse Ergonomic,10
+595,Dell RGB Mouse Fast,10
+596,Dell Bluetooth Mouse Rechargeable,10
+597,Dell Bluetooth Mouse Fast,10
+598,Razer RGB Mouse Fast,10
+599,Razer Gaming Mouse Fast,10
+600,Razer Gaming Mouse Ergonomic,10
+601,Logitech Bluetooth Mouse Ergonomic,10

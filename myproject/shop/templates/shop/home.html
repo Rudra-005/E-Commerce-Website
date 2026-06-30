@@ -10,7 +10,7 @@
 <title>Velora</title>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap');
+
 
 :root {
     --bg-color: #fcf8f2;
@@ -25,7 +25,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Comic Neue', cursive;
+    
 }
 
 body {
@@ -73,7 +73,7 @@ body {
 }
 
 .comic-logo-text {
-    font-family: 'Bangers', cursive;
+    
     font-size: 36px;
     line-height: 0.9;
     text-transform: uppercase;
@@ -97,7 +97,7 @@ body {
 }
 
 .comic-nav-links a {
-    font-family: 'Bangers', cursive;
+    
     font-size: 24px;
     color: #000;
     text-decoration: none;
@@ -122,7 +122,7 @@ body {
     border: none;
     outline: none;
     font-size: 20px;
-    font-family: 'Comic Neue', cursive;
+    
     font-weight: bold;
     padding: 0 10px;
 }
@@ -130,7 +130,7 @@ body {
 .comic-search button {
     background: var(--primary-yellow);
     border: 4px solid #000;
-    font-family: 'Bangers', cursive;
+    
     font-size: 24px;
     padding: 5px 15px;
     cursor: pointer;
@@ -145,7 +145,7 @@ body {
     background: #fff;
     border: 6px solid #000;
     padding: 15px 25px;
-    font-family: 'Bangers', cursive;
+    
     font-size: 24px;
     color: #000;
     text-decoration: none;
@@ -159,7 +159,7 @@ body {
     background: var(--primary-yellow);
     border: 6px solid #000;
     padding: 15px 25px;
-    font-family: 'Bangers', cursive;
+    
     font-size: 24px;
     color: #000;
     text-decoration: none;
@@ -190,7 +190,7 @@ body {
     position: absolute;
     top: 70px;
     right: 0;
-    width: 250px;
+    width: 280px;
     background: #fff !important;
     border: 6px solid var(--border-color);
     box-shadow: 8px 8px 0px #000;
@@ -204,8 +204,16 @@ body {
     background: var(--primary-yellow);
     border-bottom: 4px solid var(--border-color);
 }
-.profile-name { font-family: 'Bangers', cursive; font-size: 22px; color: #000; }
-.profile-email { font-weight: 700; font-size: 14px; color: #333; }
+.profile-name {  font-size: 22px; color: #000; }
+.profile-email { 
+    font-weight: 700; 
+    font-size: 14px; 
+    color: #333; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+    max-width: 180px;
+}
 .profile-link {
     display: block !important;
     padding: 14px 18px !important;
@@ -214,7 +222,7 @@ body {
     border-bottom: 4px solid var(--border-color) !important;
     font-weight: 700;
     font-size: 18px;
-    font-family: 'Comic Neue', cursive;
+    
 }
 .profile-link:hover { background: var(--primary-yellow) !important; }
 .logout-btn { border: none; cursor: pointer; width: 100%; text-align: left; background: #fff; }
@@ -274,13 +282,13 @@ body {
 }
 
 .comic-title-bubble h1 {
-    font-family: 'Bangers', cursive;
+    
     font-size: 75px;
     color: #000;
     line-height: 1;
     text-transform: uppercase;
-    text-shadow: 3px 3px 0px #fff, -3px -3px 0px #fff, 3px -3px 0px #fff, -3px 3px 0px #fff, 6px 6px 0px var(--primary-blue);
-    -webkit-text-stroke: 2px #000;
+    
+    
     letter-spacing: 2px;
 }
 
@@ -300,7 +308,7 @@ body {
     font-weight: 700;
     line-height: 1.5;
     color: #000;
-    font-family: 'Comic Neue', cursive;
+    
 }
 
 @media(max-width: 900px) {
@@ -321,12 +329,12 @@ body {
 
 .category-title {
     text-align: center;
-    font-family: 'Bangers', cursive;
+    
     font-size: 60px;
     color: #fff;
     margin-bottom: 50px;
     letter-spacing: 3px;
-    text-shadow: 4px 4px 0px var(--border-color);
+    
     text-transform: uppercase;
 }
 
@@ -370,7 +378,7 @@ body {
 }
 
 .category-card span:not(.cat-icon) {
-    font-family: 'Bangers', cursive;
+    
     font-size: 26px;
     color: #000;
     letter-spacing: 1px;
@@ -385,12 +393,12 @@ body {
 
 .featured-products .section-title {
     text-align: center;
-    font-family: 'Bangers', cursive;
+    
     font-size: 65px;
     color: #000;
     margin-bottom: 50px;
     letter-spacing: 3px;
-    text-shadow: 4px 4px 0px var(--primary-yellow);
+    
     text-transform: uppercase;
 }
 
@@ -442,7 +450,7 @@ body {
 }
 
 .product-card h3 {
-    font-family: 'Bangers', cursive;
+    
     font-size: 26px;
     color: #000;
     margin-bottom: 10px;
@@ -460,11 +468,11 @@ body {
 }
 
 .product-card p {
-    font-family: 'Bangers', cursive;
+    
     color: var(--primary-red);
     font-size: 32px;
     margin-bottom: 20px;
-    text-shadow: 1px 1px 0px #000;
+    
 }
 
 .product-buttons {
@@ -476,7 +484,7 @@ body {
 .cart-btn, .view-btn {
     flex: 1;
     text-align: center;
-    font-family: 'Bangers', cursive;
+    
     font-size: 20px;
     padding: 10px;
     border: 3px solid var(--border-color);
@@ -513,11 +521,11 @@ body {
     display: inline-block;
     white-space: nowrap;
     padding: 15px 0;
-    font-family: 'Bangers', cursive;
+    
     font-size: 24px;
     color: #fff;
     letter-spacing: 2px;
-    text-shadow: 2px 2px 0px #000;
+    
     animation: scrollOffer 15s linear infinite;
 }
 
@@ -570,7 +578,7 @@ body {
 }
 
 .search-info h2 {
-    font-family: 'Bangers', cursive;
+    
     font-size: 38px;
     color: #000;
     margin-bottom: 10px;
@@ -578,11 +586,11 @@ body {
 }
 
 .search-price {
-    font-family: 'Bangers', cursive;
+    
     color: var(--primary-red);
     font-size: 42px;
     margin-bottom: 15px;
-    text-shadow: 2px 2px 0px #000;
+    
 }
 
 .search-info p {
@@ -619,7 +627,7 @@ body {
     border: 3px solid var(--border-color);
     box-shadow: 4px 4px 0px var(--border-color);
     text-decoration: none;
-    font-family: 'Bangers', cursive;
+    
     font-size: 20px;
     transition: all 0.1s ease;
 }
@@ -647,15 +655,15 @@ footer {
 }
 
 footer h2 {
-    font-family: 'Bangers', cursive;
+    
     font-size: 60px;
     letter-spacing: 3px;
-    text-shadow: 3px 3px 0px #000;
+    
     margin-bottom: 15px;
 }
 
 footer p {
-    font-family: 'Bangers', cursive;
+    
     font-size: 24px;
     letter-spacing: 1px;
 }
@@ -685,10 +693,10 @@ footer p {
     flex-direction: column;
 }
 .explore-title-box h2 {
-    font-family: 'Bangers', cursive;
+    
     font-size: 60px;
     color: #fff;
-    text-shadow: 3px 3px 0px #000;
+    
     background: var(--bg-color);
     color: #000;
     padding: 10px 20px;
@@ -751,14 +759,14 @@ footer p {
     box-shadow: 4px 4px 0px var(--border-color);
 }
 .explore-number {
-    font-family: 'Bangers', cursive;
+    
     font-size: 80px;
     color: #fff;
-    text-shadow: 3px 3px 0px #000;
-    -webkit-text-stroke: 2px #000;
+    
+    
 }
 .explore-link-box h3 {
-    font-family: 'Bangers', cursive;
+    
     font-size: 35px;
     color: #000;
 }
@@ -768,11 +776,11 @@ footer p {
     background: var(--bg-color);
 }
 .visit-title {
-    font-family: 'Bangers', cursive;
+    
     font-size: 60px;
     color: #000;
     margin-bottom: 30px;
-    text-shadow: 3px 3px 0px var(--primary-yellow);
+    
 }
 .visit-grid {
     display: grid;
@@ -788,7 +796,7 @@ footer p {
     background-size: 10px 10px;
 }
 .visit-box h3 {
-    font-family: 'Bangers', cursive;
+    
     font-size: 30px;
     margin-bottom: 15px;
 }
@@ -814,7 +822,7 @@ footer p {
     background: #fff;
     border: 3px solid #000;
     padding: 10px 20px;
-    font-family: 'Bangers', cursive;
+    
     font-size: 24px;
     box-shadow: 4px 4px 0px #000;
     text-align: center;
@@ -830,11 +838,11 @@ footer p {
 }
 
 .battlestation-title {
-    font-family: 'Bangers', cursive;
+    
     font-size: 50px;
     margin-bottom: 30px;
     letter-spacing: 3px;
-    text-shadow: 3px 3px 0px #000;
+    
     transform: rotate(-1deg);
     display: inline-block;
     background: #fff;
@@ -933,11 +941,11 @@ footer p {
 }
 
 .screen-logo {
-    font-family: 'Bangers', cursive;
+    
     font-size: 24px;
     color: #fff;
     letter-spacing: 2px;
-    text-shadow: 2px 2px 0px #000;
+    
     z-index: 10;
     opacity: 0.8;
 }
@@ -1158,7 +1166,7 @@ footer p {
     background: #fff;
     border: 5px solid #000;
     padding: 15px 10px;
-    font-family: 'Bangers', cursive;
+    
     font-size: 18px;
     cursor: pointer;
     box-shadow: 4px 4px 0px #000;
@@ -1197,7 +1205,7 @@ footer p {
 }
 
 .setup-desc-speech {
-    font-family: 'Comic Neue', cursive;
+    
     font-weight: 700;
     font-size: 17px;
     line-height: 1.5;
@@ -1237,7 +1245,7 @@ footer p {
 }
 
 .gear-list li {
-    font-family: 'Comic Neue', cursive;
+    
     font-weight: bold;
     font-size: 16px;
     margin-bottom: 12px;
@@ -1275,10 +1283,10 @@ footer p {
 }
 
 .setup-total-price strong {
-    font-family: 'Bangers', cursive;
+    
     font-size: 36px;
     color: #000;
-    text-shadow: 2px 2px 0px var(--primary-yellow);
+    
 }
 
 .stash-loot-btn {
@@ -1286,12 +1294,12 @@ footer p {
     color: #fff;
     border: 5px solid #000;
     padding: 15px 25px;
-    font-family: 'Bangers', cursive;
+    
     font-size: 22px;
     cursor: pointer;
     box-shadow: 5px 5px 0px #000;
     transition: all 0.2s ease;
-    text-shadow: 2px 2px 0px #000;
+    
 }
 
 .stash-loot-btn:hover {
@@ -1299,7 +1307,7 @@ footer p {
     color: #000;
     transform: translateY(-3px);
     box-shadow: 8px 8px 0px #000;
-    text-shadow: none;
+    
 }
 
 .stash-loot-btn:active {
@@ -1412,11 +1420,11 @@ footer p {
 #load-more-trigger { height: 20px; }
 .loading {
     text-align: center;
-    font-family: 'Bangers', cursive;
+    
     font-size: 30px;
     padding: 40px;
     color: var(--primary-red);
-    text-shadow: 2px 2px 0px #000;
+    
     display: none;
 }
 .hidden { display: none !important; }
@@ -1463,10 +1471,10 @@ footer p {
 
 .comic-burst-text {
     position: relative;
-    font-family: 'Bangers', cursive;
+    
     font-size: 32px;
     color: #fff;
-    text-shadow: 3px 3px 0px #000;
+    
     transform: rotate(-10deg);
     z-index: 10;
     white-space: nowrap;
@@ -1476,10 +1484,102 @@ footer p {
 .scroll-follower {
     filter: drop-shadow(3px 3px 0px #000);
 }
-</style>
+
+    /* SEARCH AUTOCOMPLETE */
+    .comic-search { position: relative; }
+    .search-suggestions {
+        position: absolute;
+        top: calc(100% + 5px);
+        left: 0;
+        width: 100%;
+        background: #fff;
+        border: 4px solid #000;
+        box-shadow: 6px 6px 0px #000;
+        z-index: 10001;
+        display: none;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .suggestion-item {
+        padding: 10px 15px;
+        border-bottom: 3px solid #000;
+        
+        font-size: 18px;
+        color: #000;
+        cursor: pointer;
+        display: block;
+        transition: all 0.2s ease;
+    }
+    .suggestion-item:last-child {
+        border-bottom: none;
+    }
+    .suggestion-item:hover {
+        background: var(--primary-yellow);
+        padding-left: 20px;
+    }
+    .suggestion-price {
+        
+        color: var(--primary-red);
+        font-size: 20px;
+    }
+    
+    /* MOBILE NAVBAR FIX */
+    @media (max-width: 950px) {
+        .comic-navbar {
+            justify-content: center;
+            padding: 15px 10px;
+            gap: 15px;
+            position: static; /* Let it scroll up on mobile to save space */
+        }
+        .comic-nav-right {
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+        .comic-search {
+            width: 100%;
+            margin: 0;
+        }
+        .comic-search form {
+            width: 100%;
+        }
+        .comic-search input {
+            width: 100%;
+            font-size: 16px;
+        }
+        .comic-nav-links {
+            width: 100%;
+            padding: 10px;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .comic-nav-links a {
+            font-size: 18px;
+        }
+        .user-profile {
+            flex: 1;
+            display: flex;
+        }
+        .comic-login-btn {
+            width: 100%;
+            justify-content: center;
+            padding: 12px;
+            font-size: 20px;
+        }
+        .comic-cart-btn {
+            flex: 1;
+            justify-content: center;
+            padding: 12px;
+            font-size: 20px;
+        }
+    }
+\n</style>
 
 
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'shop/css/recommendations.css' %}">
+    <link rel="stylesheet" href="{% static 'shop/css/global.css' %}">
 </head>
 
 <body>
@@ -1496,9 +1596,10 @@ footer p {
         
         <div class="comic-search">
             <form method="GET" action="{% url 'products_list' %}" style="display: flex;">
-                <input type="text" name="search" placeholder="Search gear..." value="{{ search }}">
+                <input type="text" name="search" placeholder="Search gear..." value="{{ search }}" id="searchInput" autocomplete="off">
                 <button type="submit">GO</button>
             </form>
+            <div id="suggestions" class="search-suggestions"></div>
         </div>
 
         <div class="comic-nav-links">
@@ -1509,13 +1610,25 @@ footer p {
 
         {% if user.is_authenticated %}
         <div class="user-profile">
-            <button class="comic-login-btn" onclick="toggleProfile()">
-                👤 {{ user.first_name|default:user.username }}
+            <button class="comic-login-btn" onclick="toggleProfile()" style="display: flex; align-items: center; gap: 8px;">
+                {% if user_avatar_url %}
+                <img src="{{ user_avatar_url }}" alt="avatar" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid #000; object-fit: cover;">
+                {% else %}
+                <span style="font-size: 24px; line-height: 1;">{{ user_avatar_emoji }}</span>
+                {% endif %}
+                {{ user.first_name|default:user.username }}
             </button>
             <div id="profileDropdown" class="profile-dropdown">
-                <div class="profile-header">
-                    <div class="profile-name">Hello, {{ user.first_name|default:user.username }}</div>
-                    <div class="profile-email">{{ user.email }}</div>
+                <div class="profile-header" style="display: flex; align-items: center; gap: 12px;">
+                    {% if user_avatar_url %}
+                    <img src="{{ user_avatar_url }}" alt="avatar" style="width: 45px; height: 45px; border-radius: 50%; border: 3px solid #000; object-fit: cover;">
+                    {% else %}
+                    <span style="font-size: 36px; line-height: 1;">{{ user_avatar_emoji }}</span>
+                    {% endif %}
+                    <div>
+                        <div class="profile-name">Hello, {{ user.first_name|default:user.username }}</div>
+                        <div class="profile-email">{{ user.email }}</div>
+                    </div>
                 </div>
 
                 <a href="{% url 'profile' %}" class="profile-link">
@@ -1530,8 +1643,12 @@ footer p {
                     ❤️ My Wishlist
                 </a>
 
-                <a href="#" class="profile-link">
+                <a href="{% url 'orders' %}" class="profile-link">
                     📦 Orders
+                </a>
+
+                <a href="{% url 'addresses' %}" class="profile-link">
+                    📍 My Addresses
                 </a>
 
                 <form action="{% url 'logout' %}" method="post">
@@ -1574,15 +1691,17 @@ footer p {
         💳 Instant Cashback |
         🎁 Buy 1 Get 1 Free |
         ⚡ Limited Time Offer
-    </div>
 </div>
+
+
 {% endif %}
+
 
 {% if search or category %}
 
 <section class="search-results" data-aos="fade-up">
     {% if semantic_search_used %}
-    <div style="margin: -20px auto 30px auto; max-width: 1400px; background: #ef476f; border: 4px solid #000; box-shadow: 4px 4px 0px #000; padding: 15px; display: flex; align-items: center; gap: 10px; font-family: 'Bangers', cursive; font-size: 20px; color: #fff; letter-spacing: 1px; transform: rotate(-0.5deg);">
+    <div style="margin: -20px auto 30px auto; max-width: 1400px; background: #ef476f; border: 4px solid #000; box-shadow: 4px 4px 0px #000; padding: 15px; display: flex; align-items: center; gap: 10px;  font-size: 20px; color: #fff; letter-spacing: 1px; transform: rotate(-0.5deg);">
         <span>🔍</span>
         <span>Showing smart search results matching your description</span>
     </div>
@@ -1618,9 +1737,15 @@ footer p {
 
                 <div class="search-buttons">
 
+                    {% if product.stock > 0 %}
                     <a href="{% url 'add_to_cart' product.id %}" class="cart-btn">
                         Add To Cart
                     </a>
+                    {% else %}
+                    <span class="cart-btn" style="background: var(--primary-red); color: #fff; cursor: not-allowed; opacity: 0.9; pointer-events: none;">
+                        ❌ Out of Stock
+                    </span>
+                    {% endif %}
 
                     <a href="{% url 'product_detail' product.id %}" class="view-btn">
                         View Product
@@ -1716,6 +1841,15 @@ footer p {
     </div>
 </section>
 
+<!-- RECOMMENDED FOR YOU SECTION -->
+<div id="rec-general-container"></div>
+<script src="{% static 'shop/js/recommendations.js' %}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        loadRecommendations('general', 'rec-general-container', '✨ RECOMMENDED FOR YOU ✨');
+    });
+</script>
+
 <!-- CATEGORY SECTION -->
 
 <section class="categories-section" data-aos="fade-up" id="categories">
@@ -1791,9 +1925,15 @@ footer p {
 
                     <div class="product-buttons">
 
+                        {% if product.stock > 0 %}
                         <a href="{% url 'add_to_cart' product.id %}" class="cart-btn">
                             Add To Cart
                         </a>
+                        {% else %}
+                        <span class="cart-btn" style="background: var(--primary-red); color: #fff; cursor: not-allowed; opacity: 0.9; pointer-events: none; font-size: 16px;">
+                            ❌ Out of Stock
+                        </span>
+                        {% endif %}
 
                         <a href="{% url 'product_detail' product.id %}" class="view-btn">
                             View Product
@@ -1839,9 +1979,15 @@ footer p {
 
                     <div class="product-buttons">
 
+                        {% if product.stock > 0 %}
                         <a href="{% url 'add_to_cart' product.id %}" class="cart-btn">
                             Add To Cart
                         </a>
+                        {% else %}
+                        <span class="cart-btn" style="background: var(--primary-red); color: #fff; cursor: not-allowed; opacity: 0.9; pointer-events: none; font-size: 16px;">
+                            ❌ Out of Stock
+                        </span>
+                        {% endif %}
 
                         <a href="{% url 'product_detail' product.id %}" class="view-btn">
                             View Product
@@ -1922,13 +2068,13 @@ footer p {
             <div class="map-marker" style="pointer-events:none; white-space:nowrap; z-index:10;">📍 Velora Delhi (Get Directions)</div>
         </a>
         <div class="visit-box directions-finder-box" data-aos="zoom-in" data-aos-delay="500" style="grid-column: span 3; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 30px; background: var(--primary-yellow); position: relative; border: 4px solid #000; box-shadow: 8px 8px 0px #000; margin-top: 10px;">
-            <h3 style="font-family: 'Bangers', cursive; font-size: 32px; margin: 0 0 15px 0; text-shadow: 2px 2px 0px #fff; letter-spacing: 1px;">GET ROUTE TO THE STORE ⚡</h3>
+            <h3 style=" font-size: 32px; margin: 0 0 15px 0;  letter-spacing: 1px;">GET ROUTE TO THE STORE ⚡</h3>
             <div class="directions-input-group" style="display: flex; gap: 15px; width: 100%; max-width: 650px; flex-wrap: wrap; justify-content: center; align-items: center;">
                 <div class="input-container" style="position: relative; flex: 1; min-width: 250px; display: flex; align-items: center;">
-                    <input type="text" id="route-start" placeholder="Enter starting city/location (e.g. Noida, Delhi Airport)..." style="width: 100%; padding: 12px 50px 12px 20px; border: 4px solid #000; box-shadow: 4px 4px 0px #000; font-family: 'Comic Neue', sans-serif; font-weight: bold; font-size: 16px; border-radius: 0; outline: none; background: #fff;">
+                    <input type="text" id="route-start" placeholder="Enter starting city/location (e.g. Noida, Delhi Airport)..." style="width: 100%; padding: 12px 50px 12px 20px; border: 4px solid #000; box-shadow: 4px 4px 0px #000;  font-weight: bold; font-size: 16px; border-radius: 0; outline: none; background: #fff;">
                     <button onclick="getUserGpsLocation()" title="Use Current GPS Location" style="position: absolute; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; padding: 5px; z-index: 5; line-height: 1; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">📍</button>
                 </div>
-                <button onclick="openDirectionsRoute()" style="background: var(--primary-red); color: #fff; border: 4px solid #000; padding: 12px 25px; font-family: 'Bangers', cursive; font-size: 20px; box-shadow: 4px 4px 0px #000; cursor: pointer; transition: all 0.2s ease; text-shadow: 2px 2px 0px #000;" onmouseover="this.style.background='var(--primary-yellow)'; this.style.color='#000'; this.style.textShadow='none'; this.style.transform='translateY(-2px)'; this.style.boxShadow='6px 6px 0px #000';" onmouseout="this.style.background='var(--primary-red)'; this.style.color='#fff'; this.style.textShadow='2px 2px 0px #000'; this.style.transform='translateY(0)'; this.style.boxShadow='4px 4px 0px #000';">
+                <button onclick="openDirectionsRoute()" style="background: var(--primary-red); color: #fff; border: 4px solid #000; padding: 12px 25px;  font-size: 20px; box-shadow: 4px 4px 0px #000; cursor: pointer; transition: all 0.2s ease; " onmouseover="this.style.background='var(--primary-yellow)'; this.style.color='#000'; this.style.textShadow='none'; this.style.transform='translateY(-2px)'; this.style.boxShadow='6px 6px 0px #000';" onmouseout="this.style.background='var(--primary-red)'; this.style.color='#fff'; this.style.textShadow='2px 2px 0px #000'; this.style.transform='translateY(0)'; this.style.boxShadow='4px 4px 0px #000';">
                     LAUNCH ROUTE ⚡
                 </button>
             </div>
@@ -2031,14 +2177,7 @@ footer p {
 
 {% endblock %}
 
-<footer data-aos="fade-up">
 
-
-    <h2>Velora</h2>
-
-    <p>Powered by Django & PostgreSQL</p>
-
-</footer>
 
 <script>
 
@@ -2754,6 +2893,54 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 </script>
 {% include "chatbot/widget.html" %}
-</body>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const searchInput = document.getElementById("searchInput");
+    const suggestions = document.getElementById("suggestions");
+    let debounceTimer;
+
+    if(searchInput && suggestions){
+        searchInput.addEventListener("input", function(){
+            clearTimeout(debounceTimer);
+            const query = this.value.trim();
+
+            if(query.length === 0){
+                suggestions.style.display = "none";
+                return;
+            }
+
+            debounceTimer = setTimeout(()=>{
+                fetch(`/search-suggestions/?term=${encodeURIComponent(query)}`)
+                .then(res=>res.json())
+                .then(data=>{
+                    let html = "";
+                    if(data.length === 0){
+                        html = '<div class="suggestion-item">No products found</div>';
+                    } else {
+                        data.forEach(product=>{
+                            html += `
+                            <div class="suggestion-item" onclick="window.location='/product/${product.id}/'">
+                                <strong>${product.name}</strong><br>
+                                <span class="suggestion-price">₹${product.price}</span>
+                            </div>`;
+                        });
+                    }
+                    suggestions.innerHTML = html;
+                    suggestions.style.display = "block";
+                })
+                .catch(err => console.error(err));
+            }, 300);
+        });
+
+        document.addEventListener("click", function(e){
+            if(!searchInput.contains(e.target) && !suggestions.contains(e.target)){
+                suggestions.style.display = "none";
+            }
+        });
+    }
+});
+</script>
+\n</body>
 
 </html>

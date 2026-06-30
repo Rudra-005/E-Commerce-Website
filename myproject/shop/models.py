@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+
 class Category(models.Model):
 
     name = models.CharField(
@@ -49,6 +50,8 @@ class Product(models.Model):
     stock = models.IntegerField(
         default=0
     )
+
+
 
     @property
     def average_rating(self):
@@ -171,6 +174,16 @@ class Wishlist(models.Model):
 
 class UserProfile(models.Model):
 
+    AVATAR_CHOICES = [
+        ('ninja', '🥷'),
+        ('alien', '👽'),
+        ('robot', '🤖'),
+        ('ghost', '👻'),
+        ('wizard', '🧙'),
+        ('astronaut', '🧑‍🚀'),
+        ('cat', '😺'),
+    ]
+
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE
@@ -187,10 +200,23 @@ class UserProfile(models.Model):
         null=True
     )
 
+    avatar = models.CharField(
+        max_length=20,
+        choices=AVATAR_CHOICES,
+        default='ninja',
+        blank=True
+    )
+
     date_of_birth = models.DateField(
         blank=True,
         null=True
     )
+
+    @property
+    def display_avatar(self):
+        """Returns the emoji for the selected avatar."""
+        avatar_map = dict(self.AVATAR_CHOICES)
+        return avatar_map.get(self.avatar, '🥷')
 
     def __str__(self):
         return self.user.username
@@ -287,6 +313,18 @@ class Order(models.Model):
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=50, default="Pending")
+    
+    # Razorpay Payment Fields
+    razorpay_order_id = models.CharField(max_length=100, blank=True, null=True)
+    razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
+    razorpay_signature = models.CharField(max_length=200, blank=True, null=True)
+
+    @property
+    def get_refund(self):
+        try:
+            return self.refund_request
+        except Exception:
+            return None
 
     def __str__(self):
         return f"Order #{self.id} - {self.user.username}"
@@ -305,5 +343,117 @@ class OrderItem(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
+    @property
+    def subtotal(self):
+        return self.price * self.quantity
+
     def __str__(self):
         return f"{self.product.name} x {self.quantity}"
+
+
+class UserInteraction(models.Model):
+    INTERACTION_CHOICES = (
+        ('view', 'View'),
+        ('wishlist', 'Wishlist'),
+        ('cart', 'Cart'),
+        ('purchase', 'Purchase'),
+        ('review', 'Review'),
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="interactions"
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="interactions"
+    )
+    interaction_type = models.CharField(
+        max_length=20,
+        choices=INTERACTION_CHOICES
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.interaction_type} - {self.product.name}"
+
+
+class StockNotification(models.Model):
+    """Track users who want to be notified when a product is back in stock."""
+    email = models.EmailField()
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="stock_notifications"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    notified = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('email', 'product')
+
+    def __str__(self):
+        return f"{self.email} → {self.product.name}"
+
+
+class RefundRequest(models.Model):
+    REFUND_STATUS_CHOICES = (
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+    )
+
+    order = models.OneToOneField(
+        Order,
+        on_delete=models.CASCADE,
+        related_name="refund_request"
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="refund_requests"
+    )
+    reason = models.TextField()
+    status = models.CharField(
+        max_length=20,
+        choices=REFUND_STATUS_CHOICES,
+        default='Pending'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def get_transaction(self):
+        try:
+            return self.transaction
+        except Exception:
+            return None
+
+    def __str__(self):
+        return f"Refund #{self.id} for Order #{self.order.id} - {self.status}"
+
+
+class RefundTransaction(models.Model):
+    TRANSACTION_STATUS_CHOICES = (
+        ('Processing', 'Processing'),
+        ('Success', 'Success'),
+        ('Failed', 'Failed'),
+    )
+
+    refund_request = models.OneToOneField(
+        RefundRequest,
+        on_delete=models.CASCADE,
+        related_name="transaction"
+    )
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    transaction_id = models.CharField(max_length=100, blank=True, null=True)
+    status = models.CharField(
+        max_length=20,
+        choices=TRANSACTION_STATUS_CHOICES,
+        default='Processing'
+    )
+    processed_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Transaction for Refund #{self.refund_request.id} - {self.status}"

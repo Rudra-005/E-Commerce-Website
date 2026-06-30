@@ -19,7 +19,7 @@ from django.contrib.postgres.search import TrigramSimilarity
 
 from datetime import timedelta
 
-from .models import Product, Category, Review, Cart, EmailOTP, Wishlist, UserProfile, Address
+from .models import Product, Category, Review, Cart, EmailOTP, Wishlist, UserProfile, Address, UserInteraction, Order
 from .decorators import jwt_login_required
 from .auth_helpers import generate_tokens
 
@@ -46,18 +46,39 @@ def get_fuzzy_search_results(query_str, queryset, limit=None):
     matched_products = []
     is_semantic = False
 
-    # 2. If it's not a clear natural language description, try fuzzy matching first
+    # 2. Exact/Contains Match FIRST (Crucial for short queries like "s" or "shoes")
     if not is_natural_language:
+        direct_matches = queryset.filter(
+            Q(name__icontains=query_str) | 
+            Q(category_fk__name__icontains=query_str) | 
+            Q(category__icontains=query_str)
+        ).distinct()
+        
+        if direct_matches.exists():
+            matched_products = list(direct_matches)
+
+    # If the query is just 1 or 2 letters (e.g. "s"), STOP here. Trigram and Semantic search will return garbage.
+    if len(query_str) < 3:
+        if limit:
+            return matched_products[:limit]
+        return matched_products
+
+    # 3. If exact match didn't find enough, try fuzzy matching (Trigram)
+    if not is_natural_language and len(matched_products) < 3:
         try:
             fuzzy_qs = queryset.annotate(
                 similarity=TrigramSimilarity('name', query_str) + TrigramSimilarity('category', query_str)
-            ).filter(similarity__gt=0.1).order_by('-similarity', '-id')
-            matched_products = list(fuzzy_qs)
+            ).filter(similarity__gt=0.3).order_by('-similarity', '-id')
+            
+            existing_ids = {p.id for p in matched_products}
+            for p in fuzzy_qs:
+                if p.id not in existing_ids:
+                    matched_products.append(p)
         except Exception as e:
             logger.error(f"Fuzzy search failed: {e}")
 
-    # 3. If fuzzy search returned few results, or it's a natural language query, run semantic search
-    if len(matched_products) < 3:
+    # 4. If fuzzy search still returned NO results, or it's a natural language query, run semantic search
+    if len(matched_products) == 0 or is_natural_language:
         try:
             from chatbot.services.vector_search import search_products
             top_k = limit if limit else 30
@@ -71,9 +92,15 @@ def get_fuzzy_search_results(query_str, queryset, limit=None):
                 preserved_order = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(product_ids)])
 
                 semantic_qs = queryset.filter(id__in=product_ids).order_by(preserved_order)
-                matched_products = list(semantic_qs)
+                
+                # Append semantic results without overwriting exact/fuzzy matches!
+                existing_ids = {p.id for p in matched_products}
+                for p in semantic_qs:
+                    if p.id not in existing_ids:
+                        matched_products.append(p)
+                        
                 is_semantic = True
-                logger.info(f"Triggered semantic search for query: '{query_str}', found {len(matched_products)} products.")
+                logger.info(f"Triggered semantic search for query: '{query_str}', found total {len(matched_products)} products.")
         except Exception as sem_err:
             logger.error(f"Semantic search failed fallback: {sem_err}", exc_info=True)
 
@@ -152,6 +179,15 @@ def _get_wishlist_ids(user):
     if user.is_authenticated:
         return list(Wishlist.objects.filter(user=user).values_list('product_id', flat=True))
     return []
+
+def track_interaction(user, product, interaction_type):
+    """Stores a UserInteraction record if the user is authenticated."""
+    if user.is_authenticated:
+        UserInteraction.objects.create(
+            user=user, 
+            product=product, 
+            interaction_type=interaction_type
+        )
 
 
 # =====================================
@@ -243,8 +279,22 @@ class ProductListView(View):
 
         # Collection Filter
         if collection_name:
-            products_queryset = products_queryset.filter(collections__name=collection_name).distinct()
-            title = collection_name.replace("-", " ").title()
+            if collection_name == "new-arrivals":
+                products_queryset = products_queryset.order_by('-id')
+                title = "New Arrivals"
+            elif collection_name == "best-sellers":
+                from django.db.models import Count, Avg
+                products_queryset = products_queryset.annotate(
+                    review_count=Count('reviews'),
+                    avg_rating=Avg('reviews__rating')
+                ).filter(review_count__gt=0).order_by('-avg_rating', '-review_count')
+                title = "Best Sellers"
+            elif collection_name == "collectors-editions":
+                products_queryset = products_queryset.filter(price__gte=10000).order_by('-price')
+                title = "Collector's Editions"
+            else:
+                products_queryset = products_queryset.filter(collections__name=collection_name).distinct()
+                title = collection_name.replace("-", " ").title()
 
         # Category Filter
         if category_id:
@@ -301,18 +351,17 @@ class ProductListView(View):
 class ProductDetailView(View):
     def get(self, request, product_id):
         product = get_object_or_404(Product, id=product_id)
+        
+        track_interaction(request.user, product, 'view')
 
         reviews_list = product.reviews.all().order_by("-id")
         paginator = Paginator(reviews_list, 5)
         page_number = request.GET.get("page")
         reviews = paginator.get_page(page_number)
 
-        related_products = Product.objects.exclude(id=product.id).order_by("?")[:8]
-
         return render(request, "shop/product_detail.html", {
             "product": product,
             "reviews": reviews,
-            "related_products": related_products,
             "wishlist_product_ids": _get_wishlist_ids(request.user),
         })
 
@@ -327,6 +376,8 @@ class ProductDetailView(View):
             title=request.POST.get("title", ""),
             review_text=request.POST.get("review_text"),
         )
+        
+        track_interaction(request.user, product, 'review')
 
         return redirect("product_detail", product_id=product.id)
 
@@ -364,6 +415,12 @@ class SearchSuggestionsView(View):
 class AddToCartView(View):
     def get(self, request, product_id):
         product = get_object_or_404(Product, id=product_id)
+
+        # Block out-of-stock products
+        if product.stock <= 0:
+            messages.error(request, f"{product.name} is currently out of stock!")
+            return redirect("product_detail", product_id=product.id)
+
         cart_item, created = Cart.objects.get_or_create(
             user=request.user,
             product=product,
@@ -371,6 +428,9 @@ class AddToCartView(View):
         if not created:
             cart_item.quantity += 1
             cart_item.save()
+            
+        track_interaction(request.user, product, 'cart')
+        
         return redirect("cart")
 
 
@@ -534,11 +594,15 @@ class CheckoutView(View):
 
         total = sum(item.product.price * item.quantity for item in cart_items)
         saved_addresses = Address.objects.filter(user_profile__user=request.user)
+        default_address = saved_addresses.filter(is_default=True).first()
+        if not default_address:
+            default_address = saved_addresses.first()
 
         return render(request, "shop/checkout.html", {
             "cart_items": cart_items,
             "total": total,
             "saved_addresses": saved_addresses,
+            "default_address": default_address,
         })
 
     def post(self, request):
@@ -603,12 +667,26 @@ class CheckoutView(View):
                     pincode=pincode,
                 )
 
+            # Generate Razorpay Order
+            import razorpay
+            from django.conf import settings
+            
+            client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+            amount_in_paise = int(total * 100)
+            
+            razorpay_order = client.order.create({
+                "amount": amount_in_paise,
+                "currency": "INR",
+                "payment_capture": "1"
+            })
+
             # 2. Create the Order
             order = Order.objects.create(
                 user=request.user,
                 shipping_address=shipping_address,
                 total_price=total,
                 status="Pending",
+                razorpay_order_id=razorpay_order['id']
             )
 
             # 3. Create OrderItems from Cart
@@ -619,20 +697,156 @@ class CheckoutView(View):
                     quantity=item.quantity,
                     price=item.product.price,
                 )
+                track_interaction(request.user, item.product, 'purchase')
 
             # 4. Clear the cart
             cart_items.delete()
 
             return JsonResponse({
                 "status": "success",
-                "message": "Order placed successfully!",
+                "message": "Order created, proceed to payment.",
                 "order_id": order.id,
+                "razorpay_order_id": razorpay_order['id'],
+                "amount": amount_in_paise,
+                "currency": "INR",
+                "key_id": settings.RAZORPAY_KEY_ID
             })
 
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid request payload."}, status=400)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
+
+
+# =====================================
+# VERIFY PAYMENT
+# =====================================
+
+@method_decorator(jwt_login_required, name="dispatch")
+class VerifyPaymentView(View):
+    def post(self, request):
+        from .models import Order
+        import razorpay
+        from django.conf import settings
+        
+        try:
+            data = json.loads(request.body)
+            razorpay_payment_id = data.get("razorpay_payment_id")
+            razorpay_order_id = data.get("razorpay_order_id")
+            razorpay_signature = data.get("razorpay_signature")
+            order_id = data.get("order_id")
+
+            client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+            # Verify the signature
+            params_dict = {
+                'razorpay_order_id': razorpay_order_id,
+                'razorpay_payment_id': razorpay_payment_id,
+                'razorpay_signature': razorpay_signature
+            }
+            client.utility.verify_payment_signature(params_dict)
+
+            # Mark order as confirmed
+            order = get_object_or_404(Order, id=order_id, user=request.user)
+            order.status = "Confirmed"
+            order.razorpay_payment_id = razorpay_payment_id
+            order.razorpay_signature = razorpay_signature
+            order.save()
+
+            return JsonResponse({"status": "success", "message": "Payment verified successfully!"})
+
+        except razorpay.errors.SignatureVerificationError:
+            return JsonResponse({"error": "Payment signature verification failed."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+
+# =====================================
+# ORDER CONFIRMATION
+# =====================================
+
+@method_decorator(jwt_login_required, name="dispatch")
+class OrderConfirmationView(View):
+    def get(self, request, order_id):
+        from .models import Order, OrderItem
+
+        order = get_object_or_404(
+            Order,
+            id=order_id,
+            user=request.user
+        )
+        order_items = OrderItem.objects.filter(
+            order=order
+        ).select_related("product")
+
+        return render(request, "shop/order_confirmation.html", {
+            "order": order,
+            "order_items": order_items,
+        })
+
+
+# =====================================
+# ORDERS HISTORY
+# =====================================
+
+@method_decorator(jwt_login_required, name="dispatch")
+class OrdersView(View):
+    def get(self, request):
+        from .models import Order
+        # Fetch orders for the logged-in user, ordered by newest first
+        orders = Order.objects.filter(user=request.user).order_by('-created_at')
+        return render(request, "shop/orders.html", {"orders": orders})
+
+
+# =====================================
+# STOCK NOTIFICATION
+# =====================================
+
+class NotifyStockView(View):
+    def post(self, request, product_id):
+        from .models import StockNotification
+
+        product = get_object_or_404(Product, id=product_id)
+
+        if product.stock > 0:
+            return JsonResponse(
+                {"status": "error", "message": "Product is already in stock!"},
+                status=400
+            )
+
+        email = None
+        try:
+            data = json.loads(request.body)
+            email = data.get("email", "").strip()
+        except (json.JSONDecodeError, AttributeError):
+            email = request.POST.get("email", "").strip()
+
+        if not email:
+            if request.user.is_authenticated and request.user.email:
+                email = request.user.email
+            else:
+                return JsonResponse(
+                    {"status": "error", "message": "Please provide a valid email."},
+                    status=400
+                )
+
+        # Create or get notification subscription
+        _, created = StockNotification.objects.get_or_create(
+            email=email,
+            product=product,
+            defaults={"notified": False}
+        )
+
+        if created:
+            return JsonResponse({
+                "status": "success",
+                "message": f"We'll notify {email} when {product.name} is back in stock!"
+            })
+        else:
+            return JsonResponse({
+                "status": "info",
+                "message": f"{email} is already subscribed for this product."
+            })
 
 
 # =====================================
@@ -719,6 +933,7 @@ class AddToWishlistView(View):
     def get(self, request, product_id):
         product = get_object_or_404(Product, id=product_id)
         Wishlist.objects.get_or_create(user=request.user, product=product)
+        track_interaction(request.user, product, 'wishlist')
         return redirect(request.META.get('HTTP_REFERER', 'home'))
 
 
@@ -747,6 +962,9 @@ class WishlistView(View):
 
 class LogoutView(View):
     def get(self, request):
+        return self.post(request)
+
+    def post(self, request):
         django_logout(request)
 
         response = redirect("home")
@@ -797,10 +1015,22 @@ class GoogleLoginView(View):
 class ProfileView(View):
     def get(self, request):
         profile, _ = UserProfile.objects.get_or_create(user=request.user)
-        addresses = Address.objects.filter(user_profile=profile)
+        # Only pass the default address
+        default_address = Address.objects.filter(user_profile=profile, is_default=True).first()
 
         return render(request, "shop/profile.html", {
             "profile": profile,
+            "default_address": default_address,
+        })
+
+
+@method_decorator(jwt_login_required, name="dispatch")
+class AddressesView(View):
+    def get(self, request):
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        addresses = Address.objects.filter(user_profile=profile)
+
+        return render(request, "shop/addresses.html", {
             "addresses": addresses,
         })
 
@@ -826,8 +1056,17 @@ class EditProfileView(View):
         else:
             profile.date_of_birth = None
 
-        if "profile_image" in request.FILES:
+        if request.POST.get("remove_image"):
+            if profile.profile_image:
+                profile.profile_image.delete(save=False)
+                profile.profile_image = None
+        elif "profile_image" in request.FILES:
             profile.profile_image = request.FILES["profile_image"]
+
+        # Save avatar selection
+        avatar = request.POST.get("avatar", "").strip()
+        if avatar:
+            profile.avatar = avatar
 
         profile.save()
 
@@ -837,6 +1076,21 @@ class EditProfileView(View):
 # =====================================
 # ADDRESS MANAGEMENT
 # =====================================
+
+@method_decorator(jwt_login_required, name="dispatch")
+class SetDefaultAddressView(View):
+    def get(self, request, address_id):
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        try:
+            # First set all addresses for this profile to not default
+            Address.objects.filter(user_profile=profile).update(is_default=False)
+            # Then set the selected one as default
+            address = Address.objects.get(id=address_id, user_profile=profile)
+            address.is_default = True
+            address.save()
+        except Address.DoesNotExist:
+            pass
+        return redirect("addresses")
 
 @method_decorator(jwt_login_required, name="dispatch")
 class AddAddressView(View):
@@ -855,7 +1109,7 @@ class AddAddressView(View):
             state=request.POST["state"],
             pincode=request.POST["pincode"],
         )
-        return redirect("profile")
+        return redirect("addresses")
 
 
 @method_decorator(jwt_login_required, name="dispatch")
@@ -874,7 +1128,7 @@ class EditAddressView(View):
         address.state = request.POST["state"]
         address.pincode = request.POST["pincode"]
         address.save()
-        return redirect("profile")
+        return redirect("addresses")
 
 
 @method_decorator(jwt_login_required, name="dispatch")
@@ -882,7 +1136,7 @@ class DeleteAddressView(View):
     def get(self, request, address_id):
         address = get_object_or_404(Address, id=address_id, user_profile__user=request.user)
         address.delete()
-        return redirect("profile")
+        return redirect("addresses")
 
 
 # =====================================
@@ -1032,3 +1286,88 @@ class ResetPasswordView(View):
             return render(request, "shop/reset_password.html", {
                 "error": "User account not found. Please try again.",
             })
+
+# =====================================
+# RECOMMENDATIONS API
+# =====================================
+
+from shop.services.recommendation_service import RecommendationEngine
+
+class RecommendationAPIView(View):
+    """
+    GET /api/recommendations/
+    Returns personalized top 10 product recommendations.
+    """
+    def get(self, request):
+        context_type = request.GET.get('type', 'general')
+        product_id = request.GET.get('product_id')
+        cart_ids = request.GET.get('cart_ids')
+        
+        if product_id and product_id.isdigit():
+            product_id = int(product_id)
+        else:
+            product_id = None
+            
+        recommendations = RecommendationEngine.get_recommendations(
+            user=request.user, 
+            limit=10,
+            context_type=context_type,
+            target_id=product_id,
+            cart_ids=cart_ids
+        )
+        
+        data = {
+            "recommendations": [
+                {
+                    "id": p.id,
+                    "name": p.name,
+                    "price": str(p.price),
+                    "image": p.image,
+                    "category": p.category_fk.name if p.category_fk else p.category,
+                    "rating": p.average_rating,
+                }
+                for p in recommendations
+            ]
+        }
+        
+        return JsonResponse(data)
+
+
+from .models import RefundRequest
+
+class RequestRefundView(View):
+    def post(self, request, order_id):
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Authentication required"}, status=401)
+            
+        try:
+            order = Order.objects.get(id=order_id, user=request.user)
+            
+            # Check if eligible
+            if order.status not in ["Confirmed", "Delivered"]:
+                messages.error(request, "This order is not eligible for a refund.")
+                return redirect('orders')
+                
+            # Check if refund already requested
+            if hasattr(order, 'refund_request'):
+                messages.warning(request, "Refund already requested for this order.")
+                return redirect('orders')
+                
+            reason = request.POST.get('reason', '').strip()
+            if not reason:
+                messages.error(request, "Please provide a reason for the refund.")
+                return redirect('orders')
+                
+            # Create refund request
+            RefundRequest.objects.create(
+                order=order,
+                user=request.user,
+                reason=reason
+            )
+            
+            messages.success(request, f"Refund requested successfully for Order #{order.id}.")
+            return redirect('orders')
+            
+        except Order.DoesNotExist:
+            messages.error(request, "Order not found.")
+            return redirect('orders')

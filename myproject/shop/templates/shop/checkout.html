@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,7 +24,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Comic Neue', cursive;
+    
 }
 
 body {
@@ -48,21 +49,21 @@ body {
     z-index: 1000;
 }
 .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.logo-icon { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: var(--primary-yellow); border: 3px solid var(--border-color); box-shadow: 3px 3px 0px var(--border-color); color: #000; font-size: 24px; font-weight: 800; font-family: 'Bangers', cursive; transform: rotate(-5deg); }
-.logo-text { font-size: 38px; font-family: 'Bangers', cursive; color: #000; line-height: 1; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 0px var(--primary-red); }
-.back-btn { display: flex; align-items: center; gap: 10px; text-decoration: none; font-family: 'Bangers', cursive; font-size: 24px; color: #000; background: var(--primary-yellow); border: 3px solid var(--border-color); padding: 8px 24px; box-shadow: 4px 4px 0px var(--border-color); transition: all 0.1s ease; letter-spacing: 1px; }
+.logo-icon { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: var(--primary-yellow); border: 3px solid var(--border-color); box-shadow: 3px 3px 0px var(--border-color); color: #000; font-size: 24px; font-weight: 800;  transform: rotate(-5deg); }
+.logo-text { font-size: 38px;  color: #000; line-height: 1; text-transform: uppercase; letter-spacing: 2px;  }
+.back-btn { display: flex; align-items: center; gap: 10px; text-decoration: none;  font-size: 24px; color: #000; background: var(--primary-yellow); border: 3px solid var(--border-color); padding: 8px 24px; box-shadow: 4px 4px 0px var(--border-color); transition: all 0.1s ease; letter-spacing: 1px; }
 .back-btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--border-color); background: var(--primary-red); color: #fff; }
 
 /* PAGE TITLE */
 .page-title {
     text-align: center;
-    font-family: 'Bangers', cursive;
+    
     font-size: 60px;
     margin: 40px 0;
     text-transform: uppercase;
-    text-shadow: 3px 3px 0px var(--primary-blue);
+    
     color: #fff;
-    -webkit-text-stroke: 2px var(--border-color);
+    
     letter-spacing: 3px;
 }
 
@@ -84,7 +85,7 @@ body {
 }
 
 .checkout-card h2 {
-    font-family: 'Bangers', cursive;
+    
     font-size: 36px;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -130,7 +131,7 @@ body {
 }
 
 .address-text h3 {
-    font-family: 'Bangers', cursive;
+    
     font-size: 20px;
     margin-bottom: 5px;
 }
@@ -177,7 +178,7 @@ body {
 }
 
 .form-group label {
-    font-family: 'Bangers', cursive;
+    
     font-size: 18px;
     letter-spacing: 1px;
 }
@@ -209,7 +210,7 @@ body {
 }
 
 .summary-item span:first-child {
-    font-family: 'Bangers', cursive;
+    
     font-size: 20px;
     text-transform: uppercase;
 }
@@ -224,7 +225,7 @@ body {
 }
 
 .checkout-total-box h3 {
-    font-family: 'Bangers', cursive;
+    
     font-size: 40px;
     margin-bottom: 15px;
 }
@@ -234,7 +235,7 @@ body {
     background: var(--primary-red);
     color: #fff;
     padding: 15px;
-    font-family: 'Bangers', cursive;
+    
     font-size: 30px;
     border: 4px solid var(--border-color);
     box-shadow: 6px 6px 0px var(--border-color);
@@ -277,11 +278,11 @@ body {
 }
 
 .modal-content h2 {
-    font-family: 'Bangers', cursive;
+    
     font-size: 50px;
     color: var(--primary-yellow);
-    -webkit-text-stroke: 2px #000;
-    text-shadow: 3px 3px 0px var(--primary-red);
+    
+    
     margin-bottom: 20px;
     text-transform: uppercase;
 }
@@ -300,7 +301,7 @@ body {
     border: 4px solid #000;
     box-shadow: 6px 6px 0px #000;
     text-decoration: none;
-    font-family: 'Bangers', cursive;
+    
     font-size: 26px;
     text-transform: uppercase;
     transition: all 0.1s ease;
@@ -325,6 +326,7 @@ body {
     .page-title { font-size: 45px; }
 }
 </style>
+    <link rel="stylesheet" href="{% static 'shop/css/global.css' %}">
 </head>
 <body>
 
@@ -351,22 +353,30 @@ body {
         <form id="checkoutForm">
             {% csrf_token %}
 
-            {% if saved_addresses %}
+            {% if default_address %}
                 <div class="address-options">
-                    <p style="font-weight: bold; margin-bottom: 10px; font-size: 18px; color: var(--primary-blue);">Select a saved shipping address:</p>
-                    {% for addr in saved_addresses %}
-                        <label class="address-label">
-                            <input type="radio" name="selected_address" value="{{ addr.id }}" {% if forloop.first %}checked{% endif %}>
-                            <div class="address-text">
-                                <h3>{{ addr.full_name }} (📞 {{ addr.phone }})</h3>
-                                <p>{{ addr.address_line_1 }}{% if addr.address_line_2 %}, {{ addr.address_line_2 }}{% endif %}</p>
-                                <p>{{ addr.city }}, {{ addr.state }} - {{ addr.pincode }}</p>
-                            </div>
-                        </label>
-                    {% endfor %}
-
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <p style="font-weight: bold; font-size: 18px; color: var(--primary-blue);">Shipping to:</p>
+                        <a href="{% url 'profile' %}" style="font-size: 16px; color: var(--primary-red); font-weight: bold; text-decoration: none;">Change Address ✏️</a>
+                    </div>
+                    
+                    <label class="address-label">
+                        <input type="radio" name="selected_address" value="{{ default_address.id }}" checked style="display:none;">
+                        <div class="address-text">
+                            <h3>{{ default_address.full_name }} (📞 {{ default_address.phone }})</h3>
+                            <p>{{ default_address.address_line_1 }}{% if default_address.address_line_2 %}, {{ default_address.address_line_2 }}{% endif %}</p>
+                            <p>{{ default_address.city }}, {{ default_address.state }} - {{ default_address.pincode }}</p>
+                        </div>
+                    </label>
+                </div>
+            {% else %}
+                <div class="address-options">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <p style="font-weight: bold; font-size: 18px; color: var(--primary-blue);">No address found. Please add a new shipping address below:</p>
+                        <a href="{% url 'profile' %}" style="font-size: 16px; color: var(--primary-red); font-weight: bold; text-decoration: none;">Manage Addresses ✏️</a>
+                    </div>
                     <label class="address-label" style="background: #eef7fa;">
-                        <input type="radio" name="selected_address" value="new" id="newAddressRadio">
+                        <input type="radio" name="selected_address" value="new" id="newAddressRadio" checked style="display:none;">
                         <div class="address-text">
                             <h3>➕ Add a new shipping address</h3>
                             <p>Enter details below to ship to a different coordinates</p>
@@ -376,7 +386,11 @@ body {
             {% endif %}
 
             <!-- Form fields for entering a new address -->
-            <div id="newAddressForm" style="{% if saved_addresses %}display: none;{% endif %}">
+            <div id="newAddressForm" style="{% if default_address %}display: none;{% endif %}">
+                <div style="margin-bottom: 20px; text-align: right;">
+                    <button type="button" id="detectLocationBtn" style="font-size: 16px; color: #fff; background: var(--primary-blue); border: 3px solid var(--border-color); padding: 8px 16px; box-shadow: 4px 4px 0px var(--border-color); transition: all 0.1s ease; cursor: pointer; font-weight: bold;" onmouseover="this.style.transform='translate(2px, 2px)'; this.style.boxShadow='2px 2px 0px var(--border-color)';" onmouseout="this.style.transform='none'; this.style.boxShadow='4px 4px 0px var(--border-color)';" onclick="detectLocation('detectLocationBtn', 'address_line_1', 'city', 'state', 'pincode')">📍 Detect My Location</button>
+                </div>
+
                 <div class="form-group">
                     <label for="full_name">Recipient Name</label>
                     <input type="text" id="full_name" class="form-control" placeholder="Tony Stark" required>
@@ -449,6 +463,7 @@ body {
 
 <!-- SCRIPTS -->
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
     AOS.init({ duration: 800, once: true });
 
@@ -528,17 +543,67 @@ body {
         })
         .then(data => {
             if (data.status === 'success') {
-                document.getElementById('successModal').style.display = 'flex';
+                var options = {
+                    "key": data.key_id,
+                    "amount": data.amount,
+                    "currency": data.currency,
+                    "name": "Velora",
+                    "description": "Payment for Order #" + data.order_id,
+                    "order_id": data.razorpay_order_id,
+                    "handler": function (response){
+                        // Post the payment details to our backend for verification
+                        fetch('/verify-payment/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken')
+                            },
+                            body: JSON.stringify({
+                                'razorpay_payment_id': response.razorpay_payment_id,
+                                'razorpay_order_id': response.razorpay_order_id,
+                                'razorpay_signature': response.razorpay_signature,
+                                'order_id': data.order_id
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(verifyData => {
+                            if (verifyData.status === 'success') {
+                                window.location.href = '/order-confirmation/' + data.order_id + '/';
+                            } else {
+                                alert('Payment verification failed: ' + verifyData.error);
+                                document.getElementById('placeOrderBtn').disabled = false;
+                                document.getElementById('placeOrderBtn').innerText = 'PLACE ORDER NOW ⚡';
+                            }
+                        })
+                        .catch(err => {
+                            alert('Verification Error: ' + err.message);
+                            document.getElementById('placeOrderBtn').disabled = false;
+                            document.getElementById('placeOrderBtn').innerText = 'PLACE ORDER NOW ⚡';
+                        });
+                    },
+                    "theme": {
+                        "color": "#ef476f"
+                    }
+                };
+                
+                var rzp1 = new Razorpay(options);
+                rzp1.on('payment.failed', function (response){
+                    alert("Payment Failed: " + response.error.description);
+                    document.getElementById('placeOrderBtn').disabled = false;
+                    document.getElementById('placeOrderBtn').innerText = 'PLACE ORDER NOW ⚡';
+                });
+                rzp1.open();
+                
             } else {
                 alert('Checkout failed: ' + data.error);
-                this.disabled = false;
-                this.innerText = 'PLACE ORDER NOW ⚡';
+                document.getElementById('placeOrderBtn').disabled = false;
+                document.getElementById('placeOrderBtn').innerText = 'PLACE ORDER NOW ⚡';
             }
         })
         .catch(error => {
             alert('Error placing order: ' + error.message);
-            this.disabled = false;
-            this.innerText = 'PLACE ORDER NOW ⚡';
+            document.getElementById('placeOrderBtn').disabled = false;
+            document.getElementById('placeOrderBtn').innerText = 'PLACE ORDER NOW ⚡';
         });
     });
 
@@ -557,6 +622,7 @@ body {
         return cookieValue;
     }
 </script>
+<script src="{% static 'shop/js/location.js' %}"></script>
 
 {% include "chatbot/widget.html" %}
 </body>

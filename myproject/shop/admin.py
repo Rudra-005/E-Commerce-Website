@@ -144,3 +144,108 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = ("status", "created_at")
     search_fields = ("user__username", "id")
     inlines = (OrderItemInline,)
+
+
+@admin.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ("id", "order", "product", "quantity", "price", "item_subtotal")
+    list_filter = ("order__status",)
+    search_fields = ("product__name", "order__id", "order__user__username")
+    raw_id_fields = ("order", "product")
+
+    def item_subtotal(self, obj):
+        return obj.price * obj.quantity
+    item_subtotal.short_description = "Subtotal"
+
+
+from .models import StockNotification
+
+@admin.register(StockNotification)
+class StockNotificationAdmin(admin.ModelAdmin):
+    list_display = ("id", "email", "product", "created_at", "notified")
+    list_filter = ("notified", "created_at")
+    search_fields = ("email", "product__name")
+
+
+from .models import RefundRequest, RefundTransaction
+
+class RefundTransactionInline(admin.StackedInline):
+    model = RefundTransaction
+    can_delete = False
+
+import razorpay
+from django.conf import settings
+from django.contrib import messages
+from django.utils.translation import ngettext
+
+@admin.action(description="Accept & Process Selected Refunds (Razorpay)")
+def process_refunds(modeladmin, request, queryset):
+    try:
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+    except AttributeError:
+        messages.error(request, "Razorpay credentials not found in settings.")
+        return
+
+    success_count = 0
+    
+    for refund_req in queryset:
+        if refund_req.status != 'Pending':
+            continue
+            
+        order = refund_req.order
+        if not order.razorpay_payment_id:
+            messages.error(request, f"Order #{order.id} has no Razorpay Payment ID.")
+            continue
+            
+        try:
+            # We pass an empty dict to process a full refund automatically 
+            # without risking floating point mismatch.
+            refund_data = client.payment.refund(
+                order.razorpay_payment_id,
+                {}
+            )
+            
+            RefundTransaction.objects.create(
+                refund_request=refund_req,
+                amount=order.total_price,
+                transaction_id=refund_data.get('id'),
+                status='Success'
+            )
+            
+            refund_req.status = 'Approved'
+            refund_req.save()
+            
+            order.status = 'Refunded'
+            order.save()
+            
+            success_count += 1
+            
+        except Exception as e:
+            error_msg = str(e).lower()
+            if "invalid request" in error_msg or "badrequest" in error_msg:
+                messages.error(request, f"Failed to refund Order #{order.id}: Razorpay rejected it. This usually means you need to click 'Add Funds' in your Razorpay Test Dashboard because your test balance is low.")
+            else:
+                messages.error(request, f"Failed to refund Order #{order.id}: {str(e)}")
+            
+            RefundTransaction.objects.create(
+                refund_request=refund_req,
+                amount=order.total_price,
+                status='Failed'
+            )
+            
+    if success_count > 0:
+        messages.success(request, f"Successfully processed {success_count} refund(s) via Razorpay.")
+
+@admin.register(RefundRequest)
+class RefundRequestAdmin(admin.ModelAdmin):
+    list_display = ("id", "order", "user", "status", "created_at")
+    list_filter = ("status", "created_at")
+    search_fields = ("user__username", "order__id")
+    inlines = (RefundTransactionInline,)
+    actions = [process_refunds]
+
+@admin.register(RefundTransaction)
+class RefundTransactionAdmin(admin.ModelAdmin):
+    list_display = ("id", "refund_request", "amount", "status", "processed_at")
+    list_filter = ("status", "processed_at")
+    search_fields = ("refund_request__order__id", "transaction_id")

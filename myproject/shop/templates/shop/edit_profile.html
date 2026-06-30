@@ -17,7 +17,7 @@
     }
     
     .form-card h1 {
-        font-family: 'Bangers', cursive;
+        
         font-size: 42px;
         text-transform: uppercase;
         letter-spacing: 2px;
@@ -43,7 +43,7 @@
     }
     
     .form-group label {
-        font-family: 'Bangers', cursive;
+        
         font-size: 20px;
         letter-spacing: 1px;
         color: #000;
@@ -53,7 +53,7 @@
         border: 4px solid #000;
         padding: 12px 15px;
         font-size: 16px;
-        font-family: 'Comic Neue', cursive;
+        
         font-weight: bold;
         background: #fcf8f2;
         outline: none;
@@ -80,7 +80,7 @@
         border: 4px solid #000;
         box-shadow: 6px 6px 0px #000;
         text-decoration: none;
-        font-family: 'Bangers', cursive;
+        
         font-size: 24px;
         transition: all 0.1s ease;
         text-transform: uppercase;
@@ -147,13 +147,106 @@
             <div class="form-group">
                 <label for="profile_image">Profile Picture</label>
                 {% if profile.profile_image %}
-                    <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 15px;">
-                        <img src="{{ profile.profile_image.url }}" alt="Profile Image" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #000; object-fit: cover;">
-                        <span style="font-weight: bold;">Current Image</span>
+                    <div style="margin-bottom: 10px; display: flex; flex-direction: column; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <img src="{{ profile.profile_image.url }}" alt="Profile Image" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #000; object-fit: cover;">
+                            <span style="font-weight: bold;">Current Image</span>
+                        </div>
+                        <label style="display: flex; align-items: center; gap: 8px;  font-size: 16px; cursor: pointer; color: var(--primary-red);">
+                            <input type="checkbox" name="remove_image" style="width: 20px; height: 20px; cursor: pointer;">
+                            <strong>Remove picture to use avatar instead</strong>
+                        </label>
                     </div>
                 {% endif %}
                 <input type="file" id="profile_image" name="profile_image" class="form-control" accept="image/*">
             </div>
+
+            <div class="form-group">
+                <label>Choose Avatar (If No Profile Picture)</label>
+                <p style="font-size: 14px; font-weight: bold; color: #555; margin-bottom: 10px;">Pick your alter ego! This shows when you haven't uploaded a photo.</p>
+                <input type="hidden" name="avatar" id="avatarInput" value="{{ profile.avatar|default:'ninja' }}">
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <div class="avatar-option {% if profile.avatar == 'ninja' or not profile.avatar %}selected{% endif %}" data-avatar="ninja" onclick="selectAvatar(this, 'ninja')">
+                        <span>🥷</span>
+                        <small>Ninja</small>
+                    </div>
+                    <div class="avatar-option {% if profile.avatar == 'alien' %}selected{% endif %}" data-avatar="alien" onclick="selectAvatar(this, 'alien')">
+                        <span>👽</span>
+                        <small>Alien</small>
+                    </div>
+                    <div class="avatar-option {% if profile.avatar == 'robot' %}selected{% endif %}" data-avatar="robot" onclick="selectAvatar(this, 'robot')">
+                        <span>🤖</span>
+                        <small>Robot</small>
+                    </div>
+                    <div class="avatar-option {% if profile.avatar == 'ghost' %}selected{% endif %}" data-avatar="ghost" onclick="selectAvatar(this, 'ghost')">
+                        <span>👻</span>
+                        <small>Ghost</small>
+                    </div>
+                    <div class="avatar-option {% if profile.avatar == 'wizard' %}selected{% endif %}" data-avatar="wizard" onclick="selectAvatar(this, 'wizard')">
+                        <span>🧙</span>
+                        <small>Wizard</small>
+                    </div>
+                    <div class="avatar-option {% if profile.avatar == 'astronaut' %}selected{% endif %}" data-avatar="astronaut" onclick="selectAvatar(this, 'astronaut')">
+                        <span>🧑‍🚀</span>
+                        <small>Astro</small>
+                    </div>
+                    <div class="avatar-option {% if profile.avatar == 'cat' %}selected{% endif %}" data-avatar="cat" onclick="selectAvatar(this, 'cat')">
+                        <span>😺</span>
+                        <small>Cat</small>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                .avatar-option {
+                    width: 70px;
+                    height: 85px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 4px;
+                    border: 4px solid #000;
+                    background: #fcf8f2;
+                    box-shadow: 4px 4px 0px #000;
+                    cursor: pointer;
+                    transition: all 0.15s ease;
+                    user-select: none;
+                }
+                .avatar-option span {
+                    font-size: 32px;
+                    line-height: 1;
+                }
+                .avatar-option small {
+                    
+                    font-size: 12px;
+                    letter-spacing: 0.5px;
+                    color: #555;
+                }
+                .avatar-option:hover {
+                    transform: translateY(-3px) scale(1.05);
+                    box-shadow: 6px 6px 0px #000;
+                    background: #fff;
+                }
+                .avatar-option.selected {
+                    background: var(--primary-yellow);
+                    transform: translateY(-2px);
+                    box-shadow: 6px 6px 0px #000;
+                    border-color: var(--primary-red);
+                }
+                .avatar-option.selected small {
+                    color: #000;
+                    font-weight: bold;
+                }
+            </style>
+
+            <script>
+                function selectAvatar(el, value) {
+                    document.querySelectorAll('.avatar-option').forEach(a => a.classList.remove('selected'));
+                    el.classList.add('selected');
+                    document.getElementById('avatarInput').value = value;
+                }
+            </script>
             
             <div class="button-group">
                 <button type="submit" class="comic-btn">Save Changes ⚡</button>
