@@ -1,0 +1,14 @@
+{% extends 'admin/admin_base.html' %}
+{% block title %}Users{% endblock %}
+{% block content %}
+<div class="admin-card">
+    <h2>Manage Users</h2>
+    <ul>
+        {% for u in users %}
+            <li>{{ u.username }} - {{ u.email }}</li>
+        {% empty %}
+            <li>No users found.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

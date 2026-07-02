@@ -499,7 +499,14 @@ class LoginView(View):
         if user:
             access_token, refresh_token = generate_tokens(user)
 
-            response = redirect("home")
+            redirect_url = "/"
+            if hasattr(user, "userprofile"):
+                if user.userprofile.role == "admin":
+                    redirect_url = "/admin/dashboard/"
+                elif user.userprofile.role == "support":
+                    redirect_url = "/admin/chat/"
+
+            response = redirect(redirect_url)
             response.set_cookie("access_token", access_token, httponly=True, samesite="Lax")
             response.set_cookie("refresh_token", refresh_token, httponly=True, samesite="Lax")
             return response
@@ -524,7 +531,15 @@ class LoginPageView(View):
 
         if user is not None:
             auth_login(request, user)
-            return redirect("home")
+            
+            redirect_url = "/"
+            if hasattr(user, "userprofile"):
+                if user.userprofile.role == "admin":
+                    redirect_url = "/admin/dashboard/"
+                elif user.userprofile.role == "support":
+                    redirect_url = "/admin/chat/"
+                    
+            return redirect(redirect_url)
 
         return render(request, "shop/login.html", {"error": "Invalid Credentials"})
 
@@ -987,7 +1002,14 @@ class GoogleSuccessView(View):
         if request.user.is_authenticated:
             access_token, refresh_token = generate_tokens(request.user)
 
-            response = redirect("home")
+            redirect_url = "/"
+            if hasattr(request.user, "userprofile"):
+                if request.user.userprofile.role == "admin":
+                    redirect_url = "/admin/dashboard/"
+                elif request.user.userprofile.role == "support":
+                    redirect_url = "/admin/chat/"
+
+            response = redirect(redirect_url)
             response.set_cookie("access_token", access_token, httponly=True, samesite="Lax")
             response.set_cookie("refresh_token", refresh_token, httponly=True, samesite="Lax")
             return response

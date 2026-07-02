@@ -10,10 +10,18 @@ REFRESH_TOKEN_DAYS = 7
 
 def generate_access_token(user):
 
+    role = "customer"
+    permissions = []
+    if hasattr(user, "userprofile"):
+        role = user.userprofile.role
+        permissions = user.userprofile.permissions
+
     payload = {
         "user_id": user.id,
         "username": user.username,
         "email": user.email,
+        "role": role,
+        "permissions": permissions,
         "token_type": "access",
         "iat": datetime.utcnow(),
         "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_MINUTES)
@@ -28,10 +36,18 @@ def generate_access_token(user):
 
 def generate_refresh_token(user):
 
+    role = "customer"
+    permissions = []
+    if hasattr(user, "userprofile"):
+        role = user.userprofile.role
+        permissions = user.userprofile.permissions
+
     payload = {
         "user_id": user.id,
         "username": user.username,
         "email": user.email,
+        "role": role,
+        "permissions": permissions,
         "token_type": "refresh",
         "iat": datetime.utcnow(),
         "exp": datetime.utcnow() + timedelta(days=REFRESH_TOKEN_DAYS)

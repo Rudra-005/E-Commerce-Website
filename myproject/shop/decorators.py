@@ -15,3 +15,62 @@ def jwt_login_required(view_func):
         )
 
     return wrapper
+
+
+from django.http import HttpResponseForbidden
+from functools import wraps
+from .auth_helpers import verify_token
+
+def require_role(allowed_roles):
+    """
+    Decorator to require specific roles for accessing a view.
+    allowed_roles can be a string or a list of strings.
+    """
+    if isinstance(allowed_roles, str):
+        allowed_roles = [allowed_roles]
+
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            user = getattr(request, 'user', None)
+            
+            if user and user.is_authenticated and hasattr(user, 'userprofile'):
+                if user.userprofile.role in allowed_roles:
+                    return view_func(request, *args, **kwargs)
+
+            access_token = request.COOKIES.get("access_token")
+            if access_token:
+                payload = verify_token(access_token, "access")
+                if payload:
+                    if payload.get("role") in allowed_roles:
+                        return view_func(request, *args, **kwargs)
+                    else:
+                        return HttpResponseForbidden("You do not have permission to access this page.")
+
+            # If no valid token and not authenticated, redirect to login
+            return redirect("login")
+        return _wrapped_view
+    return decorator
+
+def require_permission(permission_name):
+    """
+    Decorator to require a specific permission for accessing a view.
+    """
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            user = getattr(request, 'user', None)
+            
+            if user and user.is_authenticated and hasattr(user, 'userprofile'):
+                if permission_name in user.userprofile.permissions:
+                    return view_func(request, *args, **kwargs)
+
+            access_token = request.COOKIES.get("access_token")
+            if access_token:
+                payload = verify_token(access_token, "access")
+                if payload and permission_name in payload.get("permissions", []):
+                    return view_func(request, *args, **kwargs)
+
+            return HttpResponseForbidden(f"You require the '{permission_name}' permission to access this page.")
+        return _wrapped_view
+    return decorator

@@ -1,0 +1,40 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+    
+    <div class="admin-card" style="text-align: center;">
+        <i class="fas fa-users" style="font-size: 40px; margin-bottom: 15px; color: var(--secondary-color);"></i>
+        <h3>Total Users</h3>
+        <h1 style="margin: 0; font-size: 48px;">{{ total_users }}</h1>
+    </div>
+
+    <div class="admin-card" style="text-align: center;">
+        <i class="fas fa-box" style="font-size: 40px; margin-bottom: 15px; color: var(--secondary-color);"></i>
+        <h3>Total Orders</h3>
+        <h1 style="margin: 0; font-size: 48px;">{{ total_orders }}</h1>
+    </div>
+
+    <div class="admin-card" style="text-align: center;">
+        <i class="fas fa-tags" style="font-size: 40px; margin-bottom: 15px; color: var(--secondary-color);"></i>
+        <h3>Products</h3>
+        <h1 style="margin: 0; font-size: 48px;">{{ total_products }}</h1>
+    </div>
+
+    <div class="admin-card" style="text-align: center; border-color: red;">
+        <i class="fas fa-undo" style="font-size: 40px; margin-bottom: 15px; color: red;"></i>
+        <h3>Pending Refunds</h3>
+        <h1 style="margin: 0; font-size: 48px;">{{ pending_refunds }}</h1>
+    </div>
+
+</div>
+
+<div class="admin-card" style="margin-top: 40px;">
+    <h2>Quick Actions</h2>
+    <a href="{% url 'admin_products' %}" class="admin-btn">Manage Products</a>
+    <a href="{% url 'admin_orders' %}" class="admin-btn">View Orders</a>
+    <a href="{% url 'admin_chat' %}" class="admin-btn">Support Chat</a>
+</div>
+{% endblock %}

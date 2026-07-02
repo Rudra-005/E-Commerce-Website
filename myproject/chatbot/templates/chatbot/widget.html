@@ -542,13 +542,14 @@
     <!-- Header -->
     <div class="velora-chat-header">
         <div class="velora-chat-header-left">
-            <div class="velora-chat-avatar">✦</div>
+            <div class="velora-chat-avatar" id="veloraChatAvatar">✦</div>
             <div>
-                <div class="velora-chat-title">Velora AI</div>
-                <div class="velora-chat-subtitle">Shopping Assistant</div>
+                <div class="velora-chat-title" id="veloraChatTitle">Velora AI</div>
+                <div class="velora-chat-subtitle" id="veloraChatSubtitle">Shopping Assistant</div>
             </div>
         </div>
         <div class="velora-chat-header-actions">
+            <button class="velora-chat-header-btn" id="veloraLiveSupportToggle" title="Chat with Live Support">🎧</button>
             <button class="velora-chat-header-btn" id="veloraChatClear" title="Clear chat">🗑</button>
             <button class="velora-chat-header-btn" id="veloraChatClose" title="Close">✕</button>
         </div>
@@ -610,11 +611,18 @@
 
     let isOpen = false;
     let isSending = false;
+    let currentMode = 'ai'; // 'ai' or 'support'
+    let supportWs = null;
+    let supportConvId = null;
+    const isAuthenticated = {{ request.user.is_authenticated|yesno:"true,false" }};
+    const currentUserId = {{ request.user.id|default:"null" }};
+
+    const chatTitle = document.getElementById('veloraChatTitle');
+    const chatSubtitle = document.getElementById('veloraChatSubtitle');
+    const chatAvatar = document.getElementById('veloraChatAvatar');
+    const liveSupportToggle = document.getElementById('veloraLiveSupportToggle');
 
     // ── User-aware session tracking ──
-    // Track which user the chat was last loaded for.
-    // On every panel open, we compare with the backend's current_user.
-    // If different (login/logout happened), clear the DOM and re-fetch.
     let loadedForUser = '__not_loaded__';
 
     function clearChatDOM() {
@@ -630,7 +638,11 @@
         fab.classList.toggle('open', isOpen);
         if (isOpen) {
             input.focus();
-            loadHistory();
+            if (currentMode === 'ai') {
+                loadHistory();
+            } else {
+                loadSupportHistory();
+            }
         }
     });
 
@@ -660,13 +672,129 @@
     // ── Clear Chat ──
     clearBtn.addEventListener('click', function() {
         if (!confirm('Clear chat history?')) return;
-        fetch('/api/chat/history/', {
-            method: 'DELETE',
-            headers: { 'X-CSRFToken': getCSRFToken() }
-        }).then(function() {
+        if (currentMode === 'ai') {
+            fetch('/api/chat/history/', {
+                method: 'DELETE',
+                headers: { 'X-CSRFToken': getCSRFToken() }
+            }).then(function() {
+                clearChatDOM();
+            });
+        } else {
             clearChatDOM();
-        });
+        }
     });
+
+    // ── Live Support Toggle ──
+    liveSupportToggle.addEventListener('click', function() {
+        if (!isAuthenticated) {
+            alert('Please log in to use Live Support.');
+            return;
+        }
+        
+        liveSupportToggle.style.color = ''; // reset notification color
+        
+        if (currentMode === 'ai') {
+            currentMode = 'support';
+            chatTitle.innerText = 'Live Support';
+            chatSubtitle.innerText = 'Chat with an Admin';
+            chatAvatar.innerText = '🎧';
+            liveSupportToggle.title = "Switch back to Velora AI";
+            input.placeholder = "Type your message to support...";
+            
+            clearChatDOM();
+            welcomeEl.style.display = 'none';
+            
+            if (!supportWs) {
+                initSupportChat();
+            } else {
+                loadSupportHistory();
+            }
+        } else {
+            currentMode = 'ai';
+            chatTitle.innerText = 'Velora AI';
+            chatSubtitle.innerText = 'Shopping Assistant';
+            chatAvatar.innerText = '✦';
+            liveSupportToggle.title = "Chat with Live Support";
+            input.placeholder = "Ask about products...";
+            
+            clearChatDOM();
+            loadHistory();
+        }
+    });
+
+    // ── Live Support Logic ──
+    async function initSupportChat() {
+        try {
+            const res = await fetch('/api/support/customer/conversation/');
+            if (!res.ok) return;
+            const data = await res.json();
+            supportConvId = data.conversation_id;
+            
+            loadSupportHistory();
+            connectSupportWebSocket();
+        } catch(e) {
+            console.error("Support Chat Init Error", e);
+        }
+    }
+
+    async function loadSupportHistory() {
+        if (!supportConvId) return;
+        const msgRes = await fetch(`/api/support/conversation/${supportConvId}/messages/`);
+        if (msgRes.ok) {
+            const msgData = await msgRes.json();
+            clearChatDOM();
+            welcomeEl.style.display = 'none';
+            msgData.messages.forEach(m => {
+                const role = m.sender_type === 'customer' ? 'user' : 'assistant';
+                addMessage(role, m.message);
+            });
+        }
+    }
+
+    function connectSupportWebSocket() {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        supportWs = new WebSocket(`${protocol}//${window.location.host}/ws/support/`);
+        
+        supportWs.onopen = () => {
+            if (supportConvId) {
+                supportWs.send(JSON.stringify({ type: 'join_conversation', payload: { conversation_id: supportConvId }}));
+            }
+        };
+        
+        supportWs.onmessage = (e) => {
+            const data = JSON.parse(e.data);
+            if (data.type === 'receiveMessage') {
+                const msg = data.payload;
+                if (msg.conversation_id === supportConvId) {
+                    if (currentMode === 'support') {
+                        if (msg.sender_type === 'admin') {
+                            addMessage('assistant', msg.message);
+                            supportWs.send(JSON.stringify({ type: 'mark_read', payload: { conversation_id: supportConvId }}));
+                        }
+                    } else {
+                        if (msg.sender_type === 'admin') {
+                            liveSupportToggle.style.color = '#ef476f';
+                        }
+                    }
+                }
+            }
+            if (data.type === 'typing') {
+                if (data.payload.conversation_id === supportConvId && data.payload.user_id !== currentUserId && currentMode === 'support') {
+                    typingEl.classList.add('show');
+                    scrollToBottom();
+                }
+            }
+            if (data.type === 'stopTyping') {
+                if (data.payload.conversation_id === supportConvId && data.payload.user_id !== currentUserId) {
+                    typingEl.classList.remove('show');
+                }
+            }
+        };
+        
+        supportWs.onclose = () => {
+            setTimeout(connectSupportWebSocket, 5000);
+        };
+    }
 
     async function sendMessage() {
         const text = input.value.trim();
@@ -680,6 +808,24 @@
         input.value = '';
         isSending = true;
         sendBtn.disabled = true;
+
+        if (currentMode === 'support') {
+            if (supportWs && supportConvId) {
+                supportWs.send(JSON.stringify({
+                    type: 'send_message',
+                    payload: {
+                        conversation_id: supportConvId,
+                        message: text
+                    }
+                }));
+                supportWs.send(JSON.stringify({ type: 'stop_typing', payload: { conversation_id: supportConvId }}));
+            }
+            isSending = false;
+            sendBtn.disabled = false;
+            input.focus();
+            scrollToBottom();
+            return;
+        }
 
         // Show typing indicator
         typingEl.classList.add('show');

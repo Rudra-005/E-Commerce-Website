@@ -1,0 +1,391 @@
+{% extends 'admin/admin_base.html' %}
+{% block title %}Support Chat{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-layout {
+        display: flex;
+        height: calc(100vh - 120px);
+        border: 4px solid var(--border-color);
+        background: #fff;
+        box-shadow: var(--shadow);
+    }
+    
+    .chat-sidebar {
+        width: 300px;
+        border-right: 4px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        background: #fdf2f8;
+    }
+    
+    .chat-sidebar-header {
+        padding: 15px;
+        border-bottom: 4px solid var(--border-color);
+        background: var(--primary-color);
+        font-weight: bold;
+        font-size: 18px;
+    }
+    
+    .conversation-list {
+        flex: 1;
+        overflow-y: auto;
+    }
+    
+    .conversation-item {
+        padding: 15px;
+        border-bottom: 2px solid var(--border-color);
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .conversation-item:hover, .conversation-item.active {
+        background: var(--primary-color);
+    }
+    
+    .conversation-item .name {
+        font-weight: bold;
+        font-size: 16px;
+    }
+    
+    .conversation-item .preview {
+        font-size: 14px;
+        color: #444;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .unread-badge {
+        background: red;
+        color: white;
+        border-radius: 50%;
+        padding: 2px 6px;
+        font-size: 12px;
+        float: right;
+    }
+    
+    .chat-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .chat-header {
+        padding: 15px;
+        border-bottom: 4px solid var(--border-color);
+        background: var(--secondary-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .chat-messages {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        background: #fafafa;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .message-bubble {
+        max-width: 70%;
+        padding: 10px 15px;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        box-shadow: 2px 2px 0px var(--border-color);
+        position: relative;
+    }
+    
+    .message-customer {
+        align-self: flex-start;
+        background: #fff;
+    }
+    
+    .message-admin {
+        align-self: flex-end;
+        background: var(--primary-color);
+    }
+    
+    .typing-indicator {
+        align-self: flex-start;
+        background: #eee;
+        font-style: italic;
+        padding: 5px 10px;
+        border-radius: 8px;
+        display: none;
+    }
+    
+    .chat-input-area {
+        padding: 15px;
+        border-top: 4px solid var(--border-color);
+        background: #fff;
+        display: flex;
+        gap: 10px;
+    }
+    
+    .chat-input {
+        flex: 1;
+        padding: 10px;
+        border: 2px solid var(--border-color);
+        font-family: inherit;
+        font-size: 16px;
+    }
+    
+    .chat-btn {
+        background: var(--primary-color);
+        border: 2px solid var(--border-color);
+        padding: 10px 20px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 2px 2px 0px var(--border-color);
+    }
+    
+    .chat-btn:active {
+        box-shadow: 0 0 0;
+        transform: translate(2px, 2px);
+    }
+    
+    .chat-context {
+        width: 250px;
+        border-left: 4px solid var(--border-color);
+        background: #fff;
+        padding: 15px;
+    }
+    
+    .context-card {
+        border: 2px solid var(--border-color);
+        padding: 10px;
+        margin-bottom: 15px;
+        background: #fdf2f8;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="chat-layout">
+    <!-- Sidebar -->
+    <div class="chat-sidebar">
+        <div class="chat-sidebar-header">
+            Active Conversations
+        </div>
+        <div class="conversation-list" id="conversationList">
+            <!-- Populated via JS -->
+            <div style="padding:15px;text-align:center;">Loading...</div>
+        </div>
+    </div>
+    
+    <!-- Main Chat -->
+    <div class="chat-main">
+        <div class="chat-header">
+            <h3 style="margin: 0;" id="chatHeaderName">Select a conversation</h3>
+            <span id="chatHeaderStatus" style="background: white; padding: 2px 8px; border: 1px solid #000;">N/A</span>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div style="text-align:center; color:#888; margin-top:50px;">Please select a conversation from the left to start chatting.</div>
+        </div>
+        <div class="typing-indicator" id="typingIndicator">Customer is typing...</div>
+        <div class="chat-input-area">
+            <input type="text" class="chat-input" id="messageInput" placeholder="Type a message..." disabled>
+            <button class="chat-btn" id="sendBtn" disabled><i class="fas fa-paper-plane"></i> Send</button>
+        </div>
+    </div>
+    
+    <!-- Context Panel -->
+    <div class="chat-context">
+        <h3 style="margin-top:0;">Customer Info</h3>
+        <div class="context-card" id="contextInfo">
+            <p>No conversation selected.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let activeConversationId = null;
+    let ws = null;
+    let conversations = [];
+    let isTyping = false;
+    let typingTimeout = null;
+    
+    const myAdminId = {{ request.user.id|default:"null" }};
+
+    async function loadConversations() {
+        const res = await fetch('/api/support/admin/conversations/');
+        const data = await res.json();
+        conversations = data.conversations;
+        renderConversations();
+    }
+    
+    function renderConversations() {
+        const list = document.getElementById('conversationList');
+        list.innerHTML = '';
+        conversations.forEach(c => {
+            const div = document.createElement('div');
+            div.className = `conversation-item ${c.id === activeConversationId ? 'active' : ''}`;
+            div.onclick = () => selectConversation(c.id);
+            div.innerHTML = `
+                <div class="name">${c.customer_name} ${c.unread_count > 0 ? `<span class="unread-badge">${c.unread_count}</span>` : ''}</div>
+                <div class="preview">${c.last_message || 'New conversation'}</div>
+            `;
+            list.appendChild(div);
+        });
+    }
+    
+    async function selectConversation(id) {
+        activeConversationId = id;
+        renderConversations();
+        
+        const conv = conversations.find(c => c.id === id);
+        if(!conv) return;
+        
+        // Update header & context
+        document.getElementById('chatHeaderName').textContent = conv.customer_name;
+        document.getElementById('chatHeaderStatus').textContent = conv.status;
+        document.getElementById('contextInfo').innerHTML = `
+            <strong>Email:</strong> ${conv.customer_email}<br><br>
+            <strong>Priority:</strong> ${conv.priority}
+        `;
+        
+        // Enable input
+        document.getElementById('messageInput').disabled = false;
+        document.getElementById('sendBtn').disabled = false;
+        
+        // Fetch messages
+        const res = await fetch(`/api/support/conversation/${id}/messages/`);
+        const data = await res.json();
+        
+        const msgContainer = document.getElementById('chatMessages');
+        msgContainer.innerHTML = '';
+        data.messages.forEach(m => appendMessage(m));
+        
+        scrollToBottom();
+        
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'join_conversation', payload: { conversation_id: id }}));
+            ws.send(JSON.stringify({ type: 'mark_read', payload: { conversation_id: id }}));
+            
+            // update UI unread count
+            conv.unread_count = 0;
+            // update preview if it was "New conversation"
+            if (!conv.last_message && data.messages.length > 0) {
+                conv.last_message = data.messages[data.messages.length - 1].message;
+            }
+            renderConversations();
+        }
+    }
+    
+    function appendMessage(msg) {
+        const msgContainer = document.getElementById('chatMessages');
+        const div = document.createElement('div');
+        div.className = `message-bubble ${msg.sender_type === 'admin' ? 'message-admin' : 'message-customer'}`;
+        div.innerHTML = `
+            <div>${msg.message}</div>
+            <div style="font-size:10px; color:#555; text-align:right; margin-top:5px;">${new Date(msg.created_at).toLocaleTimeString()}</div>
+        `;
+        msgContainer.appendChild(div);
+    }
+    
+    function scrollToBottom() {
+        const msgContainer = document.getElementById('chatMessages');
+        msgContainer.scrollTop = msgContainer.scrollHeight;
+    }
+    
+    function setupWebSocket() {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        ws = new WebSocket(`${protocol}//${window.location.host}/ws/support/`);
+        
+        ws.onopen = () => {
+            console.log("Admin Support WS Connected");
+            if (activeConversationId) {
+                ws.send(JSON.stringify({ type: 'join_conversation', payload: { conversation_id: activeConversationId }}));
+            }
+        };
+        
+        ws.onmessage = (e) => {
+            const data = JSON.parse(e.data);
+            
+            if (data.type === 'receiveMessage') {
+                const msg = data.payload;
+                if (msg.conversation_id === activeConversationId) {
+                    appendMessage(msg);
+                    scrollToBottom();
+                    if(msg.sender_type === 'customer'){
+                        ws.send(JSON.stringify({ type: 'mark_read', payload: { conversation_id: activeConversationId }}));
+                    }
+                } else {
+                    // It's for another conversation, increment unread count
+                    const c = conversations.find(x => x.id === msg.conversation_id);
+                    if(c) {
+                        c.unread_count++;
+                        c.last_message = msg.message;
+                        renderConversations();
+                    } else {
+                        // We don't have this conversation yet, let's fetch the list again
+                        loadConversations();
+                    }
+                }
+            }
+            
+            if (data.type === 'conversationUpdated') {
+                loadConversations(); // refresh list
+            }
+            
+            if (data.type === 'typing') {
+                if (data.payload.conversation_id === activeConversationId && data.payload.user_id !== myAdminId) {
+                    document.getElementById('typingIndicator').style.display = 'block';
+                }
+            }
+            
+            if (data.type === 'stopTyping') {
+                if (data.payload.conversation_id === activeConversationId && data.payload.user_id !== myAdminId) {
+                    document.getElementById('typingIndicator').style.display = 'none';
+                }
+            }
+        };
+        
+        ws.onclose = () => {
+            setTimeout(setupWebSocket, 3000);
+        };
+    }
+    
+    document.getElementById('sendBtn').onclick = () => {
+        const input = document.getElementById('messageInput');
+        if (!input.value.trim() || !activeConversationId || !ws) return;
+        
+        ws.send(JSON.stringify({
+            type: 'send_message',
+            payload: {
+                conversation_id: activeConversationId,
+                message: input.value.trim()
+            }
+        }));
+        
+        input.value = '';
+        ws.send(JSON.stringify({ type: 'stop_typing', payload: { conversation_id: activeConversationId }}));
+    };
+    
+    document.getElementById('messageInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            document.getElementById('sendBtn').click();
+        } else {
+            if (!isTyping && activeConversationId) {
+                isTyping = true;
+                ws.send(JSON.stringify({ type: 'typing', payload: { conversation_id: activeConversationId }}));
+            }
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                isTyping = false;
+                ws.send(JSON.stringify({ type: 'stop_typing', payload: { conversation_id: activeConversationId }}));
+            }, 2000);
+        }
+    });
+
+    // Initialize
+    loadConversations();
+    setupWebSocket();
+</script>
+{% endblock %}

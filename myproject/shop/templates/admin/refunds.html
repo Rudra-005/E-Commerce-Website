@@ -1,0 +1,14 @@
+{% extends 'admin/admin_base.html' %}
+{% block title %}Refunds{% endblock %}
+{% block content %}
+<div class="admin-card">
+    <h2>Manage Refunds</h2>
+    <ul>
+        {% for refund in refunds %}
+            <li>Refund #{{ refund.id }} - {{ refund.status }}</li>
+        {% empty %}
+            <li>No refunds found.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

@@ -1,7 +1,24 @@
 from django.urls import path
 from . import views
+from . import views_admin
+from . import views_support_api
 
 urlpatterns = [
+    # Admin Panel
+    path('admin/', views_admin.AdminBaseRedirectView.as_view(), name='admin_base_redirect'),
+    path('admin/dashboard/', views_admin.AdminDashboardView.as_view(), name='admin_dashboard'),
+    path('admin/chat/', views_admin.AdminChatView.as_view(), name='admin_chat'),
+    path('admin/orders/', views_admin.AdminOrdersView.as_view(), name='admin_orders'),
+    path('admin/products/', views_admin.AdminProductsView.as_view(), name='admin_products'),
+    path('admin/users/', views_admin.AdminUsersView.as_view(), name='admin_users'),
+    path('admin/analytics/', views_admin.AdminAnalyticsView.as_view(), name='admin_analytics'),
+    path('admin/refunds/', views_admin.AdminRefundsView.as_view(), name='admin_refunds'),
+    path('admin/settings/', views_admin.AdminSettingsView.as_view(), name='admin_settings'),
+    
+    # Support APIs
+    path('api/support/admin/conversations/', views_support_api.AdminConversationsAPIView.as_view(), name='api_admin_conversations'),
+    path('api/support/customer/conversation/', views_support_api.CustomerConversationAPIView.as_view(), name='api_customer_conversation'),
+    path('api/support/conversation/<int:conversation_id>/messages/', views_support_api.ConversationMessagesAPIView.as_view(), name='api_conversation_messages'),
 
     # Home
     path(

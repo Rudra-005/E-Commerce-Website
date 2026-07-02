@@ -1,0 +1,45 @@
+<div class="admin-sidebar">
+    <div class="admin-sidebar-header">
+        <h2>VELORA PRO</h2>
+    </div>
+    
+    <div class="sidebar-nav" style="padding: 20px 0;">
+        <style>
+            .sidebar-nav a {
+                display: block;
+                padding: 15px 20px;
+                color: #000;
+                text-decoration: none;
+                font-weight: bold;
+                font-size: 18px;
+                border-bottom: 2px solid #000;
+                transition: background 0.2s;
+            }
+            .sidebar-nav a:hover {
+                background: var(--primary-color);
+            }
+            .sidebar-nav a i {
+                width: 25px;
+            }
+        </style>
+
+        <!-- Admin Links -->
+        {% if request.user.userprofile.role == 'admin' %}
+            <a href="{% url 'admin_dashboard' %}"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="{% url 'admin_chat' %}"><i class="fas fa-comments"></i> Chats</a>
+            <a href="{% url 'admin_orders' %}"><i class="fas fa-box"></i> Orders</a>
+            <a href="{% url 'admin_products' %}"><i class="fas fa-tags"></i> Products</a>
+            <a href="{% url 'admin_users' %}"><i class="fas fa-users"></i> Users</a>
+            <a href="{% url 'admin_analytics' %}"><i class="fas fa-chart-bar"></i> Analytics</a>
+            <a href="{% url 'admin_refunds' %}"><i class="fas fa-undo"></i> Refunds</a>
+            <a href="{% url 'admin_settings' %}"><i class="fas fa-cog"></i> Settings</a>
+        {% endif %}
+
+        <!-- Support Links -->
+        {% if request.user.userprofile.role == 'support' %}
+            <a href="{% url 'admin_chat' %}"><i class="fas fa-comments"></i> Chats</a>
+        {% endif %}
+        
+        <a href="{% url 'home' %}" style="margin-top: 30px; border-top: 4px solid #000;"><i class="fas fa-store"></i> Back to Store</a>
+    </div>
+</div>

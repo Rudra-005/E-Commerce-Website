@@ -212,6 +212,23 @@ class UserProfile(models.Model):
         null=True
     )
 
+    ROLE_CHOICES = [
+        ('customer', 'Customer'),
+        ('support', 'Support'),
+        ('admin', 'Admin'),
+    ]
+
+    role = models.CharField(
+        max_length=20,
+        choices=ROLE_CHOICES,
+        default='customer'
+    )
+
+    permissions = models.JSONField(
+        default=list,
+        blank=True
+    )
+
     @property
     def display_avatar(self):
         """Returns the emoji for the selected avatar."""
@@ -456,4 +473,53 @@ class RefundTransaction(models.Model):
     processed_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Transaction for Refund #{self.refund_request.id} - {self.status}"
+        return f"Transaction for Refund #{self.refund_request.id} - {self.status}"
+
+
+class SupportConversation(models.Model):
+    STATUS_CHOICES = (
+        ('open', 'Open'),
+        ('pending', 'Pending'),
+        ('resolved', 'Resolved'),
+        ('closed', 'Closed'),
+    )
+    PRIORITY_CHOICES = (
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+        ('critical', 'Critical'),
+    )
+
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="support_conversations")
+    assigned_admin = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="assigned_conversations")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open')
+    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='low')
+    last_message = models.TextField(blank=True)
+    last_message_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Conversation #{self.id} with {self.customer.username}"
+
+class SupportMessage(models.Model):
+    SENDER_TYPE_CHOICES = (
+        ('customer', 'Customer'),
+        ('admin', 'Admin'),
+    )
+    MESSAGE_TYPE_CHOICES = (
+        ('text', 'Text'),
+        ('image', 'Image'),
+        ('file', 'File'),
+    )
+
+    conversation = models.ForeignKey(SupportConversation, on_delete=models.CASCADE, related_name="messages")
+    sender_id = models.IntegerField()
+    sender_type = models.CharField(max_length=20, choices=SENDER_TYPE_CHOICES)
+    message = models.TextField()
+    message_type = models.CharField(max_length=20, choices=MESSAGE_TYPE_CHOICES, default='text')
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Message in #{self.conversation.id} by {self.sender_type}"

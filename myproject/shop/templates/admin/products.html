@@ -1,0 +1,14 @@
+{% extends 'admin/admin_base.html' %}
+{% block title %}Products{% endblock %}
+{% block content %}
+<div class="admin-card">
+    <h2>Manage Products</h2>
+    <ul>
+        {% for product in products %}
+            <li>{{ product.name }} - ${{ product.price }}</li>
+        {% empty %}
+            <li>No products found.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

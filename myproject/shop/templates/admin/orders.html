@@ -1,0 +1,14 @@
+{% extends 'admin/admin_base.html' %}
+{% block title %}Orders{% endblock %}
+{% block content %}
+<div class="admin-card">
+    <h2>Manage Orders</h2>
+    <ul>
+        {% for order in orders %}
+            <li>Order #{{ order.id }} - {{ order.status }}</li>
+        {% empty %}
+            <li>No orders found.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
