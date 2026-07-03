@@ -19,6 +19,7 @@ urlpatterns = [
     path('api/support/admin/conversations/', views_support_api.AdminConversationsAPIView.as_view(), name='api_admin_conversations'),
     path('api/support/customer/conversation/', views_support_api.CustomerConversationAPIView.as_view(), name='api_customer_conversation'),
     path('api/support/conversation/<int:conversation_id>/messages/', views_support_api.ConversationMessagesAPIView.as_view(), name='api_conversation_messages'),
+    path('api/support/upload_image/', views_support_api.UploadChatImageAPIView.as_view(), name='api_upload_chat_image'),
 
     # Home
     path(

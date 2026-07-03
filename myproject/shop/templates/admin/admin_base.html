@@ -126,7 +126,7 @@
         <!-- Topbar -->
         <div class="admin-topbar">
             <div>
-                <strong>Role:</strong> <span style="text-transform: uppercase; background: var(--secondary-color); padding: 2px 8px; border: 2px solid #000; border-radius: 4px;">{{ request.user.userprofile.role }}</span>
+                <strong>Role:</strong> <span style="text-transform: uppercase; background: var(--secondary-color); padding: 2px 8px; border: 2px solid #000; border-radius: 4px; font-weight: bold;">{% if request.user.is_superuser %}ADMIN{% else %}{{ request.user.userprofile.role|default:"ADMIN" }}{% endif %}</span>
             </div>
             <div>
                 Welcome, <strong>{{ request.user.username }}</strong>!

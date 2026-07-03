@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
 from django.contrib.auth.models import User
 from .models import Order, Product, RefundRequest
 from .decorators import require_role, require_permission
@@ -32,6 +33,7 @@ class AdminDashboardView(View):
 
 @method_decorator(require_role(['admin', 'support']), name='dispatch')
 @method_decorator(require_permission('chat'), name='dispatch')
+@method_decorator(never_cache, name='dispatch')
 class AdminChatView(View):
     def get(self, request):
         return render(request, "admin/chat.html")

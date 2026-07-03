@@ -1,11 +1,19 @@
+import logging
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.contrib.auth.models import User
 from .models import SupportConversation, SupportMessage, UserProfile
+from mongodb.support_repository import (
+    save_support_ticket, save_support_message, 
+    reset_idle_status, close_support_ticket
+)
+
+logger = logging.getLogger(__name__)
 
 class SupportChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        logger.info(f"WS Connect: User {self.scope['user']}, Channel: {self.channel_name}")
         self.user = self.scope["user"]
         
         if self.user.is_anonymous:
@@ -23,10 +31,13 @@ class SupportChatConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
-        for room in self.room_group_names:
+        logger.info(f"WS Disconnect: User {self.user}, Code: {close_code}, Channel: {self.channel_name}")
+        for room in getattr(self, 'room_group_names', []):
+            logger.info(f"WS Discarding Room: {room} for Channel: {self.channel_name}")
             await self.channel_layer.group_discard(room, self.channel_name)
 
     async def receive(self, text_data):
+        logger.info(f"WS Receive from User {self.user}: {text_data}")
         data = json.loads(text_data)
         event_type = data.get('type')
         payload = data.get('payload', {})
@@ -46,6 +57,12 @@ class SupportChatConsumer(AsyncWebsocketConsumer):
         elif event_type == 'mark_read':
             await self.handle_mark_read(payload)
 
+        elif event_type == 'continue_chat':
+            await self.handle_continue_chat(payload)
+
+        elif event_type == 'end_chat':
+            await self.handle_end_chat(payload)
+
     async def join_conversation(self, conversation_id):
         if not conversation_id:
             return
@@ -57,12 +74,14 @@ class SupportChatConsumer(AsyncWebsocketConsumer):
             
         room_name = f'conversation_{conversation_id}'
         if room_name not in self.room_group_names:
+            logger.info(f"WS Adding Room: {room_name} for Channel: {self.channel_name}")
             await self.channel_layer.group_add(room_name, self.channel_name)
             self.room_group_names.append(room_name)
 
     async def handle_send_message(self, payload):
         conversation_id = payload.get('conversation_id')
         text = payload.get('message')
+        message_type = payload.get('message_type', 'text')
         
         if not conversation_id or not text:
             return
@@ -72,12 +91,14 @@ class SupportChatConsumer(AsyncWebsocketConsumer):
             return
             
         conv = await database_sync_to_async(SupportConversation.objects.get)(id=conversation_id)
-        if self.user.id == conv.customer_id:
-            sender_type = 'customer'
-        else:
-            sender_type = 'admin' if self.role in ['admin', 'support'] else 'customer'
+        payload_sender = payload.get('sender_type')
         
-        msg = await self.save_message(conversation_id, text, sender_type)
+        if payload_sender == 'admin' and self.role in ['admin', 'support']:
+            sender_type = 'admin'
+        else:
+            sender_type = 'customer'
+        
+        msg = await self.save_message(conversation_id, text, sender_type, message_type=message_type)
         
         room_name = f'conversation_{conversation_id}'
         event = {
@@ -88,11 +109,16 @@ class SupportChatConsumer(AsyncWebsocketConsumer):
                 'sender_id': self.user.id,
                 'sender_type': sender_type,
                 'message': text,
+                'message_type': message_type,
                 'created_at': msg.created_at.isoformat()
             }
         }
         
+        logger.info(f"WS Broadcasting chat_message to {room_name}")
         await self.channel_layer.group_send(room_name, event)
+        
+        # Reset idle status in MongoDB
+        await database_sync_to_async(reset_idle_status)(conversation_id)
         
         if sender_type == 'customer':
             await self.channel_layer.group_send('admins', {
@@ -125,8 +151,76 @@ class SupportChatConsumer(AsyncWebsocketConsumer):
             'read_by': self.user.id
         })
 
+    async def handle_continue_chat(self, payload):
+        conversation_id = payload.get('conversation_id')
+        if not conversation_id: return
+        
+        authorized = await self.is_authorized_for_conversation(conversation_id)
+        if not authorized: return
+
+        # Reset idle status in MongoDB
+        await database_sync_to_async(reset_idle_status)(conversation_id)
+
+        # Notify room
+        room_name = f'conversation_{conversation_id}'
+        await self.channel_layer.group_send(room_name, {
+            'type': 'chat_continued',
+            'conversation_id': conversation_id,
+            'user_id': self.user.id
+        })
+
+    async def handle_end_chat(self, payload):
+        conversation_id = payload.get('conversation_id')
+        if not conversation_id: return
+        
+        authorized = await self.is_authorized_for_conversation(conversation_id)
+        if not authorized: return
+
+        # Close ticket in MongoDB
+        await database_sync_to_async(close_support_ticket)(conversation_id)
+        
+        sender = "admin" if self.role in ['admin', 'support'] else "customer"
+        system_message = f"The {sender} ended the chat."
+        
+        # Save system message
+        msg = await self.save_message(conversation_id, system_message, 'system', is_system=True)
+        
+        # Notify room
+        room_name = f'conversation_{conversation_id}'
+        
+        # First send the system message
+        await self.channel_layer.group_send(room_name, {
+            'type': 'chat_message',
+            'message': {
+                'id': msg.id,
+                'conversation_id': conversation_id,
+                'sender_id': 'system',
+                'sender_type': msg.sender_type,
+                'message': msg.message,
+                'message_type': msg.message_type,
+                'is_system': True,
+                'created_at': msg.created_at.isoformat()
+            }
+        })
+        
+        # Then send chat_closed event
+        await self.channel_layer.group_send(room_name, {
+            'type': 'chat_closed',
+            'conversation_id': conversation_id,
+            'reason': f'{sender}_ended'
+        })
+        
+        # Also notify admins to update list
+        await self.channel_layer.group_send('admins', {
+            'type': 'conversation_updated',
+            'conversation_id': conversation_id,
+            'customer_id': self.user.id
+        })
+
+
     # Event handlers for group_send
     async def chat_message(self, event):
+        logger.info(f"WS chat_message handler sending to User {self.user}")
         await self.send(text_data=json.dumps({'type': 'receiveMessage', 'payload': event['message']}))
 
     async def conversation_updated(self, event):
@@ -138,9 +232,21 @@ class SupportChatConsumer(AsyncWebsocketConsumer):
     async def messages_read(self, event):
         await self.send(text_data=json.dumps({'type': 'messagesRead', 'payload': event}))
 
+    async def idle_warning(self, event):
+        await self.send(text_data=json.dumps({'type': 'idleWarning', 'payload': event}))
+
+    async def chat_continued(self, event):
+        await self.send(text_data=json.dumps({'type': 'chatContinued', 'payload': event}))
+
+    async def chat_closed(self, event):
+        await self.send(text_data=json.dumps({'type': 'chatClosed', 'payload': event}))
+
+
     # DB methods
     @database_sync_to_async
     def get_user_role(self, user):
+        if user.is_staff or user.is_superuser:
+            return 'admin'
         try:
             return user.userprofile.role
         except UserProfile.DoesNotExist:
@@ -148,6 +254,9 @@ class SupportChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def is_authorized_for_conversation(self, conv_id):
+        if self.user.is_staff or self.user.is_superuser:
+            return True
+            
         try:
             conv = SupportConversation.objects.get(id=conv_id)
             if self.role in ['admin', 'support']:
@@ -157,18 +266,42 @@ class SupportChatConsumer(AsyncWebsocketConsumer):
             return False
 
     @database_sync_to_async
-    def save_message(self, conv_id, text, sender_type):
+    def save_message(self, conv_id, text, sender_type, is_system=False, message_type='text'):
+        # PostgreSQL
         conv = SupportConversation.objects.get(id=conv_id)
-        conv.last_message = text
-        conv.status = 'open' if sender_type == 'customer' else 'pending'
+        if message_type == 'image':
+            conv.last_message = "Sent an image"
+        else:
+            conv.last_message = text
+            
+        if not is_system:
+            conv.status = 'open' if sender_type == 'customer' else 'pending'
+        else:
+            conv.status = 'closed'
         conv.save()
         
         msg = SupportMessage.objects.create(
             conversation=conv,
-            sender_id=self.user.id,
+            sender_id=self.user.id if not is_system else 0,
             sender_type=sender_type,
-            message=text
+            message=text,
+            message_type=message_type
         )
+        
+        # MongoDB
+        save_support_ticket(
+            ticket_id=conv_id, 
+            customer_id=conv.customer_id,
+            title=f"Chat #{conv_id}"
+        )
+        save_support_message(
+            ticket_id=conv_id,
+            sender_id=self.user.id if not is_system else "system",
+            sender_type=sender_type,
+            message_content=text,
+            is_system=is_system
+        )
+        
         return msg
 
     @database_sync_to_async

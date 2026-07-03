@@ -26,6 +26,9 @@ urlpatterns = [
 
     # AI Shopping Assistant API
     path('api/', include('chatbot.urls')),
+    
+    # MongoDB Admin APIs
+    path('mongodb/', include('mongodb.urls')),
 ]
 
 from django.conf import settings

@@ -71,3 +71,34 @@ class CustomerConversationAPIView(View):
             'conversation_id': conv.id,
             'status': conv.status
         })
+
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+import uuid
+
+@method_decorator(csrf_exempt, name='dispatch')
+class UploadChatImageAPIView(View):
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return JsonResponse({'error': 'Unauthorized'}, status=401)
+            
+        if 'image' not in request.FILES:
+            return JsonResponse({'error': 'No image provided'}, status=400)
+            
+        image_file = request.FILES['image']
+        
+        # Validate extension
+        ext = image_file.name.split('.')[-1].lower()
+        if ext not in ['jpg', 'jpeg', 'png', 'gif', 'webp']:
+            return JsonResponse({'error': 'Invalid file type'}, status=400)
+            
+        # Generate unique name
+        filename = f"chat_images/{uuid.uuid4().hex}.{ext}"
+        
+        # Save file
+        path = default_storage.save(filename, ContentFile(image_file.read()))
+        
+        # Get public URL
+        url = default_storage.url(path)
+        
+        return JsonResponse({'url': url})

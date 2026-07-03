@@ -43,6 +43,11 @@ def require_role(allowed_roles):
                 payload = verify_token(access_token, "access")
                 if payload:
                     if payload.get("role") in allowed_roles:
+                        from django.contrib.auth.models import User
+                        try:
+                            request.user = User.objects.get(id=payload.get("user_id"))
+                        except User.DoesNotExist:
+                            pass
                         return view_func(request, *args, **kwargs)
                     else:
                         return HttpResponseForbidden("You do not have permission to access this page.")

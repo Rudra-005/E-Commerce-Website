@@ -9,13 +9,14 @@ from django.db.models import Avg, Q
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth import authenticate, login as auth_login, logout as django_logout
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.conf import settings
+from django.views.decorators.cache import never_cache
 from django.utils import timezone
 from django.contrib import messages
 from django.contrib.postgres.search import TrigramSimilarity
+from django.contrib.auth.decorators import login_required
 
 from datetime import timedelta
 
@@ -1034,6 +1035,7 @@ class GoogleLoginView(View):
 # =====================================
 
 @method_decorator(jwt_login_required, name="dispatch")
+@method_decorator(never_cache, name="dispatch")
 class ProfileView(View):
     def get(self, request):
         profile, _ = UserProfile.objects.get_or_create(user=request.user)

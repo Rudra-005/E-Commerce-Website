@@ -2,29 +2,41 @@
 {% block title %}Support Chat{% endblock %}
 
 {% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+    .admin-content {
+        padding: 0 !important;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        min-height: 0;
+    }
+
     .chat-layout {
         display: flex;
-        height: calc(100vh - 120px);
-        border: 4px solid var(--border-color);
+        flex: 1;
         background: #fff;
-        box-shadow: var(--shadow);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        overflow: hidden;
+        min-height: 0;
     }
     
     .chat-sidebar {
-        width: 300px;
-        border-right: 4px solid var(--border-color);
+        width: 320px;
+        border-right: 1px solid #e5e7eb;
         display: flex;
         flex-direction: column;
-        background: #fdf2f8;
+        background: #f8fafc;
     }
     
     .chat-sidebar-header {
-        padding: 15px;
-        border-bottom: 4px solid var(--border-color);
-        background: var(--primary-color);
+        padding: 20px;
+        border-bottom: 1px solid #e5e7eb;
+        background: #ffffff;
         font-weight: bold;
         font-size: 18px;
+        color: #1e293b;
     }
     
     .conversation-list {
@@ -33,19 +45,27 @@
     }
     
     .conversation-item {
-        padding: 15px;
-        border-bottom: 2px solid var(--border-color);
+        padding: 15px 20px;
+        border-bottom: 1px solid #e5e7eb;
         cursor: pointer;
-        transition: background 0.2s;
+        transition: all 0.2s;
+        background: #ffffff;
     }
     
-    .conversation-item:hover, .conversation-item.active {
-        background: var(--primary-color);
+    .conversation-item:hover {
+        background: #f1f5f9;
+    }
+    
+    .conversation-item.active {
+        background: #e0f2fe;
+        border-left: 4px solid #0284c7;
     }
     
     .conversation-item .name {
-        font-weight: bold;
-        font-size: 16px;
+        font-weight: 600;
+        font-size: 15px;
+        color: #0f172a;
+        margin-bottom: 4px;
     }
     
     .conversation-item .preview {
@@ -57,11 +77,12 @@
     }
     
     .unread-badge {
-        background: red;
+        background: #ef4444;
         color: white;
-        border-radius: 50%;
-        padding: 2px 6px;
-        font-size: 12px;
+        border-radius: 12px;
+        padding: 2px 8px;
+        font-size: 11px;
+        font-weight: bold;
         float: right;
     }
     
@@ -69,44 +90,58 @@
         flex: 1;
         display: flex;
         flex-direction: column;
+        min-width: 0;
+        min-height: 0;
     }
     
     .chat-header {
-        padding: 15px;
-        border-bottom: 4px solid var(--border-color);
-        background: var(--secondary-color);
+        padding: 15px 25px;
+        border-bottom: 1px solid #e5e7eb;
+        background: #ffffff;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        z-index: 2;
     }
     
     .chat-messages {
         flex: 1;
-        padding: 20px;
+        padding: 25px;
         overflow-y: auto;
-        background: #fafafa;
+        background: #f8fafc;
         display: flex;
         flex-direction: column;
-        gap: 15px;
+        gap: 16px;
     }
     
     .message-bubble {
-        max-width: 70%;
-        padding: 10px 15px;
-        border: 2px solid var(--border-color);
-        border-radius: 8px;
-        box-shadow: 2px 2px 0px var(--border-color);
+        max-width: 65%;
+        padding: 12px 18px;
+        border-radius: 16px;
         position: relative;
+        font-size: 15px;
+        line-height: 1.5;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
     
     .message-customer {
         align-self: flex-start;
-        background: #fff;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-bottom-left-radius: 4px;
+        color: #1e293b;
     }
     
     .message-admin {
         align-self: flex-end;
-        background: var(--primary-color);
+        background: #2563eb;
+        color: #ffffff;
+        border-bottom-right-radius: 4px;
+    }
+    
+    .message-admin .time-text {
+        color: rgba(255,255,255,0.7) !important;
     }
     
     .typing-indicator {
@@ -119,47 +154,99 @@
     }
     
     .chat-input-area {
-        padding: 15px;
-        border-top: 4px solid var(--border-color);
-        background: #fff;
+        padding: 20px 25px;
+        border-top: 1px solid #e5e7eb;
+        background: #ffffff;
         display: flex;
-        gap: 10px;
+        align-items: center;
+        gap: 12px;
     }
     
     .chat-input {
         flex: 1;
-        padding: 10px;
-        border: 2px solid var(--border-color);
+        padding: 14px 20px;
+        border: 1px solid #cbd5e1;
+        background: #f8fafc;
         font-family: inherit;
-        font-size: 16px;
+        font-size: 15px;
+        border-radius: 24px;
+        transition: all 0.2s;
+    }
+    
+    .chat-input:focus {
+        outline: none;
+        border-color: #0ea5e9;
+        background: #ffffff;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    }
+    
+    .btn-attach {
+        background: none;
+        border: none;
+        color: #64748b;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 10px;
+        border-radius: 50%;
+        transition: all 0.2s;
+    }
+    
+    .btn-attach:hover {
+        background: #f1f5f9;
+        color: #0f172a;
     }
     
     .chat-btn {
-        background: var(--primary-color);
-        border: 2px solid var(--border-color);
-        padding: 10px 20px;
-        font-weight: bold;
+        background: #0ea5e9;
+        color: white;
+        border: none;
+        padding: 14px 24px;
+        font-weight: 600;
+        font-size: 15px;
         cursor: pointer;
-        box-shadow: 2px 2px 0px var(--border-color);
+        border-radius: 24px;
+        transition: all 0.2s;
     }
     
-    .chat-btn:active {
-        box-shadow: 0 0 0;
-        transform: translate(2px, 2px);
+    .chat-btn:hover:not(:disabled) {
+        background: #0284c7;
+    }
+    
+    .chat-btn:disabled {
+        background: #cbd5e1;
+        cursor: not-allowed;
+    }
+    
+    .chat-image {
+        max-width: 100%;
+        border-radius: 8px;
+        margin-bottom: 5px;
+        cursor: pointer;
     }
     
     .chat-context {
-        width: 250px;
-        border-left: 4px solid var(--border-color);
-        background: #fff;
-        padding: 15px;
+        width: 280px;
+        border-left: 1px solid #e5e7eb;
+        background: #ffffff;
+        padding: 25px;
     }
     
     .context-card {
-        border: 2px solid var(--border-color);
-        padding: 10px;
-        margin-bottom: 15px;
-        background: #fdf2f8;
+        border: 1px solid #e5e7eb;
+        padding: 15px;
+        margin-top: 15px;
+        background: #f8fafc;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #475569;
+    }
+    
+    /* Neobrutalism override for this specific page */
+    .chat-layout {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        overflow: hidden;
     }
 </style>
 {% endblock %}
@@ -180,14 +267,21 @@
     <!-- Main Chat -->
     <div class="chat-main">
         <div class="chat-header">
-            <h3 style="margin: 0;" id="chatHeaderName">Select a conversation</h3>
-            <span id="chatHeaderStatus" style="background: white; padding: 2px 8px; border: 1px solid #000;">N/A</span>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <h3 style="margin: 0; font-size: 18px; color: #0f172a;" id="chatHeaderName">Select a conversation</h3>
+                <span id="chatHeaderStatus" style="background: #e2e8f0; color: #475569; padding: 4px 10px; border-radius: 12px; font-weight: 600; font-size: 12px; text-transform: uppercase;">N/A</span>
+            </div>
+            <button id="adminEndChatBtn" style="background: #ef4444; color: #fff; border: none; padding: 8px 16px; font-weight: 600; cursor: pointer; display: none; border-radius: 6px; transition: background 0.2s;">End Chat</button>
         </div>
         <div class="chat-messages" id="chatMessages">
             <div style="text-align:center; color:#888; margin-top:50px;">Please select a conversation from the left to start chatting.</div>
         </div>
         <div class="typing-indicator" id="typingIndicator">Customer is typing...</div>
         <div class="chat-input-area">
+            <button class="btn-attach" id="attachBtn" title="Send Image" disabled>
+                <i class="fas fa-paperclip"></i>
+            </button>
+            <input type="file" id="fileInput" accept="image/*" style="display:none;">
             <input type="text" class="chat-input" id="messageInput" placeholder="Type a message..." disabled>
             <button class="chat-btn" id="sendBtn" disabled><i class="fas fa-paper-plane"></i> Send</button>
         </div>
@@ -250,9 +344,26 @@
             <strong>Priority:</strong> ${conv.priority}
         `;
         
-        // Enable input
-        document.getElementById('messageInput').disabled = false;
-        document.getElementById('sendBtn').disabled = false;
+        const endChatBtn = document.getElementById('adminEndChatBtn');
+        
+        if (conv.status !== 'closed') {
+            document.getElementById('messageInput').disabled = false;
+            document.getElementById('sendBtn').disabled = false;
+            document.getElementById('attachBtn').disabled = false;
+            endChatBtn.style.display = 'block';
+        } else {
+            document.getElementById('messageInput').disabled = true;
+            document.getElementById('sendBtn').disabled = true;
+            document.getElementById('attachBtn').disabled = true;
+            endChatBtn.style.display = 'none';
+        }
+        
+        endChatBtn.onclick = () => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'end_chat', payload: { conversation_id: id }}));
+                // We don't need to manually update UI here because we will receive a chatClosed event
+            }
+        };
         
         // Fetch messages
         const res = await fetch(`/api/support/conversation/${id}/messages/`);
@@ -282,9 +393,19 @@
         const msgContainer = document.getElementById('chatMessages');
         const div = document.createElement('div');
         div.className = `message-bubble ${msg.sender_type === 'admin' ? 'message-admin' : 'message-customer'}`;
+        
+        let msgContent = '';
+        if (msg.message_type === 'image') {
+            msgContent = `<img src="${msg.message}" class="chat-image" onclick="window.open('${msg.message}', '_blank')" />`;
+        } else {
+            msgContent = `<div style="word-wrap: break-word;">${(msg.message || '').replace(/\n/g, '<br>')}</div>`;
+        }
+        
+        let timeStr = new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
         div.innerHTML = `
-            <div>${msg.message}</div>
-            <div style="font-size:10px; color:#555; text-align:right; margin-top:5px;">${new Date(msg.created_at).toLocaleTimeString()}</div>
+            ${msgContent}
+            <div class="time-text" style="font-size:11px; font-weight: 500; color: #94a3b8; text-align:right; margin-top:6px;">${timeStr}</div>
         `;
         msgContainer.appendChild(div);
     }
@@ -310,15 +431,18 @@
             
             if (data.type === 'receiveMessage') {
                 const msg = data.payload;
-                if (msg.conversation_id === activeConversationId) {
+                if (String(msg.conversation_id) === String(activeConversationId)) {
                     appendMessage(msg);
                     scrollToBottom();
                     if(msg.sender_type === 'customer'){
                         ws.send(JSON.stringify({ type: 'mark_read', payload: { conversation_id: activeConversationId }}));
                     }
+                    // Hide typing indicator when message arrives
+                    document.getElementById('typingIndicator').style.display = 'none';
+                    isTyping = false;
                 } else {
                     // It's for another conversation, increment unread count
-                    const c = conversations.find(x => x.id === msg.conversation_id);
+                    const c = conversations.find(x => String(x.id) === String(msg.conversation_id));
                     if(c) {
                         c.unread_count++;
                         c.last_message = msg.message;
@@ -335,14 +459,36 @@
             }
             
             if (data.type === 'typing') {
-                if (data.payload.conversation_id === activeConversationId && data.payload.user_id !== myAdminId) {
+                if (String(data.payload.conversation_id) === String(activeConversationId) && data.payload.user_id !== myAdminId) {
                     document.getElementById('typingIndicator').style.display = 'block';
                 }
             }
             
             if (data.type === 'stopTyping') {
-                if (data.payload.conversation_id === activeConversationId && data.payload.user_id !== myAdminId) {
+                if (String(data.payload.conversation_id) === String(activeConversationId) && data.payload.user_id !== myAdminId) {
                     document.getElementById('typingIndicator').style.display = 'none';
+                }
+            }
+            
+            if (data.type === 'chatClosed') {
+                if (String(data.payload.conversation_id) === String(activeConversationId)) {
+                    appendMessage({
+                        sender_type: 'system',
+                        message: 'This conversation has been automatically closed due to inactivity.',
+                        created_at: new Date().toISOString()
+                    });
+                    scrollToBottom();
+                    document.getElementById('messageInput').disabled = true;
+                    document.getElementById('sendBtn').disabled = true;
+                    document.getElementById('attachBtn').disabled = true;
+                    document.getElementById('chatHeaderStatus').textContent = 'closed';
+                    document.getElementById('adminEndChatBtn').style.display = 'none';
+                    
+                    const c = conversations.find(x => String(x.id) === String(data.payload.conversation_id));
+                    if(c) {
+                        c.status = 'closed';
+                        renderConversations();
+                    }
                 }
             }
         };
@@ -354,13 +500,14 @@
     
     document.getElementById('sendBtn').onclick = () => {
         const input = document.getElementById('messageInput');
-        if (!input.value.trim() || !activeConversationId || !ws) return;
+        if (!input.value.trim() || !activeConversationId || !ws || ws.readyState !== WebSocket.OPEN) return;
         
         ws.send(JSON.stringify({
             type: 'send_message',
             payload: {
                 conversation_id: activeConversationId,
-                message: input.value.trim()
+                message: input.value.trim(),
+                sender_type: 'admin'
             }
         }));
         
@@ -372,15 +519,69 @@
         if (e.key === 'Enter') {
             document.getElementById('sendBtn').click();
         } else {
-            if (!isTyping && activeConversationId) {
+            if (!isTyping && activeConversationId && ws && ws.readyState === WebSocket.OPEN) {
                 isTyping = true;
                 ws.send(JSON.stringify({ type: 'typing', payload: { conversation_id: activeConversationId }}));
             }
             clearTimeout(typingTimeout);
             typingTimeout = setTimeout(() => {
                 isTyping = false;
-                ws.send(JSON.stringify({ type: 'stop_typing', payload: { conversation_id: activeConversationId }}));
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({ type: 'stop_typing', payload: { conversation_id: activeConversationId }}));
+                }
             }, 2000);
+        }
+    });
+
+    // Image Upload Logic
+    document.getElementById('attachBtn').onclick = () => {
+        document.getElementById('fileInput').click();
+    };
+
+    document.getElementById('fileInput').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file || !activeConversationId || !ws || ws.readyState !== WebSocket.OPEN) return;
+
+        // Visual feedback
+        const attachBtn = document.getElementById('attachBtn');
+        attachBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        attachBtn.disabled = true;
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const response = await fetch('/api/support/upload_image/', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                
+                // Send via WS
+                ws.send(JSON.stringify({
+                    type: 'send_message',
+                    payload: {
+                        conversation_id: activeConversationId,
+                        message: data.url,
+                        message_type: 'image',
+                        sender_type: 'admin'
+                    }
+                }));
+                
+                ws.send(JSON.stringify({ type: 'stop_typing', payload: { conversation_id: activeConversationId }}));
+            } else {
+                alert("Image upload failed.");
+            }
+        } catch (error) {
+            console.error("Upload error:", error);
+            alert("An error occurred during upload.");
+        } finally {
+            // Reset button
+            attachBtn.innerHTML = '<i class="fas fa-paperclip"></i>';
+            attachBtn.disabled = false;
+            document.getElementById('fileInput').value = ''; // clear input
         }
     });
 

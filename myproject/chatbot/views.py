@@ -5,13 +5,21 @@ Completely isolated — no modifications to existing shop views.
 
 import json
 import logging
-
 from django.http import JsonResponse, StreamingHttpResponse
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import ChatSession, ChatMessage
+from mongodb.chat_repository import (
+    create_conversation, 
+    save_message, 
+    get_user_conversations, 
+    get_conversation_messages,
+    delete_conversation,
+    delete_all_user_conversations,
+    rename_conversation
+)
 
 logger = logging.getLogger(__name__)
 
@@ -70,20 +78,33 @@ class ChatAPIView(View):
         try:
             data = json.loads(request.body)
             user_message = data.get('message', '').strip()
+            # The frontend can send a specific conversation_id for MongoDB
+            mongo_conv_id = data.get('conversation_id')
 
             if not user_message:
                 return JsonResponse({'error': 'Message is required.'}, status=400)
 
-            # 1. Get/create session
+            # 1. Get/create PostgreSQL session (keeps existing logic intact)
             session = _get_or_create_session(request)
 
-            # 2. Save user message
+            # MongoDB Logic: If no conversation_id, create one.
+            user_id = request.user.id if request.user.is_authenticated else session.session_key
+            if not mongo_conv_id:
+                # Use first message as title (truncated)
+                title = user_message[:30] + "..." if len(user_message) > 30 else user_message
+                mongo_conv_id = create_conversation(user_id=user_id, title=title)
+
+            # 2. Save user message to PostgreSQL
             ChatMessage.objects.create(
                 session=session,
                 role='user',
                 content=user_message,
                 products_data=[]
             )
+            
+            # Save to MongoDB
+            if mongo_conv_id:
+                save_message(mongo_conv_id, user_id, "user", user_message)
 
             # 3. Get chat history for context
             chat_history = _get_chat_history(session, limit=10)
@@ -188,17 +209,29 @@ class ChatAPIView(View):
                     logger.error(f"Streaming error: {stream_err}", exc_info=True)
                     yield f"event: error\ndata: {json.dumps({'message': 'I encountered an issue processing your request.'})}\n\n"
                 finally:
-                    # Save assistant response to database
+                    # Save assistant response to databases
                     ai_response = "".join(full_text)
                     if ai_response:
+                        # PostgreSQL
                         ChatMessage.objects.create(
                             session=session,
                             role='assistant',
                             content=ai_response,
                             products_data=final_products
                         )
+                        # MongoDB
+                        if mongo_conv_id:
+                            save_message(
+                                mongo_conv_id, 
+                                user_id, 
+                                "assistant", 
+                                ai_response, 
+                                metadata={"products": final_products}
+                            )
 
             response = StreamingHttpResponse(event_stream(), content_type='text/event-stream')
+            # Pass conversation_id in headers so frontend knows the ID for new chats
+            response['X-Conversation-Id'] = mongo_conv_id or ""
             response['Cache-Control'] = 'no-cache'
             response['X-Accel-Buffering'] = 'no'
             return response
@@ -228,6 +261,7 @@ class ChatHistoryAPIView(View):
 
     def get(self, request):
         try:
+            # Use current logic as fallback/default
             session = _get_or_create_session(request)
             messages = ChatMessage.objects.filter(session=session).order_by('created_at')
 
@@ -240,17 +274,30 @@ class ChatHistoryAPIView(View):
                     'timestamp': msg.created_at.isoformat(),
                 })
 
-            # Include current user identifier so frontend can detect login/logout
             current_user = request.user.username if request.user.is_authenticated else None
+            
+            # Fetch MongoDB conversations to populate the sidebar
+            user_id = request.user.id if request.user.is_authenticated else session.session_key
+            mongo_conversations = get_user_conversations(user_id)
+            
+            # Serialize for JSON
+            sidebar_convs = []
+            for c in mongo_conversations:
+                sidebar_convs.append({
+                    "id": c.get("conversation_id"),
+                    "title": c.get("title", "Chat"),
+                    "updated_at": c.get("updated_at").isoformat() if c.get("updated_at") else None
+                })
 
             return JsonResponse({
                 'history': history,
                 'current_user': current_user,
+                'conversations': sidebar_convs
             })
 
         except Exception as e:
             logger.error(f"Chat history error: {e}", exc_info=True)
-            return JsonResponse({'history': [], 'current_user': None})
+            return JsonResponse({'history': [], 'current_user': None, 'conversations': []})
 
 
 # =====================================
@@ -269,9 +316,44 @@ class ChatHistoryDeleteAPIView(View):
     def delete(self, request):
         try:
             session = _get_or_create_session(request)
+            user_id = request.user.id if request.user.is_authenticated else session.session_key
+            
+            # Delete PostgreSQL
             ChatMessage.objects.filter(session=session).delete()
+            
+            # Delete MongoDB
+            delete_all_user_conversations(user_id)
+            
             return JsonResponse({'status': 'ok', 'message': 'Chat history cleared.'})
 
         except Exception as e:
             logger.error(f"Chat history delete error: {e}", exc_info=True)
             return JsonResponse({'error': str(e)}, status=500)
+
+
+# =====================================
+# MONGODB CONVERSATION API
+# =====================================
+
+class MongoConversationAPIView(View):
+    """
+    GET /api/chat/conversations/<id>/
+    DELETE /api/chat/conversations/<id>/
+    """
+    def get(self, request, conv_id):
+        msgs = get_conversation_messages(conv_id)
+        history = []
+        for msg in msgs:
+            history.append({
+                'role': msg.get('sender'),
+                'content': msg.get('message'),
+                'products': msg.get('metadata', {}).get('products', []),
+                'timestamp': msg.get('timestamp').isoformat() if msg.get('timestamp') else None,
+            })
+        return JsonResponse({'history': history})
+
+    def delete(self, request, conv_id):
+        session = _get_or_create_session(request)
+        user_id = request.user.id if request.user.is_authenticated else session.session_key
+        delete_conversation(conv_id, user_id)
+        return JsonResponse({'status': 'ok'})
