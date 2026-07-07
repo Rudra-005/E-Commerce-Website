@@ -1,12 +1,26 @@
 {# Velora AI Shopping Assistant Widget #}
 {# Self-contained: CSS + HTML + JS #}
 
+<!-- Markdown & Purify Dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.5/purify.min.js"></script>
+
 <style>
 /* ============================================
-   VELORA AI CHATBOT WIDGET
-   Isolated styles with .velora-chat prefix
+   VELORA AI CHATBOT WIDGET - SaaS Redesign
+   Isolated styles with .velora- prefix
    ============================================ */
 
+/* Globals restricted to Velora elements */
+.velora-widget-wrapper {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #0f172a;
+}
+.velora-widget-wrapper * {
+    box-sizing: border-box;
+}
+
+/* Floating Action Button (Closed State) */
 .velora-chat-fab {
     position: fixed;
     bottom: 24px;
@@ -14,534 +28,591 @@
     width: 64px;
     height: 64px;
     border-radius: 50%;
-    background: #ffd166;
-    border: 4px solid #000;
-    box-shadow: 4px 4px 0px #000;
+    background: #0f172a; /* Dark Teal / Slate */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15), 0 8px 24px rgba(0,0,0,0.1);
     cursor: pointer;
     z-index: 99999;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    animation: velora-fab-pulse 2s infinite;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
-
 .velora-chat-fab:hover {
-    transform: translate(2px, 2px) scale(1.05);
-    box-shadow: 2px 2px 0px #000;
-    background: #ef476f;
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2), 0 12px 32px rgba(0,0,0,0.15);
 }
-
 .velora-chat-fab svg {
-    width: 30px;
-    height: 30px;
-    fill: #000;
+    width: 32px;
+    height: 32px;
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2;
     transition: transform 0.3s ease;
 }
 
-.velora-chat-fab:hover svg {
-    fill: #fff;
-}
-
-.velora-chat-fab.open svg {
-    transform: rotate(90deg);
-}
-
-@keyframes velora-fab-pulse {
-    0%, 100% { box-shadow: 4px 4px 0px #000, 0 0 0 0 rgba(255,209,102,0.6); }
-    50% { box-shadow: 4px 4px 0px #000, 0 0 0 10px rgba(255,209,102,0); }
-}
-
-/* Chat Panel */
+/* Floating Widget Panel */
 .velora-chat-panel {
     position: fixed;
-    bottom: 100px;
-    right: 24px;
-    width: 400px;
-    height: 580px;
-    max-height: calc(100vh - 130px);
-    background: #fcf8f2;
-    border: 4px solid #000;
-    box-shadow: 10px 10px 0px #000;
+    bottom: 100px; right: 24px;
+    width: 420px; height: 640px;
+    max-height: calc(100vh - 120px);
+    max-width: calc(100vw - 48px);
+    background: #F8FAFC;
+    border-radius: 24px;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.15), 0 4px 16px rgba(0,0,0,0.1);
     z-index: 99998;
     display: flex;
-    flex-direction: column;
-    transform: scale(0) translateY(20px);
-    transform-origin: bottom right;
+    flex-direction: row;
+    overflow: hidden;
     opacity: 0;
     pointer-events: none;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    overflow: hidden;
+    transform: scale(0.95) translateY(20px);
+    transform-origin: bottom right;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
 .velora-chat-panel.open {
-    transform: scale(1) translateY(0);
     opacity: 1;
     pointer-events: auto;
+    transform: scale(1) translateY(0);
 }
 
-/* Header */
-.velora-chat-header {
-    background: linear-gradient(135deg, #118ab2, #073b4c);
+/* Sidebar as an Overlay Drawer */
+.velora-sidebar {
+    position: absolute;
+    top: 0; left: 0; height: 100%;
+    width: 280px;
+    background: #0f172a;
+    color: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 50;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.2);
+}
+.velora-sidebar.closed {
+    transform: translateX(-100%);
+}
+.velora-sidebar-header {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.velora-new-chat-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.1);
     color: #fff;
-    padding: 16px 18px;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+}
+.velora-new-chat-btn:hover {
+    background: rgba(255,255,255,0.15);
+}
+.velora-toggle-sidebar-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 8px;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+}
+.velora-toggle-sidebar-btn:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+}
+
+.velora-history-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+/* Scrollbar for sidebar */
+.velora-history-list::-webkit-scrollbar { width: 4px; }
+.velora-history-list::-webkit-scrollbar-track { background: transparent; }
+.velora-history-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+.velora-chat-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 4px solid #000;
-    flex-shrink: 0;
+    padding: 12px 14px;
+    border-radius: 8px;
+    color: #cbd5e1;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+    border: 1px solid transparent;
 }
-
-.velora-chat-header-left {
+.velora-chat-item .title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
     display: flex;
     align-items: center;
     gap: 10px;
 }
-
-.velora-chat-avatar {
-    width: 36px;
-    height: 36px;
-    background: #ffd166;
-    border: 3px solid #000;
-    border-radius: 50%;
+.velora-chat-item .title svg {
+    flex-shrink: 0;
+    opacity: 0.6;
+}
+.velora-chat-item:hover {
+    background: rgba(255,255,255,0.05);
+}
+.velora-chat-item.active {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-weight: 500;
+}
+.velora-chat-item-delete {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    opacity: 0;
+    transition: 0.2s;
+    padding: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
-    font-weight: 800;
-    color: #000;
-    , sans-serif;
+}
+.velora-chat-item:hover .velora-chat-item-delete {
+    opacity: 1;
+}
+.velora-chat-item-delete:hover {
+    color: #ef4444;
 }
 
-.velora-chat-title {
-    , sans-serif;
-    font-size: 22px;
-    letter-spacing: 1px;
-    
-}
-
-.velora-chat-subtitle {
-    font-size: 11px;
-    opacity: 0.85;
-    font-weight: 600;
-}
-
-.velora-chat-header-actions {
-    display: flex;
-    gap: 6px;
-}
-
-.velora-chat-header-btn {
-    background: rgba(255,255,255,0.15);
-    border: 2px solid rgba(255,255,255,0.3);
-    color: #fff;
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    transition: all 0.15s ease;
-}
-
-/* Sidebar for Chat History */
-.velora-chat-sidebar {
-    position: absolute;
-    top: 0;
-    left: -250px;
-    width: 250px;
-    height: 100%;
-    background: #073b4c;
-    color: #fff;
-    z-index: 99999;
-    border-right: 4px solid #000;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    display: flex;
-    flex-direction: column;
-    padding: 16px;
-}
-
-.velora-chat-sidebar.open {
-    left: 0;
-    box-shadow: 5px 0 10px rgba(0,0,0,0.5);
-}
-
-.velora-chat-new-btn {
-    background: #ffd166;
-    color: #000;
-    border: 2px solid #000;
-    padding: 10px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-bottom: 15px;
-    box-shadow: 2px 2px 0px #000;
-    text-align: center;
-}
-
-.velora-chat-list {
+/* Main Chat Area */
+.velora-main-chat {
     flex: 1;
-    overflow-y: auto;
+    width: 100%;
     display: flex;
     flex-direction: column;
+    background: #F8FAFC;
+    position: relative;
+    min-width: 0;
+}
+
+/* Header */
+.velora-main-header {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    background: #fff;
+    border-bottom: 1px solid #e2e8f0;
+    flex-shrink: 0;
+}
+.velora-header-left, .velora-header-right {
+    display: flex;
+    align-items: center;
     gap: 8px;
 }
-
-.velora-chat-item {
-    background: rgba(255,255,255,0.1);
-    padding: 10px;
-    cursor: pointer;
-    border: 1px solid transparent;
-    font-size: 13px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    border-radius: 4px;
+.velora-header-right {
+    justify-content: flex-end;
 }
-
-.velora-chat-item:hover, .velora-chat-item.active {
-    background: rgba(255,255,255,0.2);
-    border-color: #ffd166;
-}
-
-.velora-chat-item-delete {
-    float: right;
-    background: none;
+.velora-icon-btn {
+    background: transparent;
     border: none;
-    color: #ff6b6b;
+    color: #64748b;
     cursor: pointer;
-    font-size: 12px;
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.2s;
+    flex-shrink: 0;
+}
+.velora-icon-btn:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+.velora-logo {
+    display: none; /* Hide logo to save space in small widget */
 }
 
-.velora-chat-header-btn:hover {
-    background: rgba(255,255,255,0.3);
-    border-color: #fff;
+/* Segmented Control */
+.velora-segmented-control {
+    display: flex;
+    background: #f1f5f9;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    margin: 0 8px;
+}
+.velora-segment {
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+.velora-segment.active {
+    background: #fff;
+    color: #0f172a;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-/* Messages Area */
-.velora-chat-messages {
+/* Messages Container */
+.velora-messages-container {
     flex: 1;
     overflow-y: auto;
-    padding: 16px;
+    padding: 24px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    background-image: radial-gradient(#e8ddd0 15%, transparent 16%);
-    background-size: 12px 12px;
+    gap: 24px;
+    scroll-behavior: smooth;
 }
+.velora-messages-container::-webkit-scrollbar { width: 6px; }
+.velora-messages-container::-webkit-scrollbar-track { background: transparent; }
+.velora-messages-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+.velora-messages-container::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-.velora-chat-messages::-webkit-scrollbar {
-    width: 8px;
+.velora-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #475569;
+    text-align: center;
+    animation: velora-fade-in 0.5s ease;
 }
-.velora-chat-messages::-webkit-scrollbar-thumb {
-    background: #000;
-    border: 2px solid #fcf8f2;
-    border-radius: 4px;
+.velora-empty-icon {
+    font-size: 48px;
+    margin-bottom: 24px;
+}
+.velora-empty-state h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #0f172a;
+}
+.velora-empty-state p {
+    font-size: 15px;
+    color: #64748b;
+    max-width: 400px;
+    line-height: 1.5;
 }
 
 /* Message Bubbles */
 .velora-msg {
-    max-width: 85%;
-    padding: 12px 16px;
-    border: 3px solid #000;
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 1.5;
-    , sans-serif;
-    word-wrap: break-word;
-    position: relative;
-    box-shadow: 3px 3px 0px #000;
-    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    max-width: 75%;
+    animation: velora-slide-up 0.3s ease;
+}
+@keyframes velora-slide-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes velora-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .velora-msg-user {
     align-self: flex-end;
-    background: #ffd166;
-    margin-left: 30px;
+}
+.velora-msg-user .velora-msg-bubble {
+    background: linear-gradient(135deg, #F59E0B, #D97706);
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 18px;
+    border-bottom-right-radius: 4px;
+    font-size: 15px;
+    line-height: 1.5;
+    box-shadow: 0 2px 4px rgba(217, 119, 6, 0.2);
 }
 
 .velora-msg-assistant {
     align-self: flex-start;
+}
+.velora-msg-assistant .velora-msg-bubble {
     background: #fff;
-    margin-right: 30px;
+    color: #1e293b;
+    padding: 16px 20px;
+    border-radius: 18px;
+    border-bottom-left-radius: 4px;
+    font-size: 15px;
+    line-height: 1.6;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+}
+
+.velora-msg-system {
+    align-self: center;
+    background: #f1f5f9;
+    color: #475569;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    margin: 8px 0;
+    border: 1px solid #e2e8f0;
 }
 
 .velora-msg-time {
-    font-size: 10px;
-    color: #555;
+    font-size: 11px;
     margin-top: 6px;
-    font-weight: bold;
+    opacity: 0.7;
     text-align: right;
 }
-
-/* Product Cards in Chat */
-.velora-chat-products {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 10px;
-}
-
-.velora-chat-product-card {
-    background: #fff;
-    border: 3px solid #000;
-    box-shadow: 4px 4px 0px #000;
-    display: flex;
-    gap: 12px;
-    padding: 12px;
-    transition: all 0.2s ease;
-    text-decoration: none;
-    color: #000;
-    cursor: pointer;
-}
-
-.velora-chat-product-card:hover {
-    transform: translate(2px, 2px);
-    box-shadow: 2px 2px 0px #000;
-    background: #ffd166;
-}
-
-.velora-chat-product-img {
-    width: 64px;
-    height: 64px;
-    object-fit: cover;
-    border: 2px solid #000;
-    flex-shrink: 0;
-    background: #fff;
-}
-
-.velora-chat-product-info {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.velora-chat-product-name {
-    , sans-serif;
-    font-size: 16px;
-    letter-spacing: 0.5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 2px;
-}
-
-.velora-chat-product-price {
-    , sans-serif;
-    color: #ef476f;
-    font-size: 16px;
-    
-}
-
-.velora-chat-product-cat {
-    font-size: 10px;
-    color: #666;
-    font-weight: 800;
-    text-transform: uppercase;
-}
-
-.velora-chat-product-btn {
-    , sans-serif;
-    background: #118ab2;
+.velora-msg-user .velora-msg-time {
     color: #fff;
-    border: 2.5px solid #000;
-    padding: 6px 12px;
-    font-size: 14px;
-    cursor: pointer;
-    letter-spacing: 0.5px;
-    align-self: center;
-    flex-shrink: 0;
-    text-decoration: none;
-    display: inline-block;
-    box-shadow: 2px 2px 0px #000;
-    transition: all 0.1s ease;
+}
+.velora-msg-assistant .velora-msg-time {
+    color: #94a3b8;
 }
 
-.velora-chat-product-card:hover .velora-chat-product-btn {
-    background: #ef476f;
-    transform: translate(1px, 1px);
-    box-shadow: 1px 1px 0px #000;
+/* Markdown Styling */
+.velora-markdown p { margin-bottom: 12px; }
+.velora-markdown p:last-child { margin-bottom: 0; }
+.velora-markdown strong { font-weight: 600; color: #0f172a; }
+.velora-markdown ul, .velora-markdown ol { margin-left: 20px; margin-bottom: 12px; }
+.velora-markdown li { margin-bottom: 4px; }
+.velora-markdown code {
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 13px;
+    color: #ef4444;
+}
+.velora-markdown pre {
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 12px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin-bottom: 12px;
+}
+.velora-markdown pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
 }
 
 /* Typing Indicator */
 .velora-typing {
+    display: none;
     align-self: flex-start;
     background: #fff;
-    border: 3px solid #000;
-    box-shadow: 3px 3px 0px #000;
     padding: 12px 18px;
-    display: none;
-    gap: 5px;
+    border-radius: 18px;
+    border-bottom-left-radius: 4px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     align-items: center;
-    max-width: 80px;
+    gap: 6px;
 }
-
 .velora-typing.show {
     display: flex;
 }
-
-.velora-typing-dot {
-    width: 8px;
-    height: 8px;
-    background: #118ab2;
+.velora-typing span {
+    width: 6px; height: 6px;
+    background: #94a3b8;
     border-radius: 50%;
-    animation: velora-bounce 1.4s infinite ease-in-out both;
+    animation: velora-typing-dot 1s infinite;
 }
-
-.velora-typing-dot:nth-child(1) { animation-delay: -0.32s; }
-.velora-typing-dot:nth-child(2) { animation-delay: -0.16s; }
-.velora-typing-dot:nth-child(3) { animation-delay: 0s; }
-
-@keyframes velora-bounce {
-    0%, 80%, 100% { transform: scale(0.5); opacity: 0.4; }
-    40% { transform: scale(1); opacity: 1; }
-}
-
-/* Suggested Questions */
-.velora-suggestions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
-    justify-content: center;
-}
-
-.velora-suggestion-chip {
-    background: #fff;
-    border: 2px solid #000;
-    box-shadow: 3px 3px 0px #000;
-    padding: 6px 12px;
-    font-size: 12px;
-    font-weight: 800;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    , sans-serif;
-    color: #000;
-}
-
-.velora-suggestion-chip:hover {
-    background: #ffd166;
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0px #000;
+.velora-typing span:nth-child(2) { animation-delay: 0.2s; }
+.velora-typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes velora-typing-dot {
+    0%, 100% { transform: translateY(0); opacity: 0.5; }
+    50% { transform: translateY(-4px); opacity: 1; }
 }
 
 /* Input Area */
-.velora-chat-input-area {
-    display: flex;
-    padding: 12px;
-    gap: 8px;
-    border-top: 4px solid #000;
-    background: #fff;
+.velora-input-container {
+    padding: 20px;
+    background: transparent;
     flex-shrink: 0;
 }
-
+.velora-input-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.velora-input-box {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    border-radius: 20px;
+    padding: 8px 12px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    transition: 0.2s;
+}
+.velora-input-box:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+.velora-attach-btn {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: 0.2s; flex-shrink: 0;
+}
+.velora-attach-btn:hover:not(:disabled) {
+    background: #f1f5f9; color: #0f172a;
+}
 .velora-chat-input {
     flex: 1;
-    border: 3px solid #000;
-    padding: 12px 14px;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 15px;
+    resize: none;
+    max-height: 200px;
+    padding: 8px 4px;
+    color: #0f172a;
+    line-height: 1.5;
+}
+.velora-chat-input::placeholder {
+    color: #94a3b8;
+}
+.velora-send-btn {
+    background: #f1f5f9;
+    color: #94a3b8;
+    border: none;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: 0.2s; flex-shrink: 0;
+}
+.velora-send-btn.active {
+    background: #0f172a;
+    color: #fff;
+}
+.velora-send-btn.active:hover {
+    background: #1e293b;
+    transform: translateY(-1px);
+}
+.velora-footer-text {
+    text-align: center;
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+/* Product Cards */
+.velora-chat-products {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 12px;
+}
+.velora-chat-product-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px;
+    width: 220px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: 0.2s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.velora-chat-product-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transform: translateY(-2px);
+}
+.product-img-wrapper {
+    width: 100%;
+    height: 120px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.product-img-wrapper img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+.product-info h4 {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #0f172a;
+}
+.product-price {
     font-size: 14px;
     font-weight: 700;
-    , sans-serif;
-    background: #fcf8f2;
-    outline: none;
-    transition: all 0.15s ease;
+    color: #10b981;
+    margin-bottom: 8px;
 }
-
-.velora-chat-input:focus {
-    background: #fff;
-    box-shadow: 3px 3px 0px #ffd166;
-}
-
-.velora-chat-input::placeholder {
-    color: #888;
-    font-weight: 700;
-}
-
-.velora-chat-send {
-    background: #118ab2;
-    color: #fff;
-    border: 3px solid #000;
-    box-shadow: 3px 3px 0px #000;
-    padding: 10px 18px;
-    , sans-serif;
-    font-size: 20px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    letter-spacing: 1px;
-}
-
-.velora-chat-send:hover {
-    background: #ffd166;
-    color: #000;
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0px #000;
-}
-
-.velora-chat-send:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* Welcome Message */
-.velora-welcome {
+.product-btn {
+    background: #f1f5f9;
+    color: #0f172a;
+    font-size: 12px;
+    font-weight: 600;
     text-align: center;
-    padding: 16px 10px;
-    background: #fff;
-    border: 3px solid #000;
-    box-shadow: 4px 4px 0px #000;
-    margin-bottom: 12px;
+    padding: 6px;
+    border-radius: 6px;
+    transition: 0.2s;
 }
-
-.velora-welcome-icon {
-    font-size: 44px;
-    margin-bottom: 8px;
-    animation: velora-bounce 2s infinite ease-in-out;
-}
-
-.velora-welcome h4 {
-    , sans-serif;
-    font-size: 26px;
-    letter-spacing: 1px;
-    
-    margin-bottom: 8px;
-}
-
-.velora-welcome p {
-    font-size: 13px;
-    font-weight: 700;
-    color: #444;
-    margin-bottom: 14px;
-    line-height: 1.4;
+.velora-chat-product-card:hover .product-btn {
+    background: #e2e8f0;
 }
 
 /* Mobile Responsive */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
     .velora-chat-panel {
-        width: 100%;
-        height: 100%;
-        max-height: 100%;
-        bottom: 0;
-        right: 0;
-        border: none;
-        box-shadow: none;
+        flex-direction: column;
     }
-
-    .velora-chat-fab {
-        bottom: 16px;
-        right: 16px;
-        width: 56px;
-        height: 56px;
+    .velora-sidebar {
+        position: absolute;
+        top: 0; left: 0; height: 100%;
+        z-index: 10;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.2);
     }
-
-    .velora-chat-panel.open ~ .velora-chat-fab {
-        display: none;
+    .velora-msg {
+        max-width: 90%;
     }
+    .velora-header-left, .velora-header-right {
+        width: auto;
+    }
+    .velora-logo { display: none; }
+    .velora-sidebar-header { margin-top: 40px; }
 }
 
-/* Floating Back Button */
+/* Floating Back Button Override */
 .velora-back-fab {
     position: fixed;
     bottom: 24px;
@@ -549,304 +620,580 @@
     width: 64px;
     height: 64px;
     border-radius: 50%;
-    background: #ffd166;
-    border: 4px solid #000;
-    box-shadow: 4px 4px 0px #000;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     cursor: pointer;
     z-index: 99999;
     display: none;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.3s ease;
 }
-
 .velora-back-fab:hover {
-    transform: translate(2px, 2px) scale(1.05);
-    box-shadow: 2px 2px 0px #000;
-    background: #ef476f;
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
 }
-
 .velora-back-fab svg {
-    width: 30px;
-    height: 30px;
-    fill: #000;
-    transition: transform 0.3s ease;
-}
-
-.velora-back-fab:hover svg {
-    fill: #fff;
-    transform: translateX(-4px);
-}
-
-@media (max-width: 480px) {
-    .velora-back-fab {
-        bottom: 16px;
-        left: 16px;
-        width: 56px;
-        height: 56px;
-    }
+    width: 24px; height: 24px;
+    stroke: #0f172a; stroke-width: 2; fill: none;
 }
 </style>
 
-<!-- Floating Back Button -->
-<div class="velora-back-fab" id="veloraBackFab" title="Go Back">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-    </svg>
-</div>
-
-<!-- Floating Chat Button -->
-<div class="velora-chat-fab" id="veloraChatFab" title="Chat with Velora AI">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
-        <circle cx="8" cy="10" r="1.2"/>
-        <circle cx="12" cy="10" r="1.2"/>
-        <circle cx="16" cy="10" r="1.2"/>
-    </svg>
-</div>
-
-<!-- Chat Panel -->
-<div class="velora-chat-panel" id="veloraChatPanel">
-    <!-- Sidebar -->
-    <div class="velora-chat-sidebar" id="veloraChatSidebar">
-        <div class="velora-chat-new-btn" id="veloraChatNewBtn">
-            + New Chat
-        </div>
-        <div class="velora-chat-list" id="veloraChatList">
-            <!-- Dynamically populated -->
-        </div>
+<div class="velora-widget-wrapper">
+    <!-- Floating Back Button -->
+    <div class="velora-back-fab" id="veloraBackFab" title="Go Back">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
     </div>
 
-    <!-- Header -->
-    <div class="velora-chat-header">
-        <div class="velora-chat-header-left">
-            <button class="velora-chat-header-btn" id="veloraSidebarToggle" style="margin-right: 10px;">☰</button>
-            <div class="velora-chat-avatar" id="veloraChatAvatar">✦</div>
-            <div>
-                <div class="velora-chat-title" id="veloraChatTitle">Velora AI</div>
-                <div class="velora-chat-subtitle" id="veloraChatSubtitle">Shopping Assistant</div>
+    <!-- Floating Chat Button -->
+    <div class="velora-chat-fab" id="veloraChatFab" title="Chat with Velora AI">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+    </div>
+
+    <!-- Main Full Screen Panel -->
+    <div class="velora-chat-panel" id="veloraChatPanel">
+        
+        <!-- Sidebar -->
+        <div class="velora-sidebar closed" id="veloraSidebar">
+            <div class="velora-sidebar-header">
+                <button class="velora-toggle-sidebar-btn" id="veloraMobileCloseSidebar" style="display:none;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                </button>
+                <button class="velora-new-chat-btn" id="veloraNewChatBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                    New Chat
+                </button>
             </div>
-        </div>
-        <div class="velora-chat-header-actions">
-            <button class="velora-chat-header-btn" id="veloraLiveSupportToggle" title="Chat with Live Support">🎧</button>
-            <button class="velora-chat-header-btn" id="veloraChatClear" title="Clear chat">🗑</button>
-            <button class="velora-chat-header-btn" id="veloraChatClose" title="Close">✕</button>
-        </div>
-    </div>
-
-    <!-- Messages -->
-    <div class="velora-chat-messages" id="veloraChatMessages">
-        <!-- Welcome Message -->
-        <div class="velora-welcome" id="veloraWelcome">
-            <div class="velora-welcome-icon">🛍️</div>
-            <h4>Hey! I'm Velora AI</h4>
-            <p>I can help you find products, compare options, and discover great deals. Ask me anything!</p>
-            <div class="velora-suggestions" id="veloraSuggestions">
-                <div class="velora-suggestion-chip" data-query="Recommend a laptop under ₹50000">💻 Laptop under ₹50000</div>
-                <div class="velora-suggestion-chip" data-query="Best products for students">🎓 Best for students</div>
-                <div class="velora-suggestion-chip" data-query="Show me gaming accessories">🎮 Gaming accessories</div>
-                <div class="velora-suggestion-chip" data-query="Trending products right now">🔥 Trending products</div>
+            <div class="velora-history-list" id="veloraChatList">
+                <!-- populated by JS -->
             </div>
         </div>
 
-        <!-- Typing indicator -->
-        <div class="velora-typing" id="veloraTyping">
-            <div class="velora-typing-dot"></div>
-            <div class="velora-typing-dot"></div>
-            <div class="velora-typing-dot"></div>
-        </div>
-    </div>
+        <!-- Main Chat Area -->
+        <div class="velora-main-chat">
+            
+            <!-- Header -->
+            <div class="velora-main-header">
+                <div class="velora-header-left">
+                    <button class="velora-icon-btn" id="veloraToggleSidebarBtn" title="Toggle Sidebar">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    </button>
+                    <div class="velora-logo">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                        Velora AI
+                    </div>
+                </div>
+                
+                <div class="velora-segmented-control">
+                    <div class="velora-segment active" id="segShopping">Shopping AI</div>
+                    <div class="velora-segment" id="segSupport">Live Support</div>
+                </div>
 
-    <!-- Input -->
-    <div class="velora-chat-input-area">
-        <button id="veloraChatAttach" title="Send Image" style="background:none; border:none; font-size:22px; cursor:pointer; display:none; padding: 0 5px; color: #118ab2; transition: transform 0.1s;">
-            <i class="fas fa-paperclip" style="pointer-events:none;"></i>
-        </button>
-        <input type="file" id="veloraChatFileInput" accept="image/*" style="display:none;">
-        <input
-            type="text"
-            class="velora-chat-input"
-            id="veloraChatInput"
-            placeholder="Ask about products..."
-            autocomplete="off"
-        >
-        <button class="velora-chat-send" id="veloraChatSend">
-            ➤
-        </button>
+                <div class="velora-header-right">
+                    <button class="velora-icon-btn" id="veloraClosePanelBtn" title="Close Chat">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            <div class="velora-messages-container" id="veloraMessages">
+                <div class="velora-empty-state" id="veloraWelcome">
+                    <div class="velora-empty-icon">👋</div>
+                    <h2>Welcome to Velora</h2>
+                    <p>Ask me about products, find laptops, compare mobiles, or search fashion.</p>
+                </div>
+                <!-- messages go here -->
+                
+                <div class="velora-typing" id="veloraTyping">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="velora-input-container">
+                <div class="velora-input-wrapper">
+                    <div class="velora-input-box">
+                        <button class="velora-attach-btn" id="veloraChatAttach" title="Attach Image" style="display:none;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                        </button>
+                        <input type="file" id="veloraChatFileInput" accept="image/*" style="display:none;">
+                        
+                        <textarea class="velora-chat-input" id="veloraChatInput" placeholder="Message Velora AI..." rows="1"></textarea>
+                        
+                        <button class="velora-send-btn" id="veloraChatSend" disabled>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        </button>
+                    </div>
+                    <div class="velora-footer-text">Velora AI can make mistakes. Check important info.</div>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
 
 <script>
 (function() {
-    'use strict';
+    // Configure Marked.js
+    if (typeof marked !== 'undefined') {
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            headerIds: false
+        });
+    }
 
     // ── Elements ──
     const fab = document.getElementById('veloraChatFab');
     const panel = document.getElementById('veloraChatPanel');
+    const closePanelBtn = document.getElementById('veloraClosePanelBtn');
+    const sidebar = document.getElementById('veloraSidebar');
+    const toggleSidebarBtn = document.getElementById('veloraToggleSidebarBtn');
+    const mobileCloseSidebar = document.getElementById('veloraMobileCloseSidebar');
+    const newChatBtn = document.getElementById('veloraNewChatBtn');
+    const chatListEl = document.getElementById('veloraChatList');
+    
+    const messagesEl = document.getElementById('veloraMessages');
+    const welcomeEl = document.getElementById('veloraWelcome');
+    const typingEl = document.getElementById('veloraTyping');
+    
     const input = document.getElementById('veloraChatInput');
     const sendBtn = document.getElementById('veloraChatSend');
-    const closeBtn = document.getElementById('veloraChatClose');
-    const clearBtn = document.getElementById('veloraChatClear');
-    const messagesEl = document.getElementById('veloraChatMessages');
-    const typingEl = document.getElementById('veloraTyping');
-    const welcomeEl = document.getElementById('veloraWelcome');
-    const suggestions = document.querySelectorAll('.velora-suggestion-chip');
+    
+    const segShopping = document.getElementById('segShopping');
+    const segSupport = document.getElementById('segSupport');
+    const attachBtn = document.getElementById('veloraChatAttach');
 
-    let isOpen = false;
+    // ── State ──
     let isSending = false;
+    let currentConversationId = null;
+    let loadedForUser = '__not_loaded__';
     let currentMode = 'ai'; // 'ai' or 'support'
+    
+    // Live Support State
     let supportWs = null;
     let supportConvId = null;
-    const isAuthenticated = {{ request.user.is_authenticated|yesno:"true,false" }};
-    const currentUserId = {{ request.user.id|default:"null" }};
-
-    const chatTitle = document.getElementById('veloraChatTitle');
-    const chatSubtitle = document.getElementById('veloraChatSubtitle');
-    const chatAvatar = document.getElementById('veloraChatAvatar');
-    const liveSupportToggle = document.getElementById('veloraLiveSupportToggle');
-    const sidebarToggle = document.getElementById('veloraSidebarToggle');
-    const sidebarEl = document.getElementById('veloraChatSidebar');
-    const newChatBtn = document.getElementById('veloraChatNewBtn');
-    const chatListEl = document.getElementById('veloraChatList');
-
-    let currentConversationId = null;
     let idleTimer = null;
     let warningTimer = null;
+    const isAuthenticated = "{{ request.user.is_authenticated|yesno:'true,false' }}" === "true";
+    const currentUserId = "{{ request.user.id|default:'null' }}";
 
-    // ── User-aware session tracking ──
-    let loadedForUser = '__not_loaded__';
+    // ── Initialization ──
+    // Sidebar starts closed by default for overlay layout
 
-    function resetIdleTimer() {
-        clearTimeout(idleTimer);
-        clearTimeout(warningTimer);
-        
-        // Only run timer if in support mode and chat is not closed
-        if (currentMode === 'support' && !input.disabled) {
-            idleTimer = setTimeout(() => {
-                addIdleWarningMessage("Do you want to terminate the session?");
-                
-                // Start warning countdown for auto-terminate
-                warningTimer = setTimeout(() => {
-                    if (supportWs && supportConvId) {
-                        supportWs.send(JSON.stringify({ type: 'end_chat', payload: { conversation_id: supportConvId }}));
-                    }
-                }, 30000); // 30 seconds to reply
-            }, 30000); // 30 seconds idle
-        }
-    }
-
-    function clearChatDOM() {
-        const msgs = messagesEl.querySelectorAll('.velora-msg, .velora-chat-products');
-        msgs.forEach(function(m) { m.remove(); });
-        welcomeEl.style.display = 'block';
-    }
-
-    // ── Toggle Panel ──
-    fab.addEventListener('click', function() {
-        isOpen = !isOpen;
-        panel.classList.toggle('open', isOpen);
-        fab.classList.toggle('open', isOpen);
-        if (isOpen) {
-            input.focus();
-            if (currentMode === 'ai') {
-                loadHistory();
-            } else {
-                loadSupportHistory();
-            }
+    // Toggle Panel
+    fab.addEventListener('click', () => {
+        panel.classList.add('open');
+        if (loadedForUser === '__not_loaded__') {
+            loadHistory();
         }
     });
-
-    closeBtn.addEventListener('click', function() {
-        isOpen = false;
+    closePanelBtn.addEventListener('click', () => {
         panel.classList.remove('open');
-        fab.classList.remove('open');
     });
 
-    // ── Send Message ──
-    sendBtn.addEventListener('click', sendMessage);
+    // Toggle Sidebar
+    toggleSidebarBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('closed');
+    });
+    if (mobileCloseSidebar) {
+        mobileCloseSidebar.addEventListener('click', () => {
+            sidebar.classList.add('closed');
+        });
+    }
+
+    // Auto-resize textarea
+    input.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight < 200 ? this.scrollHeight : 200) + 'px';
+        if(this.value.trim() !== '') {
+            sendBtn.disabled = false;
+            sendBtn.classList.add('active');
+        } else {
+            sendBtn.disabled = true;
+            sendBtn.classList.remove('active');
+        }
+    });
+
     input.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            sendMessage();
+            if(!sendBtn.disabled) sendMessage();
         }
     });
 
-    // ── Suggestion Chips ──
-    suggestions.forEach(function(chip) {
-        chip.addEventListener('click', function() {
-            input.value = this.dataset.query;
-            sendMessage();
+    sendBtn.addEventListener('click', sendMessage);
+
+    // ── Core Functions ──
+    function clearChatDOM() {
+        // Remove all messages and product containers
+        const msgs = messagesEl.querySelectorAll('.velora-msg, .velora-msg-system, .velora-chat-products');
+        msgs.forEach(m => m.remove());
+        welcomeEl.style.display = 'flex';
+    }
+
+    function scrollToBottom() {
+        setTimeout(() => {
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }, 50);
+    }
+
+    function addMessage(role, text, messageType = 'text') {
+        const div = document.createElement('div');
+        div.className = 'velora-msg velora-msg-' + role;
+
+        let contentHtml = '';
+        if (messageType === 'image') {
+            contentHtml = `<img src="${text}" style="max-width:250px; border-radius:12px; cursor:pointer;" onclick="window.open('${text}', '_blank')"/>`;
+        } else {
+            // Apply markdown if available
+            if (typeof marked !== 'undefined' && typeof DOMPurify !== 'undefined') {
+                contentHtml = `<div class="velora-markdown">${DOMPurify.sanitize(marked.parse(text || ''))}</div>`;
+            } else {
+                contentHtml = (text || '').replace(/\n/g, '<br>');
+            }
+        }
+
+        const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+        div.innerHTML = `
+            <div class="velora-msg-bubble">
+                ${contentHtml}
+            </div>
+            <div class="velora-msg-time">${timeStr}</div>
+        `;
+
+        messagesEl.insertBefore(div, typingEl);
+        scrollToBottom();
+    }
+
+    function addSystemMessage(text) {
+        const div = document.createElement('div');
+        div.className = 'velora-msg-system';
+        div.innerText = text;
+        messagesEl.insertBefore(div, typingEl);
+        scrollToBottom();
+    }
+
+    // ── Streaming Message Helper ──
+    function addStreamingMessageBubble(role) {
+        const div = document.createElement('div');
+        div.className = 'velora-msg velora-msg-' + role;
+        
+        const bubble = document.createElement('div');
+        bubble.className = 'velora-msg-bubble velora-markdown';
+        
+        const timeDiv = document.createElement('div');
+        timeDiv.className = 'velora-msg-time';
+        timeDiv.innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+        div.appendChild(bubble);
+        div.appendChild(timeDiv);
+        
+        messagesEl.insertBefore(div, typingEl);
+        return bubble;
+    }
+
+    function addProductCards(products) {
+        if (!products || products.length === 0) return;
+        const container = document.createElement('div');
+        container.className = 'velora-chat-products';
+        
+        products.forEach(p => {
+            const card = document.createElement('a');
+            card.href = `/product/${p.id}/`;
+            card.className = 'velora-chat-product-card';
+            card.target = '_blank';
+            
+            let priceHtml = `₹${p.price}`;
+            if (p.discount_price) {
+                priceHtml = `<span style="text-decoration:line-through; color:#94a3b8; font-size:12px; margin-right:6px;">₹${p.price}</span>₹${p.discount_price}`;
+            }
+
+            card.innerHTML = `
+                <div class="product-img-wrapper">
+                    <img src="${p.image_url}" alt="${p.name}">
+                </div>
+                <div class="product-info">
+                    <h4>${p.name}</h4>
+                    <div class="product-price">${priceHtml}</div>
+                    <div class="product-btn">View Product</div>
+                </div>
+            `;
+            container.appendChild(card);
         });
-    });
 
-    // ── Sidebar Toggle ──
-    sidebarToggle.addEventListener('click', function() {
-        sidebarEl.classList.toggle('open');
-    });
+        messagesEl.insertBefore(container, typingEl);
+        scrollToBottom();
+    }
 
-    // ── New Chat ──
-    newChatBtn.addEventListener('click', function() {
-        currentConversationId = null;
+    // ── API Interactions (AI Mode) ──
+    function loadHistory() {
+        fetch('/api/chat/history/')
+        .then(res => res.json())
+        .then(data => {
+            const serverUser = data.current_user || '__anonymous__';
+
+            if (loadedForUser !== '__not_loaded__' && loadedForUser !== serverUser) {
+                clearChatDOM();
+                currentConversationId = null;
+            }
+            loadedForUser = serverUser;
+
+            // Render Sidebar
+            if (data.conversations) {
+                chatListEl.innerHTML = '';
+                data.conversations.forEach(c => {
+                    const item = document.createElement('div');
+                    item.className = `velora-chat-item ${c.id === currentConversationId ? 'active' : ''}`;
+                    
+                    item.innerHTML = `
+                        <div class="title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                            ${c.title}
+                        </div>
+                    `;
+                    
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'velora-chat-item-delete';
+                    delBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>';
+                    delBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        if (confirm('Delete this chat?')) deleteConversation(c.id);
+                    };
+                    item.appendChild(delBtn);
+
+                    item.onclick = () => {
+                        sidebar.classList.add('closed');
+                        loadConversation(c.id);
+                    };
+                    chatListEl.appendChild(item);
+                });
+            }
+
+            const existingMsgs = messagesEl.querySelectorAll('.velora-msg');
+            if (existingMsgs.length > 0) return;
+
+            if (data.history && data.history.length > 0 && !currentConversationId && (!data.conversations || data.conversations.length===0)) {
+                // Legacy fallback
+                welcomeEl.style.display = 'none';
+                data.history.forEach(msg => {
+                    addMessage(msg.role, msg.content);
+                    if (msg.role === 'assistant' && msg.products && msg.products.length > 0) {
+                        addProductCards(msg.products);
+                    }
+                });
+            }
+            // Removed auto-load of most recent chat to allow starting fresh chats
+        })
+        .catch(err => console.error('Failed to load history:', err));
+    }
+
+    function loadConversation(convId) {
+        currentConversationId = convId;
         clearChatDOM();
-        sidebarEl.classList.remove('open');
-    });
+        
+        // Highlight active
+        document.querySelectorAll('.velora-chat-item').forEach(el => el.classList.remove('active'));
+        
+        // Find and add active class
+        loadHistory(); 
 
-    // ── Clear All Chat (Postgres fallback) ──
-    clearBtn.addEventListener('click', function() {
-        if (!confirm('Clear ALL chat history?')) return;
-        if (currentMode === 'ai') {
-            fetch('/api/chat/history/delete/', {
-                method: 'DELETE',
-                headers: { 'X-CSRFToken': getCSRFToken() }
-            }).then(function() {
+        fetch(`/api/chat/conversations/${convId}/`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.history) {
+                welcomeEl.style.display = 'none';
+                data.history.forEach(msg => {
+                    addMessage(msg.role, msg.content);
+                    if (msg.role === 'assistant' && msg.products && msg.products.length > 0) {
+                        addProductCards(msg.products);
+                    }
+                });
+            }
+        });
+    }
+
+    function deleteConversation(convId) {
+        fetch(`/api/chat/conversations/${convId}/`, {
+            method: 'DELETE',
+            headers: { 'X-CSRFToken': getCSRFToken() }
+        }).then(() => {
+            if (currentConversationId === convId) {
                 currentConversationId = null;
                 clearChatDOM();
-                chatListEl.innerHTML = '';
-            });
-        } else {
-            clearChatDOM();
-        }
+            }
+            loadHistory();
+        });
+    }
+
+    newChatBtn.addEventListener('click', () => {
+        currentConversationId = null;
+        clearChatDOM();
+        sidebar.classList.add('closed');
+        loadHistory(); // update highlights
     });
 
-    // ── Live Support Toggle ──
-    liveSupportToggle.addEventListener('click', function() {
-        if (!isAuthenticated) {
+    async function sendMessage() {
+        const text = input.value.trim();
+        if (!text || isSending) return;
+
+        welcomeEl.style.display = 'none';
+        addMessage('user', text);
+        
+        input.value = '';
+        input.style.height = 'auto'; // reset textarea
+        sendBtn.disabled = true;
+        sendBtn.classList.remove('active');
+        isSending = true;
+
+        if (currentMode === 'support') {
+            if (supportWs && supportConvId) {
+                supportWs.send(JSON.stringify({
+                    type: 'send_message',
+                    payload: { conversation_id: supportConvId, message: text }
+                }));
+                supportWs.send(JSON.stringify({ type: 'stop_typing', payload: { conversation_id: supportConvId }}));
+            }
+            isSending = false;
+            input.focus();
+            scrollToBottom();
+            resetIdleTimer();
+            return;
+        }
+
+        typingEl.classList.add('show');
+        scrollToBottom();
+
+        try {
+            const response = await fetch('/api/chat/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({ 
+                    message: text,
+                    conversation_id: currentConversationId
+                })
+            });
+
+            if (!response.ok) throw new Error('Network response was not ok');
+
+            const newConvId = response.headers.get('X-Conversation-Id');
+            if (newConvId && currentConversationId !== newConvId) {
+                currentConversationId = newConvId;
+                loadHistory(); // Refresh sidebar to show new chat title
+            }
+
+            typingEl.classList.remove('show');
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder('utf-8');
+            let buffer = '';
+            
+            let contentSpan = null;
+            let fullRawText = '';
+
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const blocks = buffer.split('\n\n');
+                buffer = blocks.pop(); 
+
+                for (const block of blocks) {
+                    if (!block.trim()) continue;
+
+                    let event = 'content';
+                    let dataStr = '';
+
+                    const lines = block.split('\n');
+                    for (const line of lines) {
+                        if (line.startsWith('event:')) event = line.replace('event:', '').trim();
+                        else if (line.startsWith('data:')) dataStr = line.replace('data:', '').trim();
+                    }
+
+                    if (dataStr) {
+                        try {
+                            const parsedData = JSON.parse(dataStr);
+                            
+                            if (event === 'products') {
+                                if (parsedData && parsedData.length > 0) addProductCards(parsedData);
+                            } else if (event === 'content') {
+                                if (!contentSpan) contentSpan = addStreamingMessageBubble('assistant');
+                                
+                                fullRawText += parsedData;
+                                
+                                // Render markdown
+                                if (typeof marked !== 'undefined' && typeof DOMPurify !== 'undefined') {
+                                    contentSpan.innerHTML = DOMPurify.sanitize(marked.parse(fullRawText));
+                                } else {
+                                    contentSpan.innerHTML = fullRawText.replace(/\n/g, '<br>');
+                                }
+                                scrollToBottom();
+                            } else if (event === 'error') {
+                                if (!contentSpan) contentSpan = addStreamingMessageBubble('assistant');
+                                contentSpan.innerHTML += `<span style="color: #ef4444;">${parsedData.message || "An error occurred."}</span>`;
+                                scrollToBottom();
+                            }
+                        } catch (e) {
+                            console.error('Parse stream error:', e);
+                        }
+                    }
+                }
+            }
+        } catch (err) {
+            typingEl.classList.remove('show');
+            addMessage('assistant', "Oops! I encountered an error. Please try again.");
+            console.error(err);
+        } finally {
+            isSending = false;
+            input.focus();
+            scrollToBottom();
+        }
+    }
+
+    // ── Segmented Control Logic (Mode Switch) ──
+    segShopping.addEventListener('click', () => switchMode('ai'));
+    segSupport.addEventListener('click', () => switchMode('support'));
+
+    function switchMode(mode) {
+        if (mode === 'support' && !isAuthenticated) {
             alert('Please log in to use Live Support.');
             return;
         }
         
-        liveSupportToggle.style.color = ''; // reset notification color
-        
-        if (currentMode === 'ai') {
-            currentMode = 'support';
-            chatTitle.innerText = 'Live Support';
-            chatSubtitle.innerText = 'Chat with an Admin';
-            chatAvatar.innerText = '🎧';
-            liveSupportToggle.title = "Switch back to Velora AI";
-            input.placeholder = "Type your message to support...";
-            document.getElementById('veloraChatAttach').style.display = 'block';
+        currentMode = mode;
+        if (mode === 'support') {
+            segShopping.classList.remove('active');
+            segSupport.classList.add('active');
+            input.placeholder = "Message Live Support...";
+            attachBtn.style.display = 'flex';
+            sidebar.classList.add('closed'); // collapse sidebar for support chat
             
             clearChatDOM();
-            welcomeEl.style.display = 'none';
+            if (!supportWs) initSupportChat();
+            else loadSupportHistory();
             
-            if (!supportWs) {
-                initSupportChat();
-            } else {
-                loadSupportHistory();
-            }
         } else {
-            currentMode = 'ai';
-            chatTitle.innerText = 'Velora AI';
-            chatSubtitle.innerText = 'Shopping Assistant';
-            chatAvatar.innerText = '✦';
-            liveSupportToggle.title = "Chat with Live Support";
-            input.placeholder = "Ask about products...";
-            document.getElementById('veloraChatAttach').style.display = 'none';
+            segSupport.classList.remove('active');
+            segShopping.classList.add('active');
+            input.placeholder = "Message Velora AI...";
+            attachBtn.style.display = 'none';
+            if (window.innerWidth > 768) sidebar.classList.remove('closed'); // reopen sidebar on desktop
             
             clearChatDOM();
-            loadHistory();
+            loadHistory(); // this restores the AI chat
         }
-    });
+    }
 
     // ── Live Support Logic ──
     async function initSupportChat() {
@@ -870,7 +1217,6 @@
         if (msgRes.ok) {
             const msgData = await msgRes.json();
             clearChatDOM();
-            welcomeEl.style.display = 'none';
             msgData.messages.forEach(m => {
                 const role = m.sender_type === 'customer' ? 'user' : 'assistant';
                 addMessage(role, m.message, m.message_type);
@@ -883,9 +1229,7 @@
         supportWs = new WebSocket(`${protocol}//${window.location.host}/ws/support/`);
         
         supportWs.onopen = () => {
-            if (supportConvId) {
-                supportWs.send(JSON.stringify({ type: 'join_conversation', payload: { conversation_id: supportConvId }}));
-            }
+            if (supportConvId) supportWs.send(JSON.stringify({ type: 'join_conversation', payload: { conversation_id: supportConvId }}));
         };
         
         supportWs.onmessage = (e) => {
@@ -898,13 +1242,11 @@
                             addMessage('assistant', msg.message, msg.message_type);
                             supportWs.send(JSON.stringify({ type: 'mark_read', payload: { conversation_id: supportConvId }}));
                             resetIdleTimer();
-                            // Hide typing indicator when message arrives
                             typingEl.classList.remove('show');
                         }
                     } else {
                         if (msg.sender_type === 'admin') {
-                            liveSupportToggle.style.color = '#ef476f';
-                            // Hide typing indicator when message arrives
+                            segSupport.style.color = '#ef4444'; // Notification state
                             typingEl.classList.remove('show');
                         }
                     }
@@ -923,15 +1265,15 @@
             }
             if (data.type === 'idleWarning') {
                 if (String(data.payload.conversation_id) === String(supportConvId) && currentMode === 'support') {
-                    addIdleWarningMessage(data.payload.message);
+                    addSystemMessage(data.payload.message);
                 }
             }
             if (data.type === 'chatClosed') {
                 if (String(data.payload.conversation_id) === String(supportConvId) && currentMode === 'support') {
-                    addMessage('assistant', "This conversation has been automatically closed.");
+                    addSystemMessage("This conversation has been automatically closed due to inactivity.");
                     input.disabled = true;
                     sendBtn.disabled = true;
-                    input.placeholder = "Chat closed due to inactivity.";
+                    input.placeholder = "Chat closed.";
                     clearTimeout(idleTimer);
                     clearTimeout(warningTimer);
                 }
@@ -943,385 +1285,32 @@
         };
     }
 
-    async function sendMessage() {
-        const text = input.value.trim();
-        if (!text || isSending) return;
-
-        // Hide welcome
-        welcomeEl.style.display = 'none';
-
-        // Add user bubble
-        addMessage('user', text);
-        input.value = '';
-        isSending = true;
-        sendBtn.disabled = true;
-
-        if (currentMode === 'support') {
-            if (supportWs && supportConvId) {
-                supportWs.send(JSON.stringify({
-                    type: 'send_message',
-                    payload: {
-                        conversation_id: supportConvId,
-                        message: text
-                    }
-                }));
-                supportWs.send(JSON.stringify({ type: 'stop_typing', payload: { conversation_id: supportConvId }}));
+    function resetIdleTimer() {
+        if(currentMode !== 'support') return;
+        clearTimeout(idleTimer);
+        clearTimeout(warningTimer);
+        warningTimer = setTimeout(() => {
+            if(supportWs && supportWs.readyState === WebSocket.OPEN && supportConvId) {
+                supportWs.send(JSON.stringify({ type: 'idle_warning', payload: { conversation_id: supportConvId }}));
             }
-            isSending = false;
-            sendBtn.disabled = false;
-            input.focus();
-            scrollToBottom();
-            resetIdleTimer();
-            return;
-        }
-
-        // Show typing indicator
-        typingEl.classList.add('show');
-        scrollToBottom();
-
-        try {
-            const response = await fetch('/api/chat/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken()
-                },
-                body: JSON.stringify({ 
-                    message: text,
-                    conversation_id: currentConversationId
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+        }, 150000);
+        idleTimer = setTimeout(() => {
+            if(supportWs && supportWs.readyState === WebSocket.OPEN && supportConvId) {
+                supportWs.send(JSON.stringify({ type: 'close_chat', payload: { conversation_id: supportConvId, reason: 'timeout' }}));
             }
-
-            // Capture new conversation ID from headers if generated
-            const newConvId = response.headers.get('X-Conversation-Id');
-            if (newConvId) {
-                currentConversationId = newConvId;
-            }
-
-            // Hide typing indicator as soon as stream starts
-            typingEl.classList.remove('show');
-
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder('utf-8');
-            let buffer = '';
-            
-            // Create an empty assistant message bubble to stream into
-            let contentSpan = null;
-
-            while (true) {
-                const { value, done } = await reader.read();
-                if (done) break;
-
-                buffer += decoder.decode(value, { stream: true });
-                
-                // Split buffer by double newlines (SSE boundaries)
-                const blocks = buffer.split('\n\n');
-                buffer = blocks.pop(); // Keep the last partial block
-
-                for (const block of blocks) {
-                    if (!block.trim()) continue;
-
-                    let event = 'content';
-                    let dataStr = '';
-
-                    const lines = block.split('\n');
-                    for (const line of lines) {
-                        if (line.startsWith('event:')) {
-                            event = line.replace('event:', '').trim();
-                        } else if (line.startsWith('data:')) {
-                            dataStr = line.replace('data:', '').trim();
-                        }
-                    }
-
-                    if (dataStr) {
-                        try {
-                            const parsedData = JSON.parse(dataStr);
-                            
-                            if (event === 'products') {
-                                // Add product cards if any
-                                if (parsedData && parsedData.length > 0) {
-                                    addProductCards(parsedData);
-                                }
-                            } else if (event === 'content') {
-                                // If first text chunk, initialize the assistant bubble
-                                if (!contentSpan) {
-                                    contentSpan = addStreamingMessageBubble('assistant');
-                                }
-                                // Append text chunk, formatting newlines as <br>
-                                const chunkText = parsedData;
-                                contentSpan.innerHTML += chunkText
-                                    .replace(/&/g, '&amp;')
-                                    .replace(/</g, '&lt;')
-                                    .replace(/>/g, '&gt;')
-                                    .replace(/\n/g, '<br>');
-                                scrollToBottom();
-                            } else if (event === 'error') {
-                                if (!contentSpan) {
-                                    contentSpan = addStreamingMessageBubble('assistant');
-                                }
-                                contentSpan.innerHTML += `<span style="color: red;">${parsedData.message || "An error occurred."}</span>`;
-                                scrollToBottom();
-                            }
-                        } catch (e) {
-                            console.error('Failed to parse stream event:', e, dataStr);
-                        }
-                    }
-                }
-            }
-        } catch (err) {
-            typingEl.classList.remove('show');
-            addMessage('assistant', "Oops! I encountered an error. Please try again.");
-            console.error('Chat error:', err);
-        } finally {
-            isSending = false;
-            sendBtn.disabled = false;
-            input.focus();
-            scrollToBottom();
-        }
+        }, 180000);
     }
 
-    function addMessage(role, text, messageType = 'text') {
-        const div = document.createElement('div');
-        div.className = 'velora-msg velora-msg-' + role;
-
-        let formattedText = '';
-        if (messageType === 'image') {
-            formattedText = `<img src="${text}" style="max-width:100%; border-radius:4px; cursor:pointer; border: 2px solid #000;" onclick="window.open('${text}', '_blank')"/>`;
-        } else {
-            // Format text: convert newlines to <br>
-            formattedText = (text || '')
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/\n/g, '<br>');
-        }
-
-        const now = new Date();
-        const time = now.getHours().toString().padStart(2, '0') + ':' +
-                     now.getMinutes().toString().padStart(2, '0');
-
-        div.innerHTML = formattedText + '<div class="velora-msg-time">' + time + '</div>';
-
-        // Insert before typing indicator
-        messagesEl.insertBefore(div, typingEl);
-        scrollToBottom();
-    }
-
-    function addIdleWarningMessage(text) {
-        // Remove existing if any to avoid duplicates
-        const existing = document.getElementById('velora-idle-warning');
-        if (existing) existing.remove();
-
-        const div = document.createElement('div');
-        div.className = 'velora-msg velora-msg-assistant';
-        div.id = 'velora-idle-warning';
-
-        const formattedText = text.replace(/\n/g, '<br>');
-        div.innerHTML = formattedText + 
-            '<div style="margin-top: 10px; display: flex; gap: 10px;">' +
-                '<button id="btnEndChat" style="padding: 5px 15px; background: #ef476f; color: #fff; border: 2px solid #000; border-radius: 4px; cursor: pointer; font-weight: bold; box-shadow: 2px 2px 0px #000;">Yes</button>' +
-                '<button id="btnContinueChat" style="padding: 5px 15px; background: #06d6a0; color: #fff; border: 2px solid #000; border-radius: 4px; cursor: pointer; font-weight: bold; box-shadow: 2px 2px 0px #000;">No</button>' +
-            '</div>';
-
-        chatListEl.insertBefore(div, typingEl);
-        scrollToBottom();
-
-        document.getElementById('btnContinueChat').addEventListener('click', function() {
-            if (supportWs && supportConvId) {
-                supportWs.send(JSON.stringify({ type: 'continue_chat', payload: { conversation_id: supportConvId }}));
-            }
-            div.remove();
-            resetIdleTimer();
-        });
-
-        document.getElementById('btnEndChat').addEventListener('click', function() {
-            if (supportWs && supportConvId) {
-                supportWs.send(JSON.stringify({ type: 'end_chat', payload: { conversation_id: supportConvId }}));
-            }
-            div.remove();
-        });
-    }
-
-    function addStreamingMessageBubble(role) {
-        const div = document.createElement('div');
-        div.className = 'velora-msg velora-msg-' + role;
-        
-        const contentSpan = document.createElement('span');
-        contentSpan.className = 'velora-msg-text-content';
-        div.appendChild(contentSpan);
-        
-        const timeDiv = document.createElement('div');
-        timeDiv.className = 'velora-msg-time';
-        const now = new Date();
-        timeDiv.textContent = now.getHours().toString().padStart(2, '0') + ':' +
-                              now.getMinutes().toString().padStart(2, '0');
-        div.appendChild(timeDiv);
-
-        messagesEl.insertBefore(div, typingEl);
-        scrollToBottom();
-        return contentSpan;
-    }
-
-    function addProductCards(products) {
-        const container = document.createElement('div');
-        container.className = 'velora-chat-products';
-
-        // Show max 5 products in chat
-        const displayProducts = products.slice(0, 5);
-
-        displayProducts.forEach(function(p) {
-            const card = document.createElement('a');
-            card.className = 'velora-chat-product-card';
-            card.href = p.url || ('/product/' + p.id + '/');
-            card.target = '_self';
-
-            card.innerHTML =
-                '<img class="velora-chat-product-img" src="' + (p.image || '') + '" alt="' + (p.name || '') + '" onerror="this.style.display=\'none\'">' +
-                '<div class="velora-chat-product-info">' +
-                    '<div class="velora-chat-product-name">' + (p.name || '') + '</div>' +
-                    '<div class="velora-chat-product-price">₹' + (p.price || '0') + '</div>' +
-                    '<div class="velora-chat-product-cat">' + (p.category || '') + '</div>' +
-                '</div>' +
-                '<span class="velora-chat-product-btn">VIEW</span>';
-
-            container.appendChild(card);
-        });
-
-        messagesEl.insertBefore(container, typingEl);
-        scrollToBottom();
-    }
-
-    function loadHistory() {
-        fetch('/api/chat/history/')
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-            const serverUser = data.current_user || '__anonymous__';
-
-            if (loadedForUser !== '__not_loaded__' && loadedForUser !== serverUser) {
-                clearChatDOM();
-                currentConversationId = null;
-            }
-            loadedForUser = serverUser;
-
-            // Render Sidebar
-            if (data.conversations) {
-                chatListEl.innerHTML = '';
-                data.conversations.forEach(c => {
-                    const item = document.createElement('div');
-                    item.className = 'velora-chat-item';
-                    item.innerText = c.title;
-                    
-                    const delBtn = document.createElement('button');
-                    delBtn.className = 'velora-chat-item-delete';
-                    delBtn.innerText = '✕';
-                    delBtn.onclick = (e) => {
-                        e.stopPropagation();
-                        if (confirm('Delete this chat?')) deleteConversation(c.id);
-                    };
-                    item.appendChild(delBtn);
-
-                    item.onclick = () => loadConversation(c.id);
-                    chatListEl.appendChild(item);
-                });
-            }
-
-            const existingMsgs = messagesEl.querySelectorAll('.velora-msg');
-            if (existingMsgs.length > 0) return;
-
-            if (data.history && data.history.length > 0 && !currentConversationId && (!data.conversations || data.conversations.length===0)) {
-                // Legacy Postgres history fallback if no mongo convos
-                welcomeEl.style.display = 'none';
-                data.history.forEach(function(msg) {
-                    addMessage(msg.role, msg.content);
-                    if (msg.role === 'assistant' && msg.products && msg.products.length > 0) {
-                        addProductCards(msg.products);
-                    }
-                });
-                scrollToBottom();
-            } else if (data.conversations && data.conversations.length > 0) {
-                // Auto-load most recent chat
-                loadConversation(data.conversations[0].id);
-            }
-        })
-        .catch(function(err) {
-            console.error('Failed to load chat history:', err);
-        });
-    }
-
-    function loadConversation(convId) {
-        currentConversationId = convId;
-        sidebarEl.classList.remove('open');
-        clearChatDOM();
-        welcomeEl.style.display = 'none';
-        
-        // Highlight active
-        document.querySelectorAll('.velora-chat-item').forEach(el => el.classList.remove('active'));
-        
-        fetch(`/api/chat/conversations/${convId}/`)
-        .then(res => res.json())
-        .then(data => {
-            if (data.history) {
-                data.history.forEach(msg => {
-                    addMessage(msg.role, msg.content);
-                    if (msg.role === 'assistant' && msg.products && msg.products.length > 0) {
-                        addProductCards(msg.products);
-                    }
-                });
-                scrollToBottom();
-            }
-        });
-    }
-
-    function deleteConversation(convId) {
-        fetch(`/api/chat/conversations/${convId}/`, {
-            method: 'DELETE',
-            headers: { 'X-CSRFToken': getCSRFToken() }
-        }).then(() => {
-            if (currentConversationId === convId) {
-                currentConversationId = null;
-                clearChatDOM();
-            }
-            loadHistory(); // refresh sidebar
-        });
-    }
-
-    function scrollToBottom() {
-        setTimeout(function() {
-            messagesEl.scrollTop = messagesEl.scrollHeight;
-        }, 50);
-    }
-
-    function getCSRFToken() {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.startsWith('csrftoken=')) {
-                return cookie.substring('csrftoken='.length);
-            }
-        }
-        // Fallback: try meta tag
-        const meta = document.querySelector('meta[name="csrf-token"]');
-        return meta ? meta.content : '';
-    }
-
-    // ── Image Upload Logic ──
-    const attachBtn = document.getElementById('veloraChatAttach');
+    // ── Image Upload ──
     const fileInput = document.getElementById('veloraChatFileInput');
-    
     if (attachBtn && fileInput) {
-        attachBtn.addEventListener('click', () => {
-            fileInput.click();
-        });
+        attachBtn.addEventListener('click', () => fileInput.click());
         
         fileInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file || !supportConvId || !supportWs || currentMode !== 'support') return;
             
-            attachBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            attachBtn.style.opacity = '0.5';
             attachBtn.disabled = true;
             
             const formData = new FormData();
@@ -1335,42 +1324,41 @@
                 
                 if (response.ok) {
                     const data = await response.json();
-                    
                     addMessage('user', data.url, 'image');
-                    
                     supportWs.send(JSON.stringify({
                         type: 'send_message',
-                        payload: {
-                            conversation_id: supportConvId,
-                            message: data.url,
-                            message_type: 'image'
-                        }
+                        payload: { conversation_id: supportConvId, message: data.url, message_type: 'image' }
                     }));
                     supportWs.send(JSON.stringify({ type: 'stop_typing', payload: { conversation_id: supportConvId }}));
                     resetIdleTimer();
-                } else {
-                    alert("Image upload failed.");
-                }
+                } else alert("Image upload failed.");
             } catch (err) {
                 console.error("Upload error:", err);
-                alert("An error occurred during upload.");
             } finally {
-                attachBtn.innerHTML = '<i class="fas fa-paperclip"></i>';
+                attachBtn.style.opacity = '1';
                 attachBtn.disabled = false;
                 fileInput.value = '';
             }
         });
     }
 
-    // ── Back Button Logic ──
+    function getCSRFToken() {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.startsWith('csrftoken=')) return cookie.substring('csrftoken='.length);
+        }
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.content : '';
+    }
+
+    // Floating Back Button Logic (unchanged)
     const backFab = document.getElementById('veloraBackFab');
     if (backFab) {
         const path = window.location.pathname;
-        // Show back button only if we are not on the homepage
         if (path !== '/' && path !== '/home/' && path !== '/shop/') {
             backFab.style.display = 'flex';
         }
-        
         backFab.addEventListener('click', function() {
             if (document.referrer && document.referrer.includes(window.location.host)) {
                 window.history.back();
@@ -1379,5 +1367,6 @@
             }
         });
     }
+
 })();
 </script>

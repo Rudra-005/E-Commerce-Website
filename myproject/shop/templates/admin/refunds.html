@@ -3,12 +3,106 @@
 {% block content %}
 <div class="admin-card">
     <h2>Manage Refunds</h2>
-    <ul>
-        {% for refund in refunds %}
-            <li>Refund #{{ refund.id }} - {{ refund.status }}</li>
-        {% empty %}
-            <li>No refunds found.</li>
-        {% endfor %}
-    </ul>
+    <div style="overflow-x: auto; margin-top: 20px;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; background: #fff; border: 3px solid #000; box-shadow: 4px 4px 0px #000;">
+            <thead>
+                <tr style="background-color: #ffd166; border-bottom: 3px solid #000;">
+                    <th style="padding: 12px; border-right: 3px solid #000;">ID</th>
+                    <th style="padding: 12px; border-right: 3px solid #000;">Order</th>
+                    <th style="padding: 12px; border-right: 3px solid #000;">Customer</th>
+                    <th style="padding: 12px; border-right: 3px solid #000;">Reason</th>
+                    <th style="padding: 12px; border-right: 3px solid #000;">Status</th>
+                    <th style="padding: 12px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for refund in refunds %}
+                <tr style="border-bottom: 2px solid #000;">
+                    <td style="padding: 12px; border-right: 3px solid #000; font-weight: bold;">#{{ refund.id }}</td>
+                    <td style="padding: 12px; border-right: 3px solid #000;">
+                        <a href="#" style="color: #118ab2; font-weight: bold; text-decoration: none;">Order #{{ refund.order.id }}</a><br>
+                        <small>₹{{ refund.order.total_price }}</small>
+                    </td>
+                    <td style="padding: 12px; border-right: 3px solid #000;">{{ refund.user.username }}<br><small>{{ refund.user.email }}</small></td>
+                    <td style="padding: 12px; border-right: 3px solid #000; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ refund.reason }}">{{ refund.reason }}</td>
+                    <td style="padding: 12px; border-right: 3px solid #000;">
+                        {% if refund.status == 'Pending' %}
+                            <span style="background: #ffd166; padding: 4px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #000; font-size: 0.85em;">{{ refund.status }}</span>
+                        {% elif refund.status == 'Approved' %}
+                            <span style="background: #06d6a0; color: #fff; padding: 4px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #000; font-size: 0.85em;">{{ refund.status }}</span>
+                        {% elif refund.status == 'Rejected' %}
+                            <span style="background: #ef476f; color: #fff; padding: 4px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #000; font-size: 0.85em;">{{ refund.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px; display: flex; gap: 8px;" id="actions-{{ refund.id }}">
+                        {% if refund.status == 'Pending' %}
+                            <button onclick="processRefund({{ refund.id }}, 'approve')" style="background: #06d6a0; color: #fff; border: 2px solid #000; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; box-shadow: 2px 2px 0px #000;">Approve</button>
+                            <button onclick="processRefund({{ refund.id }}, 'reject')" style="background: #ef476f; color: #fff; border: 2px solid #000; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; box-shadow: 2px 2px 0px #000;">Reject</button>
+                        {% else %}
+                            <span style="color: #666; font-style: italic;">Processed</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="padding: 20px; text-align: center; font-style: italic; color: #666;">No refunds found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
+
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    async function processRefund(refundId, action) {
+        if (!confirm(`Are you sure you want to ${action} this refund?`)) {
+            return;
+        }
+
+        const actionsContainer = document.getElementById(`actions-${refundId}`);
+        actionsContainer.innerHTML = `<span style="font-style: italic; color: #118ab2; font-weight: bold;">Processing...</span>`;
+
+        try {
+            const res = await fetch("{% url 'admin_process_refund' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    refund_id: refundId,
+                    action: action
+                })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                alert(data.message);
+                window.location.reload();
+            } else {
+                alert(`Error: ${data.error}`);
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error('Error processing refund:', error);
+            alert('An unexpected error occurred.');
+            window.location.reload();
+        }
+    }
+</script>
 {% endblock %}

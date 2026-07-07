@@ -50,6 +50,7 @@ class ConversationMessagesAPIView(View):
                 'sender_id': m.sender_id,
                 'sender_type': m.sender_type,
                 'message': m.message,
+                'message_type': m.message_type,
                 'created_at': m.created_at.isoformat()
             })
             

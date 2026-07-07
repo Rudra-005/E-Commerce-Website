@@ -683,50 +683,90 @@ class CheckoutView(View):
                     pincode=pincode,
                 )
 
-            # Generate Razorpay Order
-            import razorpay
-            from django.conf import settings
-            
-            client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-            amount_in_paise = int(total * 100)
-            
-            razorpay_order = client.order.create({
-                "amount": amount_in_paise,
-                "currency": "INR",
-                "payment_capture": "1"
-            })
+            payment_method = data.get("payment_method", "Online")
 
-            # 2. Create the Order
-            order = Order.objects.create(
-                user=request.user,
-                shipping_address=shipping_address,
-                total_price=total,
-                status="Pending",
-                razorpay_order_id=razorpay_order['id']
-            )
-
-            # 3. Create OrderItems from Cart
-            for item in cart_items:
-                OrderItem.objects.create(
-                    order=order,
-                    product=item.product,
-                    quantity=item.quantity,
-                    price=item.product.price,
+            if payment_method == "COD":
+                # Validate COD Eligibility
+                from .services.payment_service import PaymentService
+                is_eligible, reason = PaymentService.validate_cod_eligibility(cart_items, shipping_address)
+                if not is_eligible:
+                    # Rolling back address creation (optional)
+                    shipping_address.delete()
+                    return JsonResponse({"error": reason}, status=400)
+                
+                # Create Order for COD
+                order = Order.objects.create(
+                    user=request.user,
+                    shipping_address=shipping_address,
+                    total_price=total,
+                    status="Pending",
+                    payment_method="COD",
+                    payment_status="Pending"
                 )
-                track_interaction(request.user, item.product, 'purchase')
 
-            # 4. Clear the cart
-            cart_items.delete()
+                # Create OrderItems
+                for item in cart_items:
+                    OrderItem.objects.create(
+                        order=order, product=item.product, quantity=item.quantity, price=item.product.price
+                    )
+                    track_interaction(request.user, item.product, 'purchase')
 
-            return JsonResponse({
-                "status": "success",
-                "message": "Order created, proceed to payment.",
-                "order_id": order.id,
-                "razorpay_order_id": razorpay_order['id'],
-                "amount": amount_in_paise,
-                "currency": "INR",
-                "key_id": settings.RAZORPAY_KEY_ID
-            })
+                cart_items.delete()
+
+                # Generate Invoice for COD
+                from .services.invoice_service import InvoiceService
+                InvoiceService.generate_invoice(order)
+
+                return JsonResponse({
+                    "status": "success",
+                    "message": "Order placed successfully using Cash on Delivery.",
+                    "order_id": order.id,
+                    "payment_method": "COD"
+                })
+            else:
+                # Generate Razorpay Order
+                import razorpay
+                from django.conf import settings
+                
+                client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+                amount_in_paise = int(total * 100)
+                
+                razorpay_order = client.order.create({
+                    "amount": amount_in_paise,
+                    "currency": "INR",
+                    "payment_capture": "1"
+                })
+
+                # Create Order for Online Payment
+                order = Order.objects.create(
+                    user=request.user,
+                    shipping_address=shipping_address,
+                    total_price=total,
+                    status="Pending",
+                    payment_method="Online",
+                    payment_status="Pending",
+                    razorpay_order_id=razorpay_order['id']
+                )
+
+                # Create OrderItems
+                for item in cart_items:
+                    OrderItem.objects.create(
+                        order=order, product=item.product, quantity=item.quantity, price=item.product.price
+                    )
+                    track_interaction(request.user, item.product, 'purchase')
+
+                cart_items.delete()
+
+                return JsonResponse({
+                    "status": "success",
+                    "message": "Order created, proceed to payment.",
+                    "order_id": order.id,
+                    "razorpay_order_id": razorpay_order['id'],
+                    "amount": amount_in_paise,
+                    "currency": "INR",
+                    "key_id": settings.RAZORPAY_KEY_ID,
+                    "payment_method": "Online"
+                })
 
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid request payload."}, status=400)
@@ -765,9 +805,14 @@ class VerifyPaymentView(View):
             # Mark order as confirmed
             order = get_object_or_404(Order, id=order_id, user=request.user)
             order.status = "Confirmed"
+            order.payment_status = "Paid"
             order.razorpay_payment_id = razorpay_payment_id
             order.razorpay_signature = razorpay_signature
             order.save()
+
+            # Automatically generate invoice
+            from .services.invoice_service import InvoiceService
+            InvoiceService.generate_invoice(order)
 
             return JsonResponse({"status": "success", "message": "Payment verified successfully!"})
 

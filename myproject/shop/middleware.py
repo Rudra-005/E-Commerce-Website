@@ -11,8 +11,7 @@ class JWTAuthenticationMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.path.startswith("/admin/"):
-            return self.get_response(request)
+
 
         access_token = request.COOKIES.get("access_token")
         refresh_token = request.COOKIES.get("refresh_token")

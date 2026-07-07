@@ -35,14 +35,17 @@ You help users discover products, check their active cart, track their recent or
 RULES:
 1. You have direct access to the user's profile, saved addresses, active cart, and order history (in the system context below).
 2. If the user asks about their cart (e.g. what's in it, total price, quantity), look at CURRENT CART ITEMS and summarize it.
-3. If they ask about their orders (e.g. order status, tracking, previous purchases), look at RECENT ORDERS.
+3. If they ask about their orders (e.g. order status, tracking, previous purchases), look at RECENT ORDERS. Note that each item within an order has its own status, and can be cancelled individually.
 4. NEVER invent or hallucinate products. Only recommend products from the RETRIEVED PRODUCTS list below.
 5. Explain WHY each product matches the user's needs using product attributes (price, category, description, rating).
 6. Keep answers concise, helpful, and friendly.
 7. If no relevant products are found in the catalog, but they asked about their cart, orders, profile, or addresses, answer those questions directly.
 8. If the user asks about completely off-topic subjects (not shopping, cart, orders, profile, or addresses), politely redirect: "I'm specialized in helping you find great products and manage your account at Velora!"
 9. Use plain text with line breaks. Do NOT use markdown like ** or ## or *. For product names or headings, just write them normally.
-10. If the user asks about their saved addresses, look at SAVED ADDRESSES and list or summarize them clearly."""
+10. If the user asks about their saved addresses, look at SAVED ADDRESSES and list or summarize them clearly.
+11. Customers can cancel individual items in an order without cancelling the whole order. Check individual item statuses.
+12. If a user asks for their invoice, bill, tax receipt, or has a billing issue, check if an Invoice is listed under the order in RECENT ORDERS. If it is, explain the invoice details and you MUST output EXACTLY the phrase [ATTACH_INVOICE] to automatically attach the PDF."""
+
 
 
 def build_context(products, filters=None):
@@ -133,8 +136,13 @@ def build_user_context(user):
         if orders.exists():
             lines.append("\nRECENT ORDERS:")
             for order in orders:
-                items_str = ", ".join(f"{item.product.name} x {item.quantity}" for item in order.items.all())
-                lines.append(f"- Order #{order.id} on {order.created_at:%Y-%m-%d}: Status: {order.status}, Total: ₹{order.total_price}, Items: [{items_str}]")
+                items_str = ", ".join(f"{item.product.name} x {item.quantity} (Status: {item.status})" for item in order.items.all())
+                
+                invoice_str = ""
+                if hasattr(order, 'invoice'):
+                    invoice_str = f" [INVOICE AVAILABLE: #{order.invoice.invoice_number}, Subtotal: ₹{order.invoice.subtotal}, Tax: ₹{order.invoice.tax}, Total: ₹{order.invoice.grand_total}]"
+                
+                lines.append(f"- Order #{order.id} on {order.created_at:%Y-%m-%d}: Status: {order.status}, Payment: {order.payment_method} ({order.payment_status}), Total: ₹{order.total_price}, Items: [{items_str}]{invoice_str}")
         else:
             lines.append("\nRECENT ORDERS: No order history found.")
     except Exception as e:

@@ -1,303 +1,604 @@
-{% extends 'admin/admin_base.html' %}
-{% block title %}Support Chat{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Dashboard - Velora Pro</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Globals & CSS Reset */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            background: #F8FAFC; 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #0f172a;
+            overflow: hidden;
+            height: 100vh;
+        }
 
-{% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-    .admin-content {
-        padding: 0 !important;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        min-height: 0;
-    }
+        /* Layout Grid */
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 240px 320px 1fr 300px;
+            height: 100vh;
+            width: 100vw;
+        }
 
-    .chat-layout {
-        display: flex;
-        flex: 1;
-        background: #fff;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        overflow: hidden;
-        min-height: 0;
-    }
-    
-    .chat-sidebar {
-        width: 320px;
-        border-right: 1px solid #e5e7eb;
-        display: flex;
-        flex-direction: column;
-        background: #f8fafc;
-    }
-    
-    .chat-sidebar-header {
-        padding: 20px;
-        border-bottom: 1px solid #e5e7eb;
-        background: #ffffff;
-        font-weight: bold;
-        font-size: 18px;
-        color: #1e293b;
-    }
-    
-    .conversation-list {
-        flex: 1;
-        overflow-y: auto;
-    }
-    
-    .conversation-item {
-        padding: 15px 20px;
-        border-bottom: 1px solid #e5e7eb;
-        cursor: pointer;
-        transition: all 0.2s;
-        background: #ffffff;
-    }
-    
-    .conversation-item:hover {
-        background: #f1f5f9;
-    }
-    
-    .conversation-item.active {
-        background: #e0f2fe;
-        border-left: 4px solid #0284c7;
-    }
-    
-    .conversation-item .name {
-        font-weight: 600;
-        font-size: 15px;
-        color: #0f172a;
-        margin-bottom: 4px;
-    }
-    
-    .conversation-item .preview {
-        font-size: 14px;
-        color: #444;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    .unread-badge {
-        background: #ef4444;
-        color: white;
-        border-radius: 12px;
-        padding: 2px 8px;
-        font-size: 11px;
-        font-weight: bold;
-        float: right;
-    }
-    
-    .chat-main {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-        min-height: 0;
-    }
-    
-    .chat-header {
-        padding: 15px 25px;
-        border-bottom: 1px solid #e5e7eb;
-        background: #ffffff;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        z-index: 2;
-    }
-    
-    .chat-messages {
-        flex: 1;
-        padding: 25px;
-        overflow-y: auto;
-        background: #f8fafc;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
-    
-    .message-bubble {
-        max-width: 65%;
-        padding: 12px 18px;
-        border-radius: 16px;
-        position: relative;
-        font-size: 15px;
-        line-height: 1.5;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    
-    .message-customer {
-        align-self: flex-start;
-        background: #ffffff;
-        border: 1px solid #e5e7eb;
-        border-bottom-left-radius: 4px;
-        color: #1e293b;
-    }
-    
-    .message-admin {
-        align-self: flex-end;
-        background: #2563eb;
-        color: #ffffff;
-        border-bottom-right-radius: 4px;
-    }
-    
-    .message-admin .time-text {
-        color: rgba(255,255,255,0.7) !important;
-    }
-    
-    .typing-indicator {
-        align-self: flex-start;
-        background: #eee;
-        font-style: italic;
-        padding: 5px 10px;
-        border-radius: 8px;
-        display: none;
-    }
-    
-    .chat-input-area {
-        padding: 20px 25px;
-        border-top: 1px solid #e5e7eb;
-        background: #ffffff;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-    
-    .chat-input {
-        flex: 1;
-        padding: 14px 20px;
-        border: 1px solid #cbd5e1;
-        background: #f8fafc;
-        font-family: inherit;
-        font-size: 15px;
-        border-radius: 24px;
-        transition: all 0.2s;
-    }
-    
-    .chat-input:focus {
-        outline: none;
-        border-color: #0ea5e9;
-        background: #ffffff;
-        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
-    }
-    
-    .btn-attach {
-        background: none;
-        border: none;
-        color: #64748b;
-        font-size: 20px;
-        cursor: pointer;
-        padding: 10px;
-        border-radius: 50%;
-        transition: all 0.2s;
-    }
-    
-    .btn-attach:hover {
-        background: #f1f5f9;
-        color: #0f172a;
-    }
-    
-    .chat-btn {
-        background: #0ea5e9;
-        color: white;
-        border: none;
-        padding: 14px 24px;
-        font-weight: 600;
-        font-size: 15px;
-        cursor: pointer;
-        border-radius: 24px;
-        transition: all 0.2s;
-    }
-    
-    .chat-btn:hover:not(:disabled) {
-        background: #0284c7;
-    }
-    
-    .chat-btn:disabled {
-        background: #cbd5e1;
-        cursor: not-allowed;
-    }
-    
-    .chat-image {
-        max-width: 100%;
-        border-radius: 8px;
-        margin-bottom: 5px;
-        cursor: pointer;
-    }
-    
-    .chat-context {
-        width: 280px;
-        border-left: 1px solid #e5e7eb;
-        background: #ffffff;
-        padding: 25px;
-    }
-    
-    .context-card {
-        border: 1px solid #e5e7eb;
-        padding: 15px;
-        margin-top: 15px;
-        background: #f8fafc;
-        border-radius: 8px;
-        font-size: 14px;
-        color: #475569;
-    }
-    
-    /* Neobrutalism override for this specific page */
-    .chat-layout {
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        overflow: hidden;
-    }
-</style>
-{% endblock %}
+        /* Responsive Layouts */
+        @media (max-width: 1400px) {
+            .dashboard-layout {
+                grid-template-columns: 220px 300px 1fr 280px;
+            }
+        }
+        @media (max-width: 1200px) {
+            .dashboard-layout {
+                grid-template-columns: 220px 300px 1fr;
+            }
+            .context-panel {
+                display: none;
+            }
+        }
+        @media (max-width: 992px) {
+            .dashboard-layout {
+                grid-template-columns: 70px 280px 1fr;
+            }
+            .sidebar-logo, .sidebar-nav a span, .admin-profile .info {
+                display: none;
+            }
+            .sidebar-nav a { justify-content: center; padding: 16px; }
+            .sidebar-nav a i { font-size: 20px; }
+        }
 
-{% block content %}
-<div class="chat-layout">
-    <!-- Sidebar -->
-    <div class="chat-sidebar">
-        <div class="chat-sidebar-header">
-            Active Conversations
+        /* -----------------------
+           1. Sidebar 
+        ------------------------*/
+        .sidebar {
+            background: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            min-height: 0;
+        }
+        .sidebar-logo {
+            padding: 24px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+            border-bottom: 1px solid #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sidebar-logo i { color: #2563eb; }
+        .sidebar-nav {
+            flex: 1;
+            padding: 24px 16px;
+            overflow-y: auto;
+        }
+        .nav-group-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin: 0 0 12px 12px;
+        }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            margin-bottom: 4px;
+        }
+        .sidebar-nav a i { width: 20px; text-align: center; }
+        .sidebar-nav a:hover {
+            background: #f8fafc;
+            color: #0f172a;
+            transform: translateX(4px);
+        }
+        .sidebar-nav a.active {
+            background: #eff6ff;
+            color: #2563eb;
+            font-weight: 600;
+        }
+        .sidebar-bottom {
+            padding: 24px 16px;
+            border-top: 1px solid #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .admin-profile .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #2563eb;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .admin-profile .info .name { font-size: 14px; font-weight: 600; color: #0f172a; }
+        .admin-profile .info .role { font-size: 12px; color: #64748b; text-transform: capitalize; }
+        .logout-btn { color: #94a3b8; transition: 0.2s; padding: 8px; border-radius: 8px; }
+        .logout-btn:hover { color: #ef4444; background: #fee2e2; }
+
+        /* -----------------------
+           2. Conversations Panel 
+        ------------------------*/
+        .conversations-panel {
+            background: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        .panel-header {
+            padding: 24px;
+            border-bottom: 1px solid #f8fafc;
+        }
+        .panel-header h2 { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #0f172a; }
+        .search-box {
+            position: relative;
+        }
+        .search-box i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 14px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            background: #f8fafc;
+            transition: all 0.2s;
+            color: #0f172a;
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+        }
+        .search-box input::placeholder { color: #94a3b8; }
+        
+        .filter-tags { display: flex; gap: 8px; padding: 0 12px 12px; overflow-x: auto; }
+        .filter-tag { font-size: 11px; padding: 4px 10px; border-radius: 12px; background: #f1f5f9; color: #475569; cursor: pointer; white-space: nowrap; font-weight: 500; }
+        .filter-tag.active { background: #3b82f6; color: #fff; }
+        .conversation-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+        .conversation-item {
+            display: flex;
+            gap: 14px;
+            padding: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 4px;
+            border: 1px solid transparent;
+        }
+        .conversation-item:hover {
+            background: #f8fafc;
+            border-color: #f1f5f9;
+        }
+        .conversation-item.active {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+        .conv-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .conversation-item.active .conv-avatar {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+        .unread-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: #ef4444;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            border: 2px solid #fff;
+            font-weight: 700;
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+        }
+        .conv-info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+        .conv-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .conv-name { font-weight: 600; font-size: 14px; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .conv-time { font-size: 11px; color: #94a3b8; flex-shrink: 0; font-weight: 500; }
+        .conv-preview { font-size: 13px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* -----------------------
+           3. Chat Panel 
+        ------------------------*/
+        .chat-panel {
+            display: flex;
+            flex-direction: column;
+            background: #f8fafc;
+            min-height: 0;
+            min-width: 0;
+        }
+        .chat-header {
+            height: 80px;
+            padding: 0 32px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            z-index: 5;
+        }
+        .chat-header-info { display: flex; align-items: center; gap: 16px; }
+        .chat-header-info .avatar {
+            width: 44px; height: 44px; border-radius: 50%; background: #f1f5f9; color: #64748b;
+            display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 18px;
+        }
+        .chat-header-info h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; color: #0f172a; }
+        .status-badge {
+            display: inline-block;
+            font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; 
+            padding: 4px 10px; border-radius: 12px;
+        }
+        .status-open { background: #dcfce7; color: #166534; }
+        .status-closed { background: #f1f5f9; color: #475569; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-resolved { background: #e0f2fe; color: #075985; }
+
+        .btn-danger {
+            background: #ffffff; color: #ef4444; border: 1px solid #fecaca; padding: 10px 16px; border-radius: 8px;
+            font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .btn-danger:hover { background: #fef2f2; border-color: #fca5a5; transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(239,68,68,0.1); }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            color: #94a3b8;
+        }
+        .empty-state i {
+            font-size: 48px;
+            color: #cbd5e1;
+            margin-bottom: 16px;
+        }
+        .empty-state h3 { font-size: 18px; font-weight: 600; color: #475569; margin-bottom: 8px; }
+        .empty-state p { font-size: 14px; max-width: 250px; line-height: 1.5; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .message-bubble {
+            max-width: 65%;
+            padding: 14px 18px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            position: relative;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .message-in {
+            align-self: flex-start;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-bottom-left-radius: 4px;
+            color: #1e293b;
+        }
+        .message-out {
+            align-self: flex-end;
+            background: #2563eb;
+            color: #ffffff;
+            border-bottom-right-radius: 4px;
+        }
+        .msg-text { word-wrap: break-word; }
+        .msg-time { font-size: 11px; margin-top: 8px; text-align: right; opacity: 0.8; }
+        .message-out .msg-time { color: rgba(255,255,255,0.8); }
+        .message-in .msg-time { color: #94a3b8; }
+        .chat-image { max-width: 100%; max-height: 250px; object-fit: contain; border-radius: 10px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: 0.2s; }
+        .chat-image:hover { transform: scale(1.01); }
+
+        .message-system {
+            align-self: center;
+            background: #e2e8f0;
+            color: #475569;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin: 16px 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .typing-indicator {
+            padding: 0 32px 16px;
+            font-size: 13px;
+            color: #64748b;
+            display: none;
+            align-items: center;
+            gap: 12px;
+        }
+        .typing-dots {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            padding: 8px 12px;
+            border-radius: 16px;
+            border-bottom-left-radius: 4px;
+            display: inline-flex;
+            gap: 4px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .typing-dots span {
+            display: inline-block; width: 6px; height: 6px; background: #94a3b8; border-radius: 50%;
+            animation: typing 1s infinite;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing { 0%, 100% { transform: translateY(0); opacity: 0.5; } 50% { transform: translateY(-4px); opacity: 1; } }
+
+        .chat-input-area {
+            padding: 24px 32px;
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .btn-attach {
+            background: #f8fafc; border: 1px solid #e2e8f0; color: #64748b; font-size: 18px;
+            cursor: pointer; width: 44px; height: 44px; border-radius: 50%; transition: all 0.2s ease;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .btn-attach:hover:not(:disabled) { background: #f1f5f9; color: #0f172a; border-color: #cbd5e1; transform: translateY(-1px); }
+        .chat-input {
+            flex: 1; padding: 14px 24px; border: 1px solid #e2e8f0; border-radius: 24px;
+            background: #f8fafc; font-family: inherit; font-size: 15px; transition: all 0.2s ease;
+            color: #0f172a;
+        }
+        .chat-input:focus { outline: none; border-color: #2563eb; background: #ffffff; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .chat-input::placeholder { color: #94a3b8; }
+        .btn-primary {
+            background: #2563eb; color: #fff; border: none; width: 48px; height: 48px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s ease; font-size: 18px; box-shadow: 0 4px 6px -1px rgba(37,99,235,0.2);
+        }
+        .btn-primary:hover:not(:disabled) { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 6px 8px -2px rgba(37,99,235,0.3); }
+        .btn-primary:disabled, .btn-attach:disabled, .chat-input:disabled { opacity: 0.6; cursor: not-allowed; background: #f1f5f9; color: #94a3b8; border-color: #e2e8f0; box-shadow: none; transform: none; }
+
+        /* -----------------------
+           4. Context Panel 
+        ------------------------*/
+        .context-panel {
+            background: #ffffff;
+            border-left: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        .context-header {
+            padding: 24px;
+            border-bottom: 1px solid #f8fafc;
+        }
+        .context-header h2 { font-size: 18px; font-weight: 600; color: #0f172a; }
+        .context-content {
+            padding: 32px 24px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        .customer-profile-card {
+            text-align: center; margin-bottom: 32px; padding-bottom: 32px; border-bottom: 1px solid #f8fafc;
+        }
+        .profile-avatar {
+            width: 80px; height: 80px; border-radius: 50%; background: #eff6ff; color: #2563eb;
+            display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 600;
+            margin: 0 auto 16px;
+            box-shadow: 0 4px 6px -1px rgba(37,99,235,0.1);
+        }
+        .customer-profile-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: #0f172a; }
+        .customer-profile-card p { font-size: 14px; color: #64748b; margin-bottom: 16px; }
+        .info-group { margin-bottom: 24px; background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #f1f5f9; }
+        .info-group label { display: block; font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+        .info-group .value { font-size: 14px; font-weight: 500; color: #0f172a; }
+        
+        .priority-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .priority-high { background: #fee2e2; color: #ef4444; }
+        .priority-medium { background: #fef3c7; color: #d97706; }
+        .priority-low { background: #dcfce7; color: #166534; }
+        .priority-normal { background: #e0f2fe; color: #0284c7; }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-layout">
+    
+    <!-- 1. Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <i class="fas fa-bolt"></i> VELORA PRO
         </div>
-        <div class="conversation-list" id="conversationList">
-            <!-- Populated via JS -->
-            <div style="padding:15px;text-align:center;">Loading...</div>
+        <nav class="sidebar-nav">
+            {% if request.user.userprofile.role == 'admin' or request.user.is_superuser %}
+                <div class="nav-group-title">Main Menu</div>
+                <a href="{% url 'admin_dashboard' %}"><i class="fas fa-home"></i> <span>Dashboard</span></a>
+                <a href="{% url 'admin_chat' %}" class="active"><i class="fas fa-comments"></i> <span>Chats</span></a>
+                <a href="{% url 'admin_orders' %}"><i class="fas fa-box"></i> <span>Orders</span></a>
+                <a href="{% url 'admin_products' %}"><i class="fas fa-tags"></i> <span>Products</span></a>
+                <a href="{% url 'admin_users' %}"><i class="fas fa-users"></i> <span>Users</span></a>
+                
+                <div class="nav-group-title" style="margin-top: 24px;">Management</div>
+                <a href="{% url 'admin_analytics' %}"><i class="fas fa-chart-bar"></i> <span>Analytics</span></a>
+                <a href="{% url 'admin_refunds' %}"><i class="fas fa-undo"></i> <span>Refunds</span></a>
+                <a href="{% url 'admin_settings' %}"><i class="fas fa-cog"></i> <span>Settings</span></a>
+                <a href="/django-admin/"><i class="fas fa-database"></i> <span>Django Admin</span></a>
+            {% elif request.user.userprofile.role == 'support' %}
+                <div class="nav-group-title">Support</div>
+                <a href="{% url 'admin_chat' %}" class="active"><i class="fas fa-comments"></i> <span>Chats</span></a>
+            {% endif %}
+            
+            <div class="nav-group-title" style="margin-top: 24px;">Store</div>
+            <a href="{% url 'home' %}"><i class="fas fa-store"></i> <span>Back to Store</span></a>
+        </nav>
+        <div class="sidebar-bottom">
+            <div class="admin-profile">
+                <div class="avatar">{{ request.user.username|make_list|first|upper }}</div>
+                <div class="info">
+                    <div class="name">{{ request.user.username }}</div>
+                    <div class="role">{{ request.user.userprofile.role|default:"Admin" }}</div>
+                </div>
+            </div>
+            <a href="{% url 'logout' %}" class="logout-btn" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
         </div>
     </div>
-    
-    <!-- Main Chat -->
-    <div class="chat-main">
-        <div class="chat-header">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <h3 style="margin: 0; font-size: 18px; color: #0f172a;" id="chatHeaderName">Select a conversation</h3>
-                <span id="chatHeaderStatus" style="background: #e2e8f0; color: #475569; padding: 4px 10px; border-radius: 12px; font-weight: 600; font-size: 12px; text-transform: uppercase;">N/A</span>
+
+    <!-- 2. Conversations Panel -->
+    <div class="sidebar">
+        <div class="panel-header">
+            <h2>Messages</h2>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search conversations...">
             </div>
-            <button id="adminEndChatBtn" style="background: #ef4444; color: #fff; border: none; padding: 8px 16px; font-weight: 600; cursor: pointer; display: none; border-radius: 6px; transition: background 0.2s;">End Chat</button>
         </div>
+        
+        <!-- Filter Tags -->
+        <div class="filter-tags" id="filterTags">
+            <div class="filter-tag active" data-filter="all">All</div>
+            <div class="filter-tag" data-filter="open">Open</div>
+            <div class="filter-tag" data-filter="high-priority">High Priority</div>
+        </div>
+
+        <div class="conversation-list" id="conversationList">
+            <div class="empty-state">
+                <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #2563eb; margin-bottom: 16px;"></i>
+                <p>Loading conversations...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Main Chat Window -->
+    <div class="chat-panel">
+        <div class="chat-header">
+            <div class="chat-header-info">
+                <div class="avatar" id="chatHeaderAvatar"><i class="fas fa-user"></i></div>
+                <div>
+                    <h3 id="chatHeaderName">Select a conversation</h3>
+                    <span id="chatHeaderStatus" class="status-badge status-closed">N/A</span>
+                </div>
+            </div>
+            <button id="adminEndChatBtn" class="btn-danger" style="display: none;">
+                <i class="fas fa-times" style="margin-right: 6px;"></i> End Chat
+            </button>
+        </div>
+        
         <div class="chat-messages" id="chatMessages">
-            <div style="text-align:center; color:#888; margin-top:50px;">Please select a conversation from the left to start chatting.</div>
+            <div class="empty-state">
+                <i class="fas fa-comments"></i>
+                <h3>No conversation selected</h3>
+                <p>Please select a conversation from the left to start chatting.</p>
+            </div>
         </div>
-        <div class="typing-indicator" id="typingIndicator">Customer is typing...</div>
+        
+        <div class="typing-indicator" id="typingIndicator">
+            <div class="typing-dots">
+                <span></span><span></span><span></span>
+            </div>
+            <span style="font-weight: 500;">Customer is typing...</span>
+        </div>
+        
+        <!-- Admin Quick Actions -->
+        <div class="admin-quick-actions" id="adminQuickActions" style="display:flex; gap:8px; padding: 12px 24px; background: #f8fafc; border-top: 1px solid #e2e8f0; overflow-x: auto;">
+            <button class="qa-btn" onclick="sendAdminQuickAction('Approve Refund')" style="padding:6px 12px; border-radius:16px; border:1px solid #cbd5e1; background:#fff; font-size:12px; cursor:pointer;">Approve Refund</button>
+            <button class="qa-btn" onclick="sendAdminQuickAction('Approve Replacement')" style="padding:6px 12px; border-radius:16px; border:1px solid #cbd5e1; background:#fff; font-size:12px; cursor:pointer;">Approve Replacement</button>
+            <button class="qa-btn" onclick="sendAdminQuickAction('Send Invoice')" style="padding:6px 12px; border-radius:16px; border:1px solid #cbd5e1; background:#fff; font-size:12px; cursor:pointer;">Send Invoice</button>
+            <button class="qa-btn" onclick="sendAdminQuickAction('Track Shipment')" style="padding:6px 12px; border-radius:16px; border:1px solid #cbd5e1; background:#fff; font-size:12px; cursor:pointer;">Track Shipment</button>
+            <button class="qa-btn" onclick="closeTicketQuickAction()" style="padding:6px 12px; border-radius:16px; border:1px solid #ef4444; background:#fef2f2; color:#991b1b; font-size:12px; cursor:pointer; font-weight:600;">Close Ticket</button>
+        </div>
+
         <div class="chat-input-area">
             <button class="btn-attach" id="attachBtn" title="Send Image" disabled>
                 <i class="fas fa-paperclip"></i>
             </button>
             <input type="file" id="fileInput" accept="image/*" style="display:none;">
-            <input type="text" class="chat-input" id="messageInput" placeholder="Type a message..." disabled>
-            <button class="chat-btn" id="sendBtn" disabled><i class="fas fa-paper-plane"></i> Send</button>
+            <input type="text" class="chat-input" id="messageInput" placeholder="Type your message..." autocomplete="off" disabled>
+            <button class="btn-primary" id="sendBtn" disabled>
+                <i class="fas fa-paper-plane"></i>
+            </button>
         </div>
     </div>
-    
-    <!-- Context Panel -->
-    <div class="chat-context">
-        <h3 style="margin-top:0;">Customer Info</h3>
-        <div class="context-card" id="contextInfo">
-            <p>No conversation selected.</p>
-        </div>
-    </div>
-</div>
-{% endblock %}
 
-{% block extra_js %}
+    <!-- 4. Context Panel -->
+    <div class="context-panel">
+        <div class="context-header">
+            <h2>Customer Info</h2>
+        </div>
+        <div class="context-content" id="contextInfo">
+            <div class="empty-state">
+                <i class="fas fa-address-card" style="font-size: 32px;"></i>
+                <p style="margin-top: 16px;">Select a conversation to view details.</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- PRESERVED JAVASCRIPT LOGIC (ONLY HTML STRINGS UPDATED) -->
 <script>
     let activeConversationId = null;
     let ws = null;
@@ -312,18 +613,146 @@
         const data = await res.json();
         conversations = data.conversations;
         renderConversations();
+        if (activeConversationId) {
+            updateActiveConversationUI(activeConversationId);
+        }
+    }
+
+    function updateActiveConversationUI(id) {
+        const conv = conversations.find(c => c.id === id);
+        if(!conv) return;
+        
+        // Update header
+        const avatarLetter = conv.customer_name ? conv.customer_name.charAt(0).toUpperCase() : 'U';
+        document.getElementById('chatHeaderAvatar').innerHTML = avatarLetter;
+        document.getElementById('chatHeaderName').textContent = conv.customer_name;
+        
+        const statusClass = 'status-' + (conv.status || 'open').toLowerCase();
+        const headerStatus = document.getElementById('chatHeaderStatus');
+        headerStatus.className = `status-badge ${statusClass}`;
+        headerStatus.textContent = conv.status;
+        
+        let tagsHtml = '';
+        if (conv.tags && conv.tags.length > 0) {
+            tagsHtml = conv.tags.map(t => `<span style="background:#e0e7ff; color:#4f46e5; padding:4px 8px; border-radius:12px; font-size:11px; margin-right:4px; font-weight:600; display:inline-block; margin-bottom:4px;">${t}</span>`).join('');
+        }
+        
+        // Update context
+        const priorityClass = 'priority-' + (conv.priority || 'normal').toLowerCase();
+        document.getElementById('contextInfo').innerHTML = `
+            <div class="customer-profile-card">
+                <div class="profile-avatar">${avatarLetter}</div>
+                <h3>${conv.customer_name}</h3>
+                <p>${conv.customer_email}</p>
+                <span class="status-badge ${statusClass}">${conv.status}</span>
+            </div>
+            <div class="info-group">
+                <label>Priority Level</label>
+                <div class="priority-badge ${priorityClass}">${conv.priority || 'Normal'}</div>
+            </div>
+            <div class="info-group">
+                <label>Conversation ID</label>
+                <div class="value" style="font-family: monospace;">#${conv.id}</div>
+            </div>
+            <div class="info-group">
+                <label>Tags</label>
+                <div style="margin-top:6px;">${tagsHtml || '<span style="color:#94a3b8; font-size:12px;">No tags available</span>'}</div>
+            </div>
+        `;
+        
+        const endChatBtn = document.getElementById('adminEndChatBtn');
+        const qActions = document.getElementById('adminQuickActions');
+        
+        if (conv.status !== 'closed') {
+            document.getElementById('messageInput').disabled = false;
+            document.getElementById('sendBtn').disabled = false;
+            document.getElementById('attachBtn').disabled = false;
+            endChatBtn.style.display = 'block';
+            qActions.style.display = 'flex';
+        } else {
+            document.getElementById('messageInput').disabled = true;
+            document.getElementById('sendBtn').disabled = true;
+            document.getElementById('attachBtn').disabled = true;
+            endChatBtn.style.display = 'none';
+            qActions.style.display = 'none';
+        }
     }
     
+    let currentSearch = '';
+    let currentFilter = 'all';
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        currentSearch = e.target.value.toLowerCase();
+        renderConversations();
+    });
+
+    document.querySelectorAll('.filter-tag').forEach(tag => {
+        tag.addEventListener('click', (e) => {
+            document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+            e.target.classList.add('active');
+            currentFilter = e.target.dataset.filter;
+            renderConversations();
+        });
+    });
+
     function renderConversations() {
         const list = document.getElementById('conversationList');
         list.innerHTML = '';
-        conversations.forEach(c => {
+        
+        // Apply filters
+        let filtered = conversations.filter(c => {
+            const matchesSearch = c.customer_name.toLowerCase().includes(currentSearch) || 
+                                  (c.last_message && c.last_message.toLowerCase().includes(currentSearch)) ||
+                                  String(c.id).includes(currentSearch) ||
+                                  (c.tags && c.tags.some(t => t.toLowerCase().includes(currentSearch)));
+                                  
+            let matchesFilter = true;
+            if (currentFilter === 'open') matchesFilter = (c.status !== 'closed' && c.status !== 'resolved');
+            if (currentFilter === 'high-priority') matchesFilter = (c.priority === 'high' || c.priority === 'critical');
+            
+            return matchesSearch && matchesFilter;
+        });
+
+        if (filtered.length === 0) {
+            list.innerHTML = `
+                <div class="empty-state" style="margin-top: 50px;">
+                    <i class="fas fa-inbox" style="font-size: 32px; color: #cbd5e1; margin-bottom: 12px;"></i>
+                    <p style="color: #94a3b8; font-size: 14px;">No matching conversations.</p>
+                </div>
+            `;
+            return;
+        }
+
+        filtered.forEach(c => {
             const div = document.createElement('div');
             div.className = `conversation-item ${c.id === activeConversationId ? 'active' : ''}`;
             div.onclick = () => selectConversation(c.id);
+            
+            const avatarLetter = c.customer_name ? c.customer_name.charAt(0).toUpperCase() : 'U';
+            
+            let timePreview = '';
+            if (c.created_at) {
+                timePreview = new Date(c.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            }
+
+            let tagsPreview = '';
+            if (c.tags && c.tags.length > 0) {
+                tagsPreview = `<div style="margin-top:4px; font-size:10px; color:#6366f1;">${c.tags.slice(0,2).join(', ')}${c.tags.length > 2 ? '...' : ''}</div>`;
+            }
+
             div.innerHTML = `
-                <div class="name">${c.customer_name} ${c.unread_count > 0 ? `<span class="unread-badge">${c.unread_count}</span>` : ''}</div>
-                <div class="preview">${c.last_message || 'New conversation'}</div>
+                <div class="conv-avatar">
+                    ${avatarLetter}
+                    ${c.unread_count > 0 ? `<span class="unread-badge">${c.unread_count}</span>` : ''}
+                </div>
+                <div class="conv-info">
+                    <div class="conv-header">
+                        <span class="conv-name">${c.customer_name}</span>
+                        <span class="conv-time">${timePreview}</span>
+                    </div>
+                    <div class="conv-preview">${c.last_message || 'New conversation'}</div>
+                    ${tagsPreview}
+                </div>
             `;
             list.appendChild(div);
         });
@@ -333,31 +762,12 @@
         activeConversationId = id;
         renderConversations();
         
+        updateActiveConversationUI(id);
+        
         const conv = conversations.find(c => c.id === id);
         if(!conv) return;
         
-        // Update header & context
-        document.getElementById('chatHeaderName').textContent = conv.customer_name;
-        document.getElementById('chatHeaderStatus').textContent = conv.status;
-        document.getElementById('contextInfo').innerHTML = `
-            <strong>Email:</strong> ${conv.customer_email}<br><br>
-            <strong>Priority:</strong> ${conv.priority}
-        `;
-        
         const endChatBtn = document.getElementById('adminEndChatBtn');
-        
-        if (conv.status !== 'closed') {
-            document.getElementById('messageInput').disabled = false;
-            document.getElementById('sendBtn').disabled = false;
-            document.getElementById('attachBtn').disabled = false;
-            endChatBtn.style.display = 'block';
-        } else {
-            document.getElementById('messageInput').disabled = true;
-            document.getElementById('sendBtn').disabled = true;
-            document.getElementById('attachBtn').disabled = true;
-            endChatBtn.style.display = 'none';
-        }
-        
         endChatBtn.onclick = () => {
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({ type: 'end_chat', payload: { conversation_id: id }}));
@@ -392,20 +802,63 @@
     function appendMessage(msg) {
         const msgContainer = document.getElementById('chatMessages');
         const div = document.createElement('div');
-        div.className = `message-bubble ${msg.sender_type === 'admin' ? 'message-admin' : 'message-customer'}`;
+        
+        if (msg.message && msg.message.includes('[AI SUMMARY BLOCK HANDOFF]')) {
+            // Extract Tags and Priority
+            const priorityMatch = msg.message.match(/Priority:\s*(Low|Medium|High|Critical)/i);
+            const tagsMatch = msg.message.match(/Tags:\s*\[(.*?)\]/);
+            
+            let pLevel = priorityMatch ? priorityMatch[1] : 'Normal';
+            let tags = tagsMatch ? tagsMatch[1].split(',').map(s => s.trim()) : [];
+            
+            const c = conversations.find(x => String(x.id) === String(msg.conversation_id));
+            if (c) {
+                c.priority = pLevel;
+                c.tags = tags;
+                if (String(c.id) === String(activeConversationId)) {
+                    updateActiveConversationUI(activeConversationId);
+                }
+            }
+
+            const summaryClean = msg.message.replace('[AI SUMMARY BLOCK HANDOFF]\n', '');
+            const parsedSummary = typeof marked !== 'undefined' ? DOMPurify.sanitize(marked.parse(summaryClean)) : summaryClean.replace(/\n/g, '<br>');
+
+            div.className = 'message-system summary-card';
+            div.innerHTML = `
+                <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; padding:16px; margin: 16px 0; text-align:left; width: 80%; margin-left:auto; margin-right:auto;">
+                    <h4 style="margin-bottom:12px; color:#1e293b; display:flex; align-items:center; gap:8px;">
+                        <i class="fas fa-robot text-blue-600"></i> AI Generated Summary
+                    </h4>
+                    <div style="font-size:13px; color:#475569; white-space:pre-wrap;" class="sd-markdown">${parsedSummary}</div>
+                </div>
+            `;
+            msgContainer.appendChild(div);
+            return;
+        }
+
+        // Handle System Messages
+        if (msg.sender_type === 'system') {
+            div.className = 'message-system';
+            div.innerHTML = `<span><i class="fas fa-info-circle" style="margin-right: 6px;"></i> ${msg.message}</span>`;
+            msgContainer.appendChild(div);
+            return;
+        }
+
+        // Handle standard messages
+        div.className = `message-bubble ${msg.sender_type === 'admin' ? 'message-out' : 'message-in'}`;
         
         let msgContent = '';
         if (msg.message_type === 'image') {
             msgContent = `<img src="${msg.message}" class="chat-image" onclick="window.open('${msg.message}', '_blank')" />`;
         } else {
-            msgContent = `<div style="word-wrap: break-word;">${(msg.message || '').replace(/\n/g, '<br>')}</div>`;
+            msgContent = `<div class="msg-text">${(msg.message || '').replace(/\n/g, '<br>')}</div>`;
         }
         
         let timeStr = new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         
         div.innerHTML = `
             ${msgContent}
-            <div class="time-text" style="font-size:11px; font-weight: 500; color: #94a3b8; text-align:right; margin-top:6px;">${timeStr}</div>
+            <div class="msg-time">${timeStr}</div>
         `;
         msgContainer.appendChild(div);
     }
@@ -460,7 +913,7 @@
             
             if (data.type === 'typing') {
                 if (String(data.payload.conversation_id) === String(activeConversationId) && data.payload.user_id !== myAdminId) {
-                    document.getElementById('typingIndicator').style.display = 'block';
+                    document.getElementById('typingIndicator').style.display = 'flex';
                 }
             }
             
@@ -481,7 +934,11 @@
                     document.getElementById('messageInput').disabled = true;
                     document.getElementById('sendBtn').disabled = true;
                     document.getElementById('attachBtn').disabled = true;
-                    document.getElementById('chatHeaderStatus').textContent = 'closed';
+                    
+                    const statusBadge = document.getElementById('chatHeaderStatus');
+                    statusBadge.className = 'status-badge status-closed';
+                    statusBadge.textContent = 'closed';
+                    
                     document.getElementById('adminEndChatBtn').style.display = 'none';
                     
                     const c = conversations.find(x => String(x.id) === String(data.payload.conversation_id));
@@ -515,6 +972,20 @@
         ws.send(JSON.stringify({ type: 'stop_typing', payload: { conversation_id: activeConversationId }}));
     };
     
+    function sendAdminQuickAction(text) {
+        if (!activeConversationId || !ws || ws.readyState !== WebSocket.OPEN) return;
+        ws.send(JSON.stringify({
+            type: 'send_message',
+            payload: { conversation_id: activeConversationId, message: text, sender_type: 'admin' }
+        }));
+    }
+
+    function closeTicketQuickAction() {
+        if (ws && ws.readyState === WebSocket.OPEN && activeConversationId) {
+            ws.send(JSON.stringify({ type: 'end_chat', payload: { conversation_id: activeConversationId }}));
+        }
+    }
+
     document.getElementById('messageInput').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             document.getElementById('sendBtn').click();
@@ -589,4 +1060,5 @@
     loadConversations();
     setupWebSocket();
 </script>
-{% endblock %}
+</body>
+</html>

@@ -331,6 +331,10 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=50, default="Pending")
     
+    # Payment Fields
+    payment_method = models.CharField(max_length=50, default="Online")
+    payment_status = models.CharField(max_length=50, default="Pending")
+    
     # Razorpay Payment Fields
     razorpay_order_id = models.CharField(max_length=100, blank=True, null=True)
     razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
@@ -359,13 +363,15 @@ class OrderItem(models.Model):
     )
     quantity = models.PositiveIntegerField(default=1)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=50, default="Pending")
 
     @property
     def subtotal(self):
         return self.price * self.quantity
 
     def __str__(self):
-        return f"{self.product.name} x {self.quantity}"
+        return f"{self.product.name} x {self.quantity} ({self.status})"
+
 
 
 class UserInteraction(models.Model):
@@ -476,6 +482,53 @@ class RefundTransaction(models.Model):
         return f"Transaction for Refund #{self.refund_request.id} - {self.status}"
 
 
+class OrderItemCancellation(models.Model):
+    order_item = models.ForeignKey(
+        OrderItem,
+        on_delete=models.CASCADE,
+        related_name="cancellations"
+    )
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name="item_cancellations"
+    )
+    customer = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="item_cancellations"
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE
+    )
+    quantity_cancelled = models.PositiveIntegerField()
+    reason = models.CharField(max_length=100)
+    other_reason = models.TextField(blank=True, null=True)
+    status = models.CharField(max_length=50, default="Pending")
+    requested_at = models.DateTimeField(auto_now_add=True)
+    approved_at = models.DateTimeField(null=True, blank=True)
+    cancelled_at = models.DateTimeField(null=True, blank=True)
+    refund_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    refund_status = models.CharField(max_length=50, default="Pending")
+    refund_reference = models.CharField(max_length=100, blank=True, null=True)
+    refund_completed_at = models.DateTimeField(null=True, blank=True)
+    approved_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="approved_cancellations"
+    )
+    admin_notes = models.TextField(blank=True, null=True)
+    is_partial_cancel = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Cancel {self.product.name} (Order #{self.order.id}) - {self.status}"
+
+
 class SupportConversation(models.Model):
     STATUS_CHOICES = (
         ('open', 'Open'),
@@ -522,4 +575,37 @@ class SupportMessage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Message in #{self.conversation.id} by {self.sender_type}"
+        return f"Message in #{self.conversation.id} by {self.sender_type}"
+
+
+class Invoice(models.Model):
+    invoice_number = models.CharField(max_length=50, unique=True)
+    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='invoice')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='invoices')
+    invoice_pdf = models.FileField(upload_to='invoices/', blank=True, null=True)
+    
+    # Financial fields
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
+    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    coupon_discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    shipping_charge = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    platform_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    tax = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    grand_total = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=10, default="INR")
+    
+    # Payment fields
+    payment_method = models.CharField(max_length=50, default="Razorpay")
+    payment_status = models.CharField(max_length=50, default="Paid")
+    gst_number = models.CharField(max_length=20, blank=True, null=True)
+    
+    # Addresses (Snapshot at time of order)
+    billing_address = models.TextField()
+    shipping_address = models.TextField()
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Invoice {self.invoice_number} for Order #{self.order.id}"
+

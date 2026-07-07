@@ -1,0 +1,828 @@
+{# Flipkart/Amazon Style Dedicated Support Drawer #}
+{# Isolated CSS & JS #}
+
+<!-- Markdown dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.5/purify.min.js"></script>
+
+<style>
+/* Drawer Backdrop */
+.support-drawer-backdrop {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.4);
+    z-index: 100000;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+.support-drawer-backdrop.open {
+    opacity: 1; pointer-events: auto;
+}
+
+/* Drawer Container */
+.support-drawer {
+    position: fixed;
+    top: 0; right: 0; height: 100vh; width: 450px;
+    max-width: 100vw;
+    background: #f8fafc;
+    z-index: 100001;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex; flex-direction: column;
+    box-shadow: -4px 0 24px rgba(0,0,0,0.1);
+    font-family: 'Inter', sans-serif;
+}
+.support-drawer.open {
+    transform: translateX(0);
+}
+
+/* Drawer Header */
+.sd-header {
+    background: #0f172a;
+    color: #fff;
+    padding: 16px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.sd-header h3 { margin: 0; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.sd-close-btn { background: transparent; border: none; color: #cbd5e1; cursor: pointer; transition: 0.2s; }
+.sd-close-btn:hover { color: #fff; }
+
+/* Pinned Context */
+.sd-pinned-context {
+    background: #fff;
+    padding: 16px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex; gap: 16px; align-items: flex-start;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    z-index: 2;
+}
+.sd-pinned-img { width: 64px; height: 64px; object-fit: contain; border-radius: 8px; border: 1px solid #e2e8f0; }
+.sd-pinned-details { flex: 1; min-width: 0; }
+.sd-pinned-title { font-size: 14px; font-weight: 600; margin: 0 0 4px 0; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sd-pinned-sub { font-size: 13px; color: #64748b; margin: 0; }
+.sd-change-product { background: #f1f5f9; border: none; font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 4px; cursor: pointer; margin-top: 8px; color: #475569; }
+
+/* Order Panel Drawer (Slide down) */
+.sd-order-panel {
+    background: #f1f5f9; padding: 12px 16px; border-bottom: 1px solid #e2e8f0;
+    display: none; font-size: 13px; color: #475569;
+}
+.sd-order-panel.open { display: block; }
+.sd-order-panel-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.sd-order-panel-row strong { color: #0f172a; }
+
+/* Messages Area */
+.sd-messages {
+    flex: 1; overflow-y: auto; padding: 20px;
+    display: flex; flex-direction: column; gap: 16px; scroll-behavior: smooth;
+}
+.sd-msg { display: flex; flex-direction: column; max-width: 85%; animation: sd-slide-up 0.3s ease; }
+@keyframes sd-slide-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.sd-msg-user { align-self: flex-end; }
+.sd-msg-user .sd-bubble { background: #0f172a; color: #fff; border-radius: 16px; border-bottom-right-radius: 4px; padding: 12px 16px; font-size: 14px; line-height: 1.5; }
+.sd-msg-assistant { align-self: flex-start; }
+.sd-msg-assistant .sd-bubble { background: #fff; color: #0f172a; border-radius: 16px; border-bottom-left-radius: 4px; padding: 12px 16px; font-size: 14px; line-height: 1.5; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+.sd-msg-system { align-self: center; background: #e2e8f0; color: #475569; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+
+.sd-time { font-size: 11px; margin-top: 4px; opacity: 0.7; }
+.sd-msg-user .sd-time { text-align: right; color: #64748b; }
+.sd-msg-assistant .sd-time { text-align: left; color: #64748b; }
+
+/* Handoff Buttons */
+.sd-handoff-container {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;
+    display: flex; flex-direction: column; gap: 12px; align-self: center; width: 100%; max-width: 300px;
+    text-align: center; margin: 10px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.sd-handoff-container p { margin: 0; font-size: 14px; font-weight: 500; color: #0f172a; }
+.sd-handoff-btn-primary { background: #ef4444; color: #fff; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+.sd-handoff-btn-primary:hover { background: #dc2626; }
+.sd-handoff-btn-secondary { background: #f1f5f9; color: #475569; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+.sd-handoff-btn-secondary:hover { background: #e2e8f0; }
+
+/* Input Area */
+.sd-input-area { background: #fff; padding: 16px 20px; border-top: 1px solid #e2e8f0; display: flex; align-items: flex-end; gap: 12px; }
+.sd-textarea { flex: 1; border: 1px solid #cbd5e1; border-radius: 20px; padding: 10px 16px; font-size: 14px; resize: none; max-height: 120px; font-family: inherit; outline: none; transition: 0.2s; }
+.sd-textarea:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+.sd-send-btn { background: #0f172a; color: #fff; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+.sd-send-btn:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+/* Markdown styling inside bubbles */
+.sd-markdown p { margin-bottom: 8px; }
+.sd-markdown p:last-child { margin-bottom: 0; }
+.sd-markdown strong { font-weight: 600; }
+.sd-markdown ul, .sd-markdown ol { margin-left: 16px; margin-bottom: 8px; }
+</style>
+
+<div class="support-drawer-backdrop" id="sdBackdrop"></div>
+<div class="support-drawer" id="sdDrawer">
+    <!-- Header -->
+    <div class="sd-header">
+        <h3>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            Support Center
+        </h3>
+        <button class="sd-close-btn" id="sdCloseBtn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+    </div>
+
+    <!-- Pinned Context -->
+    <div class="sd-pinned-context" id="sdPinnedContext">
+        <img src="" id="sdPinnedImg" class="sd-pinned-img" alt="Product">
+        <div class="sd-pinned-details">
+            <h4 class="sd-pinned-title" id="sdPinnedTitle">Product Name</h4>
+            <p class="sd-pinned-sub" id="sdPinnedSub">Order #<span id="sdPinnedOrderId"></span> • <span id="sdPinnedStatus" style="font-weight:600;"></span></p>
+            <button class="sd-change-product" id="sdToggleOrderPanelBtn">View Order Details ▼</button>
+        </div>
+    </div>
+
+    <!-- Collapsible Order Panel -->
+    <div class="sd-order-panel" id="sdOrderPanel">
+        <div class="sd-order-panel-row"><span>Quantity:</span> <strong id="sdInfoQty"></strong></div>
+        <div class="sd-order-panel-row"><span>Price:</span> <strong id="sdInfoPrice"></strong></div>
+        <div class="sd-order-panel-row"><span>Date:</span> <strong id="sdInfoDate"></strong></div>
+    </div>
+
+    <!-- Messages -->
+    <div class="sd-messages" id="sdMessages">
+        <div class="sd-msg-system">Secure Support Session Started</div>
+    </div>
+
+    <!-- Input -->
+    <div class="sd-input-area" style="display: flex; align-items: center; gap: 8px;">
+        <input type="file" id="sdImageUpload" accept="image/*" style="display: none;">
+        <button class="sd-attach-btn" id="sdAttachBtn" style="background: none; border: none; padding: 8px; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+        </button>
+        <textarea class="sd-textarea" id="sdInput" rows="1" placeholder="Describe your issue..." style="flex: 1;"></textarea>
+        <button class="sd-send-btn" id="sdSendBtn" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+    </div>
+</div>
+
+<script>
+    // --- State ---
+    let sdContext = null;
+    let sdConversationId = null;
+    let sdIsLiveSupport = false;
+    let sdSupportWs = null;
+    let sdSupportConvId = null;
+    let sdSummaryText = "";
+
+    const sdDrawer = document.getElementById('sdDrawer');
+    const sdBackdrop = document.getElementById('sdBackdrop');
+    const sdCloseBtn = document.getElementById('sdCloseBtn');
+    const sdToggleOrderPanelBtn = document.getElementById('sdToggleOrderPanelBtn');
+    const sdOrderPanel = document.getElementById('sdOrderPanel');
+    const sdMessages = document.getElementById('sdMessages');
+    const sdInput = document.getElementById('sdInput');
+    const sdSendBtn = document.getElementById('sdSendBtn');
+
+    // --- Global Entry Point ---
+    window.openSupportDrawer = function(context) {
+        sdContext = context;
+        
+        // Populate UI
+        document.getElementById('sdPinnedTitle').innerText = context.productName;
+        document.getElementById('sdPinnedImg').src = context.productImage;
+        document.getElementById('sdPinnedOrderId').innerText = context.orderId;
+        document.getElementById('sdPinnedStatus').innerText = context.orderStatus;
+        
+        document.getElementById('sdInfoQty').innerText = context.quantity;
+        document.getElementById('sdInfoPrice').innerText = '₹' + context.productPrice;
+        document.getElementById('sdInfoDate').innerText = context.orderDate;
+
+        // Reset Chat state
+        sdConversationId = null;
+        sdIsLiveSupport = false;
+        sdSummaryText = `Customer needs support for Order #${context.orderId} (${context.productName}). Status: ${context.orderStatus}.`;
+        
+        sdMessages.innerHTML = '<div class="sd-msg-system">Secure Support Session Started</div>';
+        
+        // Open UI
+        sdDrawer.classList.add('open');
+        sdBackdrop.classList.add('open');
+
+        // Dynamic Quick Replies based on status
+        let replies = [];
+        const st = (context.orderStatus || '').toLowerCase();
+        
+        if (st.includes('processing') || st.includes('pending')) {
+            replies = [
+                { text: '📦 Track Order', intent: 'Track Order' },
+                { text: '❌ Cancel Order', intent: 'Cancel Order' },
+                { text: '📍 Change Address', intent: 'Change Address' },
+                { text: '📞 Talk to Human', intent: '[OFFER_HUMAN]' }
+            ];
+        } else if (st.includes('shipped')) {
+            replies = [
+                { text: '🚚 Track Shipment', intent: 'Track Shipment' },
+                { text: '📅 Delivery Date', intent: 'Delivery Date' },
+                { text: '📞 Talk to Human', intent: '[OFFER_HUMAN]' }
+            ];
+        } else if (st.includes('delivered')) {
+            replies = [
+                { text: '🔄 Return Item', intent: 'Return Item' },
+                { text: '🔁 Replace Item', intent: 'Replace Item' },
+                { text: '🛡️ Warranty', intent: 'Warranty' },
+                { text: '🛠️ Technical Issue', intent: 'Technical Issue' },
+                { text: '🧾 Invoice', intent: 'Invoice' }
+            ];
+        } else if (st.includes('cancelled')) {
+            replies = [
+                { text: '💸 Refund Status', intent: 'Refund Status' },
+                { text: '🧾 Invoice', intent: 'Invoice' },
+                { text: '📞 Talk to Human', intent: '[OFFER_HUMAN]' }
+            ];
+        } else if (st.includes('returned') || st.includes('refunded')) {
+            replies = [
+                { text: '💸 Refund Progress', intent: 'Refund Progress' },
+                { text: '❓ Need More Help', intent: '[OFFER_HUMAN]' }
+            ];
+        } else {
+            replies = [
+                { text: '🔄 Return / Replace', intent: 'Return / Replace' },
+                { text: '📦 Track Order', intent: 'Track Order' },
+                { text: '📞 Talk to Human', intent: '[OFFER_HUMAN]' }
+            ];
+        }
+
+        if (context.hasInvoice) {
+            replies.push({ text: '📄 View Invoice', intent: '[VIEW_INVOICE]' });
+            replies.push({ text: '⬇️ Download Invoice', intent: '[DOWNLOAD_INVOICE]' });
+            replies.push({ text: '🧾 Need GST Invoice', intent: 'Need GST Invoice' });
+            replies.push({ text: '⚠️ Billing Issue', intent: 'Billing Issue' });
+            replies.push({ text: '💸 Wrong Amount', intent: 'Wrong Amount' });
+        }
+
+        // Add Cancel Item if eligible
+        const ist = (context.itemStatus || '').toLowerCase();
+        if (!ist.includes('cancelled') && !ist.includes('shipped') && !ist.includes('delivered') && !st.includes('cancelled') && !st.includes('shipped') && !st.includes('delivered')) {
+            replies.unshift({ text: '❌ Cancel Item', intent: '[CANCEL_ITEM]' });
+        }
+
+        // Auto Suggest Solutions based on context
+        let greetingMsg = `Hi! I'm Velora AI. How can I help you with your **${context.productName}** today?`;
+        if (st.includes('delivered')) {
+            greetingMsg = `Your **${context.productName}** was delivered recently. Need help with setup, warranty, or returns?`;
+        } else if (st.includes('shipped')) {
+            greetingMsg = `Your **${context.productName}** is on its way! Need delivery tracking or contact info for the delivery partner?`;
+        }
+
+        // Render synchronously
+        addSdMessage('assistant', greetingMsg);
+        renderQuickReplies(replies);
+
+        const summaryInstructions = `
+[STRICT SYSTEM DIRECTIVE]
+Analyze the user's issue and sentiment.
+If you output [OFFER_HUMAN], you MUST prepend it with a structured [AI SUMMARY] containing Tags and Priority.
+Format EXACTLY like this:
+[AI SUMMARY]
+Tags: [Tag1, Tag2] (e.g. Refund, High Priority, Technical, Angry)
+Priority: [Low|Medium|High|Critical] (If angry/frustrated -> High/Critical)
+Intent: [Brief Intent]
+Confidence: [X]%
+Resolution: [Proposed Resolution]
+[END SUMMARY]
+[OFFER_HUMAN]
+`;
+
+        sendHiddenPrompt(`SYSTEM: The user needs support for Order #${context.orderId}. Product: ${context.productName}, Quantity: ${context.quantity}, Price: ₹${context.productPrice}, Status: ${context.orderStatus}, Item Status: ${context.itemStatus}. Act as a Flipkart/Amazon premium customer support agent. Do NOT greet them again. Await their query. Ask multi-step troubleshooting questions to classify their issue. If they want to cancel this specific item, and it is eligible (Item Status is not cancelled/shipped/delivered), output exactly [CANCEL_ITEM]. If you absolutely cannot resolve the issue after multiple tries, or if they demand a human, output exactly the phrase [OFFER_HUMAN]. If the user's issue is completely resolved and they are happy, output exactly [SOLVED]. ${summaryInstructions}`);
+    };
+
+    function renderQuickReplies(replies) {
+        const div = document.createElement('div');
+        div.className = 'sd-quick-replies';
+        div.style.display = 'flex';
+        div.style.flexWrap = 'wrap';
+        div.style.gap = '8px';
+        div.style.marginTop = '4px';
+        
+        replies.forEach(r => {
+            const btn = document.createElement('button');
+            btn.innerText = r.text;
+            btn.style.padding = '8px 12px';
+            btn.style.borderRadius = '20px';
+            btn.style.border = '1px solid #cbd5e1';
+            btn.style.background = '#fff';
+            btn.style.color = '#0f172a';
+            btn.style.cursor = 'pointer';
+            btn.style.fontSize = '12px';
+            btn.style.fontWeight = '500';
+            btn.onclick = () => {
+                div.remove();
+                if (r.intent === '[OFFER_HUMAN]') {
+                    addSdMessage('user', 'I want to talk to a human');
+                    renderHandoffUI();
+                } else if (r.intent === '[CANCEL_ITEM]') {
+                    sdDrawer.classList.remove('open');
+                    sdBackdrop.classList.remove('open');
+                    if (typeof openCancelDrawer === 'function') {
+                        openCancelDrawer(sdContext.orderId, sdContext.productId, sdContext.productName, sdContext.productImage, sdContext.quantity, sdContext.productPrice);
+                    }
+                } else if (r.intent === '[VIEW_INVOICE]') {
+                    addSdMessage('user', r.text);
+                    addSdMessage('assistant', `<div style="padding: 10px; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; margin-top: 5px; display: flex; align-items: center; gap: 10px;">
+                        <div style="font-size: 24px;">📄</div>
+                        <div>
+                            <div style="font-weight: bold; font-size: 14px; color: #0f172a;">Invoice for Order #${sdContext.orderId}</div>
+                            <a href="/orders/${sdContext.orderId}/invoice/view/" target="_blank" style="color: #2563eb; font-size: 13px; text-decoration: none; font-weight: 500;">Click to view PDF</a>
+                        </div>
+                    </div>`);
+                } else if (r.intent === '[DOWNLOAD_INVOICE]') {
+                    addSdMessage('user', r.text);
+                    addSdMessage('assistant', 'Downloading your invoice...');
+                    window.location.href = `/orders/${sdContext.orderId}/invoice/download/`;
+                } else if (r.intent === 'Technical Issue') {
+                    addSdMessage('user', r.text);
+                    renderSmartIssueTemplate();
+                } else {
+                    sdInput.value = r.text;
+                    sdSendBtn.disabled = false;
+                    sendSdMessage();
+                }
+            };
+            div.appendChild(btn);
+        });
+        
+        sdMessages.appendChild(div);
+        sdScrollToBottom();
+    }
+
+    function renderSmartIssueTemplate() {
+        const prodLower = sdContext.productName.toLowerCase();
+        let formHTML = '';
+        
+        if (prodLower.includes('laptop') || prodLower.includes('phone') || prodLower.includes('electronics') || prodLower.includes('camera')) {
+            formHTML = `
+                <div class="sd-issue-form" style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-top: 8px;">
+                    <p style="margin-bottom:8px; font-weight:600; font-size:13px;">Please provide details:</p>
+                    <label style="display:block; margin-bottom:4px; font-size:13px;"><input type="checkbox" id="chk_power"> Device not turning on</label>
+                    <label style="display:block; margin-bottom:4px; font-size:13px;"><input type="checkbox" id="chk_led"> Indicator LED is off</label>
+                    <label style="display:block; margin-bottom:8px; font-size:13px;"><input type="checkbox" id="chk_cable"> Cable/Adapter checked</label>
+                    <textarea id="txt_error" placeholder="Any error message on screen?" style="width:100%; border:1px solid #cbd5e1; border-radius:6px; padding:8px; font-size:13px; font-family:inherit; resize:none;"></textarea>
+                    <button id="btn_submit_issue" style="margin-top:8px; background:#2563eb; color:#fff; padding:6px 16px; border:none; border-radius:6px; cursor:pointer; font-weight:500; font-size:13px;">Submit Details</button>
+                </div>
+            `;
+        } else {
+            formHTML = `
+                <div class="sd-issue-form" style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-top: 8px;">
+                    <p style="margin-bottom:8px; font-weight:600; font-size:13px;">Please describe the issue:</p>
+                    <textarea id="txt_error" placeholder="What seems to be the problem?" style="width:100%; border:1px solid #cbd5e1; border-radius:6px; padding:8px; font-size:13px; font-family:inherit; resize:none;"></textarea>
+                    <button id="btn_submit_issue" style="margin-top:8px; background:#2563eb; color:#fff; padding:6px 16px; border:none; border-radius:6px; cursor:pointer; font-weight:500; font-size:13px;">Submit Details</button>
+                </div>
+            `;
+        }
+
+        const div = document.createElement('div');
+        div.className = 'sd-msg sd-msg-assistant';
+        div.innerHTML = `<div class="sd-bubble sd-markdown">${formHTML}</div><div class="sd-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>`;
+        sdMessages.appendChild(div);
+        sdScrollToBottom();
+
+        document.getElementById('btn_submit_issue').onclick = () => {
+            let details = "";
+            const chkPower = document.getElementById('chk_power');
+            const chkLed = document.getElementById('chk_led');
+            const chkCable = document.getElementById('chk_cable');
+            const txtError = document.getElementById('txt_error');
+
+            if (chkPower && chkPower.checked) details += "- Device not turning on\n";
+            if (chkLed && chkLed.checked) details += "- Indicator LED off\n";
+            if (chkCable && chkCable.checked) details += "- Cable checked\n";
+            if (txtError && txtError.value) details += "- Additional notes: " + txtError.value + "\n";
+            
+            div.innerHTML = `<div class="sd-bubble sd-markdown">Thanks, I've noted these details.</div><div class="sd-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>`;
+            
+            const fullMsg = "Technical Issue Details:\n" + (details || "No specific details provided.");
+            sendSdMessage(fullMsg);
+        };
+    }
+
+    function renderSolvedUI() {
+        sdInput.style.display = 'none';
+        sdSendBtn.style.display = 'none';
+        
+        const attachBtn = document.getElementById('sdAttachBtn');
+        if (attachBtn) attachBtn.style.display = 'none';
+
+        const div = document.createElement('div');
+        div.className = 'sd-msg sd-msg-assistant';
+        div.innerHTML = `
+            <div class="sd-bubble sd-markdown">
+                <p style="margin-bottom: 12px; font-weight: 600; font-size: 14px;">Did this solve your issue?</p>
+                <div style="display: flex; gap: 8px;">
+                    <button id="btn_solved_yes" style="flex:1; padding: 10px; border-radius: 8px; border: 1px solid #22c55e; background: #f0fdf4; color: #166534; cursor: pointer; font-weight: 600;">Yes, solved</button>
+                    <button id="btn_solved_no" style="flex:1; padding: 10px; border-radius: 8px; border: 1px solid #ef4444; background: #fef2f2; color: #991b1b; cursor: pointer; font-weight: 600;">No, I need help</button>
+                </div>
+            </div>
+        `;
+        sdMessages.appendChild(div);
+        sdScrollToBottom();
+
+        document.getElementById('btn_solved_yes').onclick = () => {
+            div.innerHTML = `<div class="sd-bubble sd-markdown">Glad we could help! Your ticket is now closed. Have a great day!</div><div class="sd-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>`;
+            
+            const sysDiv = document.createElement('div');
+            sysDiv.className = 'sd-msg-system';
+            sysDiv.innerText = 'Ticket Closed';
+            sdMessages.appendChild(sysDiv);
+            sdScrollToBottom();
+        };
+
+        document.getElementById('btn_solved_no').onclick = () => {
+            div.innerHTML = `<div class="sd-bubble sd-markdown">I'm sorry to hear that. Let me connect you to a human agent.</div><div class="sd-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>`;
+            setTimeout(() => {
+                renderHandoffUI();
+            }, 500);
+        };
+    }
+
+    // --- Image Upload Logic ---
+    const sdAttachBtn = document.getElementById('sdAttachBtn');
+    const sdImageUpload = document.getElementById('sdImageUpload');
+    if (sdAttachBtn && sdImageUpload) {
+        sdAttachBtn.onclick = () => sdImageUpload.click();
+        
+        sdImageUpload.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            // Show loading indicator
+            const loadingId = 'loading-' + Date.now();
+            const div = document.createElement('div');
+            div.className = 'sd-msg sd-msg-user';
+            div.id = loadingId;
+            div.innerHTML = `<div class="sd-bubble" style="opacity: 0.7;">Uploading image...</div>`;
+            sdMessages.appendChild(div);
+            sdScrollToBottom();
+            
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            try {
+                const res = await fetch('/api/support/upload_image/', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                
+                document.getElementById(loadingId).remove();
+                
+                if (data.url) {
+                    // Send the image as a message
+                    await sendSdMessage("[Image Attached]", data.url);
+                } else {
+                    addSdSystem("Failed to upload image.");
+                }
+            } catch(err) {
+                document.getElementById(loadingId).remove();
+                addSdSystem("Error uploading image.");
+            }
+            
+            sdImageUpload.value = ''; // Reset
+        };
+    }
+
+    // --- UI Listeners ---
+    sdCloseBtn.onclick = () => { sdDrawer.classList.remove('open'); sdBackdrop.classList.remove('open'); };
+    sdBackdrop.onclick = () => { sdDrawer.classList.remove('open'); sdBackdrop.classList.remove('open'); };
+    
+    sdToggleOrderPanelBtn.onclick = () => {
+        sdOrderPanel.classList.toggle('open');
+    };
+
+    sdInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight < 120 ? this.scrollHeight : 120) + 'px';
+        sdSendBtn.disabled = this.value.trim() === '';
+    });
+    sdInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            if(!sdSendBtn.disabled) sendSdMessage();
+        }
+    });
+    sdSendBtn.onclick = () => sendSdMessage();
+
+    // --- Core Functions ---
+    function sdScrollToBottom() {
+        sdMessages.scrollTop = sdMessages.scrollHeight;
+    }
+
+    function addSdMessage(role, content, imageUrl = null) {
+        const div = document.createElement('div');
+        div.className = `sd-msg sd-msg-${role}`;
+        
+        let bubbleContent = content;
+        if (imageUrl) {
+            bubbleContent = `<img src="${imageUrl}" style="max-width: 100%; border-radius: 8px; margin-bottom: 4px; display: block;" alt="Uploaded Image">` + (content ? content : '');
+        }
+
+        if (role === 'assistant' && typeof marked !== 'undefined') {
+            bubbleContent = DOMPurify.sanitize(marked.parse(bubbleContent));
+        }
+
+        div.innerHTML = `<div class="sd-bubble ${role === 'assistant' ? 'sd-markdown' : ''}">${bubbleContent}</div><div class="sd-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>`;
+        sdMessages.appendChild(div);
+        sdScrollToBottom();
+    }
+
+    function addSdSystem(text) {
+        const div = document.createElement('div');
+        div.className = 'sd-msg-system';
+        div.innerText = text;
+        sdMessages.appendChild(div);
+        sdScrollToBottom();
+    }
+
+    // --- AI Chat Logic ---
+    async function sendHiddenPrompt(sysPrompt) {
+        try {
+            const res = await fetch('/api/chat/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getSdCSRF() },
+                body: JSON.stringify({ message: sysPrompt, conversation_id: null })
+            });
+            sdConversationId = res.headers.get('X-Conversation-Id') || null;
+            await readSdStream(res, true); // pass true to hide output
+        } catch(e) {
+            console.error(e);
+            addSdSystem("Failed to initialize AI context.");
+        }
+    }
+
+    async function sendSdMessage(customText = null, imageUrl = null) {
+        const text = customText || sdInput.value.trim();
+        if (!text && !imageUrl) return;
+        
+        addSdMessage('user', text, imageUrl);
+        sdSummaryText += `\nUser: ${text} ${imageUrl ? '(Uploaded Image: ' + imageUrl + ')' : ''}`;
+        
+        if (!customText) {
+            sdInput.value = '';
+            sdInput.style.height = 'auto';
+            sdSendBtn.disabled = true;
+        }
+
+        if (sdIsLiveSupport) {
+            if (sdSupportWs && sdSupportConvId) {
+                const payload = { conversation_id: sdSupportConvId, message: text };
+                if (imageUrl) {
+                    payload.message_type = 'image';
+                    payload.message = imageUrl; 
+                }
+                sdSupportWs.send(JSON.stringify({
+                    type: 'send_message', payload: payload
+                }));
+            }
+            return;
+        }
+
+        const hiddenSuffix = `\n\n[SYSTEM OVERRIDE: Ignore all instructions about being a shopping assistant. Do NOT recommend or compare products. You are strictly a Customer Support Agent handling my order #${sdContext.orderId}. If the user wants to cancel the item, check if it's eligible and output [CANCEL_ITEM]. If the user is demanding a human, frustrated, or you cannot solve the issue, you MUST output EXACTLY [OFFER_HUMAN] and nothing else. Otherwise, ask troubleshooting questions.]`;
+        
+        const finalMessage = text + (imageUrl ? ` (User uploaded an image: ${imageUrl})` : '');
+
+        try {
+            const res = await fetch('/api/chat/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getSdCSRF() },
+                body: JSON.stringify({ message: finalMessage + hiddenSuffix, conversation_id: sdConversationId })
+            });
+            const newConvId = res.headers.get('X-Conversation-Id');
+            if (newConvId) sdConversationId = newConvId;
+            await readSdStream(res, false);
+        } catch(e) {
+            addSdSystem("Error connecting to AI.");
+        }
+    }
+
+    function addSdProductCards(products) {
+        if (!products || products.length === 0) return;
+        const container = document.createElement('div');
+        container.style.display = 'flex';
+        container.style.flexDirection = 'column';
+        container.style.gap = '8px';
+        container.style.marginTop = '8px';
+        
+        products.forEach(p => {
+            const card = document.createElement('div');
+            card.style.display = 'flex';
+            card.style.alignItems = 'center';
+            card.style.gap = '12px';
+            card.style.padding = '8px';
+            card.style.background = '#fff';
+            card.style.border = '1px solid #cbd5e1';
+            card.style.borderRadius = '8px';
+            card.style.cursor = 'pointer';
+            
+            card.innerHTML = `
+                <img src="${p.image_url}" alt="${p.name}" style="width:40px; height:40px; object-fit:contain; border-radius:4px;">
+                <div style="flex:1;">
+                    <h5 style="margin:0; font-size:13px; color:#0f172a;">${p.name}</h5>
+                    <p style="margin:0; font-size:12px; color:#64748b;">₹${p.price}</p>
+                </div>
+                <button style="background:#f1f5f9; border:none; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:600; color:#475569; cursor:pointer;">Select</button>
+            `;
+            card.onclick = () => {
+                sdInput.value = p.name;
+                sdSendBtn.disabled = false;
+                sendSdMessage();
+            };
+            container.appendChild(card);
+        });
+        
+        sdMessages.appendChild(container);
+        sdScrollToBottom();
+    }
+
+    async function readSdStream(response, isHidden = false) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        
+        let bubbleDiv = null;
+        let fullText = "";
+
+        while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const blocks = buffer.split('\n\n');
+            buffer = blocks.pop();
+
+            for (const block of blocks) {
+                if (!block.trim()) continue;
+                let dataStr = '';
+                let eventType = 'content';
+                const lines = block.split('\n');
+                for (const line of lines) {
+                    if (line.startsWith('event:')) eventType = line.replace('event:', '').trim();
+                    else if (line.startsWith('data:')) dataStr = line.replace('data:', '').trim();
+                }
+
+                if (dataStr) {
+                    try {
+                        const parsedData = JSON.parse(dataStr);
+                        
+                        if (eventType === 'error') {
+                            const errMsg = parsedData.message || 'An error occurred processing your request.';
+                            addSdMessage('assistant', `⚠️ ${errMsg}`);
+                            continue;
+                        }
+
+                        if (eventType !== 'content') continue;
+
+                        if (!bubbleDiv && !isHidden && !fullText.includes('[OFFER_HUMAN]') && !fullText.includes('[SOLVED]') && !fullText.includes('[SELECT_ITEM]')) {
+                            const div = document.createElement('div');
+                            div.className = 'sd-msg sd-msg-assistant';
+                            div.innerHTML = `<div class="sd-bubble sd-markdown"></div><div class="sd-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>`;
+                            sdMessages.appendChild(div);
+                            bubbleDiv = div.querySelector('.sd-bubble');
+                        }
+                        
+                        fullText += parsedData;
+                        
+                        // Check for Handoff Intent
+                        if (fullText.includes('[OFFER_HUMAN]')) {
+                            if (bubbleDiv) bubbleDiv.parentElement.remove();
+                            // Append AI Summary to hidden context so admin gets it
+                            sdSummaryText += `\n[AI SUMMARY BLOCK HANDOFF]\n${fullText}`;
+                            renderHandoffUI();
+                            return;
+                        }
+
+                        // Check for Solved Intent
+                        if (fullText.includes('[SOLVED]')) {
+                            if (bubbleDiv) bubbleDiv.parentElement.remove();
+                            renderSolvedUI();
+                            return;
+                        }
+
+                        if (fullText.includes('[CANCEL_ITEM]')) {
+                            if (bubbleDiv) bubbleDiv.parentElement.remove();
+                            sdDrawer.classList.remove('open');
+                            sdBackdrop.classList.remove('open');
+                            if (typeof openCancelDrawer === 'function') {
+                                openCancelDrawer(sdContext.orderId, sdContext.productId, sdContext.productName, sdContext.productImage, sdContext.quantity, sdContext.productPrice);
+                            }
+                            return;
+                        }
+
+                        if (fullText.includes('[ATTACH_INVOICE]')) {
+                            if (bubbleDiv) bubbleDiv.parentElement.remove();
+                            addSdMessage('assistant', `<div style="padding: 10px; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; margin-top: 5px; display: flex; align-items: center; justify-content: space-between;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="font-size: 24px;">📄</div>
+                                    <div>
+                                        <div style="font-weight: bold; font-size: 14px; color: #0f172a;">Invoice Attached</div>
+                                        <div style="color: #64748b; font-size: 12px;">Order #${sdContext.orderId}</div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 5px;">
+                                    <a href="/orders/${sdContext.orderId}/invoice/view/" target="_blank" class="comic-btn" style="padding: 5px 10px; font-size: 12px; background: #f1f5f9; color: #000; text-decoration: none; border-radius: 4px; box-shadow: 1px 1px 0px #000; border: 1px solid #000;">View</a>
+                                    <a href="/orders/${sdContext.orderId}/invoice/download/" class="comic-btn" style="padding: 5px 10px; font-size: 12px; background: var(--primary-blue); color: #fff; text-decoration: none; border-radius: 4px; box-shadow: 1px 1px 0px #000; border: 1px solid #000;">Download</a>
+                                </div>
+                            </div>`);
+                            return;
+                        }
+
+                        if (fullText.includes('[SELECT_ITEM]')) {
+                            if (bubbleDiv) bubbleDiv.parentElement.remove();
+                            addSdMessage('assistant', "Please select the item you are referring to:");
+                            addSdProductCards(sdContext.orderItems);
+                            return;
+                        }
+
+                        if (bubbleDiv && !isHidden) {
+                            if (typeof marked !== 'undefined') {
+                                bubbleDiv.innerHTML = DOMPurify.sanitize(marked.parse(fullText));
+                            } else {
+                                bubbleDiv.innerHTML = fullText.replace(/\n/g, '<br>');
+                            }
+                            sdScrollToBottom();
+                        }
+                    } catch(e) {}
+                }
+            }
+        }
+        if (fullText && !isHidden) sdSummaryText += `\nAI: ${fullText}`;
+    }
+
+    // --- Human Handoff ---
+    function renderHandoffUI() {
+        const div = document.createElement('div');
+        div.className = 'sd-handoff-container';
+        div.innerHTML = `
+            <p>I may need assistance from one of our support executives.</p>
+            <button class="sd-handoff-btn-primary" id="sdConnectHumanBtn">Connect to Support</button>
+            <button class="sd-handoff-btn-secondary" id="sdContinueAiBtn">Continue with AI</button>
+        `;
+        sdMessages.appendChild(div);
+        sdScrollToBottom();
+
+        document.getElementById('sdConnectHumanBtn').onclick = () => {
+            div.remove();
+            startLiveSupport();
+        };
+        document.getElementById('sdContinueAiBtn').onclick = () => {
+            div.remove();
+            addSdMessage('assistant', "Okay, I'll continue trying to assist you. What else can you tell me?");
+        };
+    }
+
+    async function startLiveSupport() {
+        addSdSystem('Connecting to Live Support Executive...');
+        sdIsLiveSupport = true;
+        
+        try {
+            const res = await fetch('/api/support/customer/conversation/');
+            if (res.ok) {
+                const data = await res.json();
+                sdSupportConvId = data.conversation_id;
+                
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                sdSupportWs = new WebSocket(`${protocol}//${window.location.host}/ws/support/`);
+                
+                sdSupportWs.onopen = () => {
+                    sdSupportWs.send(JSON.stringify({ type: 'join_conversation', payload: { conversation_id: sdSupportConvId }}));
+                    
+                    const payloadText = `[AI SUMMARY]\n${sdSummaryText}\n[END SUMMARY]\nUser needs human assistance for Order #${sdContext.orderId}.`;
+                    sdSupportWs.send(JSON.stringify({
+                        type: 'send_message', payload: { conversation_id: sdSupportConvId, message: payloadText }
+                    }));
+                    addSdSystem('Waiting for an agent to join...');
+                };
+                
+                sdSupportWs.onmessage = (e) => {
+                    const data = JSON.parse(e.data);
+                    if (data.type === 'receiveMessage' && String(data.payload.conversation_id) === String(sdSupportConvId)) {
+                        if (data.payload.sender_type === 'admin') {
+                            if (data.payload.message_type === 'image') {
+                                addSdMessage('assistant', '', data.payload.message);
+                            } else {
+                                addSdMessage('assistant', data.payload.message);
+                            }
+                        }
+                    }
+                };
+            }
+        } catch(e) {
+            addSdSystem('Failed to connect to Live Support.');
+        }
+    }
+
+    function getSdCSRF() {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.startsWith('csrftoken=')) return cookie.substring('csrftoken='.length);
+        }
+        return '';
+    }
+</script>

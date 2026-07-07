@@ -428,6 +428,30 @@ body {
                     <input type="text" id="pincode" class="form-control" placeholder="90265" required>
                 </div>
             </div>
+
+            <!-- PAYMENT METHOD -->
+            <div style="margin-top: 40px; border-top: 4px solid var(--border-color); padding-top: 25px;">
+                <h3 style="font-size: 24px; text-transform: uppercase; margin-bottom: 20px;">💳 Payment Method</h3>
+                
+                <div class="address-options">
+                    <label class="address-label" style="background: #fff;">
+                        <input type="radio" name="payment_method" value="Online" checked style="margin-top: 8px; width: 24px; height: 24px;">
+                        <div class="address-text">
+                            <h3 style="font-size: 20px; color: #0f172a;">Online Payment</h3>
+                            <p style="font-weight: normal; color: #475569;">Secure payment using Razorpay (UPI, Cards, Net Banking)</p>
+                        </div>
+                    </label>
+
+                    <label class="address-label" id="codLabel" style="background: #fff;">
+                        <input type="radio" name="payment_method" value="COD" id="codRadio" style="margin-top: 8px; width: 24px; height: 24px;">
+                        <div class="address-text">
+                            <h3 style="font-size: 20px; color: #0f172a;">Cash on Delivery</h3>
+                            <p style="font-weight: normal; color: #475569;">Pay when your order is delivered to your doorstep.</p>
+                            <p id="codError" style="color: var(--primary-red); font-size: 14px; font-weight: bold; margin-top: 8px; display: none;"></p>
+                        </div>
+                    </label>
+                </div>
+            </div>
         </form>
     </div>
 
@@ -523,6 +547,9 @@ body {
             payload.pincode = document.getElementById('pincode').value.trim();
         }
 
+        const paymentRadio = document.querySelector('input[name="payment_method"]:checked');
+        payload.payment_method = paymentRadio ? paymentRadio.value : 'Online';
+
         // Disable button to prevent double submit
         this.disabled = true;
         this.innerText = 'PROCESSING ORDER...';
@@ -543,6 +570,11 @@ body {
         })
         .then(data => {
             if (data.status === 'success') {
+                if (data.payment_method === 'COD') {
+                    window.location.href = '/order-confirmation/' + data.order_id + '/';
+                    return;
+                }
+
                 var options = {
                     "key": data.key_id,
                     "amount": data.amount,
@@ -604,6 +636,47 @@ body {
             alert('Error placing order: ' + error.message);
             document.getElementById('placeOrderBtn').disabled = false;
             document.getElementById('placeOrderBtn').innerText = 'PLACE ORDER NOW ⚡';
+        });
+    });
+
+    function validateCOD(addressId) {
+        if (!addressId || addressId === 'new') return;
+        
+        fetch('/api/checkout/validate_cod/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+            body: JSON.stringify({ address_id: addressId })
+        })
+        .then(res => res.json())
+        .then(data => {
+            const codRadio = document.getElementById('codRadio');
+            const codLabel = document.getElementById('codLabel');
+            const codError = document.getElementById('codError');
+            
+            if (data.eligible) {
+                codRadio.disabled = false;
+                codLabel.style.opacity = '1';
+                codError.style.display = 'none';
+            } else {
+                codRadio.disabled = true;
+                codLabel.style.opacity = '0.6';
+                codError.innerText = data.reason || 'Not available for this address';
+                codError.style.display = 'block';
+                if (codRadio.checked) {
+                    document.querySelector('input[name="payment_method"][value="Online"]').checked = true;
+                }
+            }
+        });
+    }
+
+    // Trigger validation on initial load
+    const initAddress = document.querySelector('input[name="selected_address"]:checked');
+    if (initAddress && initAddress.value !== 'new') validateCOD(initAddress.value);
+
+    // Re-validate when address changes
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value !== 'new') validateCOD(this.value);
         });
     });
 

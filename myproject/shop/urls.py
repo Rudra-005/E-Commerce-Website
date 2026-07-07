@@ -2,8 +2,14 @@ from django.urls import path
 from . import views
 from . import views_admin
 from . import views_support_api
+from . import views_cancellations
+from . import views_invoice
 
 urlpatterns = [
+    # Invoices
+    path('orders/<int:order_id>/invoice/view/', views_invoice.InvoiceView.as_view(), name='invoice_view'),
+    path('orders/<int:order_id>/invoice/download/', views_invoice.InvoiceDownloadView.as_view(), name='invoice_download'),
+
     # Admin Panel
     path('admin/', views_admin.AdminBaseRedirectView.as_view(), name='admin_base_redirect'),
     path('admin/dashboard/', views_admin.AdminDashboardView.as_view(), name='admin_dashboard'),
@@ -13,6 +19,7 @@ urlpatterns = [
     path('admin/users/', views_admin.AdminUsersView.as_view(), name='admin_users'),
     path('admin/analytics/', views_admin.AdminAnalyticsView.as_view(), name='admin_analytics'),
     path('admin/refunds/', views_admin.AdminRefundsView.as_view(), name='admin_refunds'),
+    path('admin/refunds/process/', views_admin.AdminProcessRefundAPIView.as_view(), name='admin_process_refund'),
     path('admin/settings/', views_admin.AdminSettingsView.as_view(), name='admin_settings'),
     
     # Support APIs
@@ -20,6 +27,11 @@ urlpatterns = [
     path('api/support/customer/conversation/', views_support_api.CustomerConversationAPIView.as_view(), name='api_customer_conversation'),
     path('api/support/conversation/<int:conversation_id>/messages/', views_support_api.ConversationMessagesAPIView.as_view(), name='api_conversation_messages'),
     path('api/support/upload_image/', views_support_api.UploadChatImageAPIView.as_view(), name='api_upload_chat_image'),
+
+    # Order Cancellations
+    path('api/orders/<int:order_id>/items/<int:item_id>/cancel/', views_cancellations.CancelOrderItemAPIView.as_view(), name='api_cancel_order_item'),
+    path('admin/cancellations/', views_cancellations.AdminCancellationsView.as_view(), name='admin_cancellations'),
+    path('api/admin/cancellations/<int:cancel_id>/process/', views_cancellations.AdminProcessCancellationAPIView.as_view(), name='api_admin_process_cancellation'),
 
     # Home
     path(
@@ -91,6 +103,12 @@ urlpatterns = [
         "checkout/",
         views.CheckoutView.as_view(),
         name="checkout"
+    ),
+
+    path(
+        "api/checkout/validate_cod/",
+        views.ValidateCODView.as_view(),
+        name="validate_cod"
     ),
 
     # Verify Payment

@@ -554,6 +554,22 @@ body {
                 <span class="status-badge status-pending">{{ order.status }}</span>
             </div>
             <div class="meta-item">
+                <span class="label">Payment Method</span>
+                <span>{{ order.payment_method }}</span>
+            </div>
+            <div class="meta-item">
+                <span class="label">Payment Status</span>
+                <span>
+                    {% if order.payment_status == 'Paid' %}
+                        <span style="color: var(--primary-green);">{{ order.payment_status }}</span>
+                    {% elif order.payment_status == 'Failed' %}
+                        <span style="color: var(--primary-red);">{{ order.payment_status }}</span>
+                    {% else %}
+                        <span style="color: var(--primary-yellow); text-shadow: 1px 1px 0 #000;">{{ order.payment_status }}</span>
+                    {% endif %}
+                </span>
+            </div>
+            <div class="meta-item">
                 <span class="label">Total Items</span>
                 <span>{{ order_items|length }} item{{ order_items|length|pluralize }}</span>
             </div>

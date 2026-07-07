@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Invoice {{ invoice.invoice_number }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+            @frame footer {
+                -pdf-frame-content: footerContent;
+                bottom: 1cm;
+                margin-left: 2cm;
+                margin-right: 2cm;
+                height: 1cm;
+            }
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 10pt;
+            color: #333333;
+        }
+        .header {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .header td {
+            vertical-align: top;
+        }
+        .company-name {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #000000;
+        }
+        .invoice-title {
+            font-size: 20pt;
+            color: #666666;
+            text-align: right;
+            text-transform: uppercase;
+        }
+        .details-table {
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        .details-table td {
+            vertical-align: top;
+            width: 50%;
+        }
+        .section-title {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #555555;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #eeeeee;
+            padding-bottom: 2px;
+        }
+        .info-box {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .items-table th {
+            background-color: #eeeeee;
+            color: #333333;
+            font-weight: bold;
+            padding: 8px;
+            text-align: left;
+            border-bottom: 2px solid #dddddd;
+        }
+        .items-table td {
+            padding: 8px;
+            border-bottom: 1px solid #eeeeee;
+        }
+        .items-table th.right, .items-table td.right {
+            text-align: right;
+        }
+        .totals-table {
+            width: 40%;
+            margin-left: 60%;
+            border-collapse: collapse;
+        }
+        .totals-table td {
+            padding: 5px 8px;
+        }
+        .totals-table .total-label {
+            text-align: right;
+            font-weight: bold;
+        }
+        .totals-table .total-value {
+            text-align: right;
+        }
+        .totals-table .grand-total {
+            font-size: 14pt;
+            font-weight: bold;
+            border-top: 2px solid #dddddd;
+            padding-top: 8px;
+        }
+        #footerContent {
+            text-align: center;
+            font-size: 8pt;
+            color: #888888;
+            border-top: 1px solid #eeeeee;
+            padding-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <table class="header">
+        <tr>
+            <td>
+                <div class="company-name">{{ company.name }}</div>
+                <div>{{ company.address|linebreaksbr }}</div>
+                <div>GSTIN: {{ company.gst }}</div>
+                <div>Email: {{ company.email }} | Web: {{ company.website }}</div>
+            </td>
+            <td>
+                <div class="invoice-title">TAX INVOICE</div>
+                <div style="text-align: right; margin-top: 10px;">
+                    <strong>Invoice No:</strong> {{ invoice.invoice_number }}<br>
+                    <strong>Invoice Date:</strong> {{ invoice.created_at|date:"d M Y" }}<br>
+                    <strong>Order ID:</strong> #{{ order.id }}<br>
+                    <strong>Payment:</strong> {{ invoice.payment_method }} ({{ invoice.payment_status }})
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="details-table">
+        <tr>
+            <td style="padding-right: 15px;">
+                <div class="section-title">Billing Address</div>
+                <div class="info-box">
+                    {{ invoice.billing_address|linebreaksbr }}
+                </div>
+            </td>
+            <td style="padding-left: 15px;">
+                <div class="section-title">Shipping Address</div>
+                <div class="info-box">
+                    {{ invoice.shipping_address|linebreaksbr }}
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th style="width: 5%;">#</th>
+                <th style="width: 45%;">Product Description</th>
+                <th style="width: 15%;" class="right">Unit Price</th>
+                <th style="width: 10%;" class="right">Qty</th>
+                <th style="width: 10%;" class="right">Tax</th>
+                <th style="width: 15%;" class="right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>
+                    <strong>{{ item.product.name }}</strong><br>
+                    <span style="font-size: 8pt; color: #777;">Category: {{ item.product.category_fk.name|default:item.product.category }}</span>
+                </td>
+                <td class="right">₹{{ item.price }}</td>
+                <td class="right">{{ item.quantity }}</td>
+                <td class="right">18%</td>
+                <td class="right">₹{{ item.subtotal }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="totals-table">
+        <tr>
+            <td class="total-label">Subtotal:</td>
+            <td class="total-value">₹{{ invoice.subtotal }}</td>
+        </tr>
+        <tr>
+            <td class="total-label">Shipping:</td>
+            <td class="total-value">₹{{ invoice.shipping_charge }}</td>
+        </tr>
+        <tr>
+            <td class="total-label">Tax (IGST 18%):</td>
+            <td class="total-value">₹{{ invoice.tax }}</td>
+        </tr>
+        <tr>
+            <td class="total-label grand-total">Grand Total:</td>
+            <td class="total-value grand-total">₹{{ invoice.grand_total }}</td>
+        </tr>
+    </table>
+
+    <div style="margin-top: 40px;">
+        <p style="font-weight: bold;">Amount in words:</p>
+        <p style="color: #555;">Rupees {{ invoice.grand_total }} Only</p>
+    </div>
+
+    <div id="footerContent">
+        This is a computer-generated invoice and does not require a physical signature.<br>
+        Thank you for shopping with {{ company.name }}! For support, contact {{ company.phone }} or {{ company.email }}.
+    </div>
+</body>
+</html>

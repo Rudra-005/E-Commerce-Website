@@ -3,12 +3,47 @@
 {% block content %}
 <div class="admin-card">
     <h2>Manage Products</h2>
-    <ul>
-        {% for product in products %}
-            <li>{{ product.name }} - ${{ product.price }}</li>
-        {% empty %}
-            <li>No products found.</li>
-        {% endfor %}
-    </ul>
+    <div style="overflow-x: auto; margin-top: 20px;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; background: #fff; border: 3px solid #000; box-shadow: 4px 4px 0px #000;">
+            <thead>
+                <tr style="background-color: #ffd166; border-bottom: 3px solid #000;">
+                    <th style="padding: 12px; border-right: 3px solid #000; width: 60px;">Image</th>
+                    <th style="padding: 12px; border-right: 3px solid #000;">Product</th>
+                    <th style="padding: 12px; border-right: 3px solid #000;">Category</th>
+                    <th style="padding: 12px; border-right: 3px solid #000;">Price</th>
+                    <th style="padding: 12px; border-right: 3px solid #000;">Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr style="border-bottom: 2px solid #000;">
+                    <td style="padding: 12px; border-right: 3px solid #000; text-align: center;">
+                        {% if product.image %}
+                            <img src="{{ product.image }}" alt="{{ product.name }}" style="width: 50px; height: 50px; object-fit: cover; border: 2px solid #000; border-radius: 4px;">
+                        {% else %}
+                            <div style="width: 50px; height: 50px; background: #eee; border: 2px solid #000; border-radius: 4px; display: inline-block;"></div>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px; border-right: 3px solid #000; font-weight: bold;">{{ product.name }}<br><small style="color: #666; font-weight: normal;">ID: {{ product.id }}</small></td>
+                    <td style="padding: 12px; border-right: 3px solid #000;">{{ product.category_fk.name|default:"-" }}</td>
+                    <td style="padding: 12px; border-right: 3px solid #000; font-weight: bold;">₹{{ product.price }}</td>
+                    <td style="padding: 12px; border-right: 3px solid #000;">
+                        {% if product.stock > 10 %}
+                            <span style="background: #06d6a0; color: #fff; padding: 4px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #000; font-size: 0.85em;">{{ product.stock }} in stock</span>
+                        {% elif product.stock > 0 %}
+                            <span style="background: #ffd166; padding: 4px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #000; font-size: 0.85em;">Only {{ product.stock }} left</span>
+                        {% else %}
+                            <span style="background: #ef476f; color: #fff; padding: 4px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #000; font-size: 0.85em;">Out of stock</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="padding: 20px; text-align: center; font-style: italic; color: #666;">No products found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

@@ -109,13 +109,17 @@ class ChatAPIView(View):
             # 3. Get chat history for context
             chat_history = _get_chat_history(session, limit=10)
 
+            # Strip any SYSTEM OVERRIDE hidden suffix before parsing logic
+            import re
+            clean_message = re.sub(r'\[SYSTEM OVERRIDE:.*?\]', '', user_message, flags=re.DOTALL).strip()
+            msg_lower = clean_message.lower().strip()
+
             # 4. Bypass vector search if the query is a greeting, or relates to cart, orders, or user profile/account
             greetings = {'hi', 'hii', 'hello', 'hey', 'yo', 'greetings', 'sup', 'hola', 'test', 'help', 'thanks', 'thank you', 'bye', 'goodbye'}
-            msg_lower = user_message.lower().strip()
             is_greeting = msg_lower.strip('?.! ') in greetings
 
             is_cart_query = any(kw in msg_lower for kw in ['cart', 'basket', 'bag', 'subtotal', 'checkout'])
-            is_order_query = any(kw in msg_lower for kw in ['track', 'delivery', 'status', 'shipped', 'shipping', 'purchase', 'history']) or 'orders' in msg_lower or 'my order' in msg_lower or 'recent order' in msg_lower
+            is_order_query = any(kw in msg_lower for kw in ['track', 'delivery', 'status', 'shipped', 'shipping', 'purchase', 'history', 'return', 'replace', 'cancel', 'refund']) or 'orders' in msg_lower or 'my order' in msg_lower or 'recent order' in msg_lower
             is_account_query = any(kw in msg_lower for kw in ['account', 'profile', 'my info', 'who am i', 'email', 'username'])
             is_address_query = any(kw in msg_lower for kw in ['address', 'addresses', 'location', 'pincode'])
 
@@ -127,7 +131,7 @@ class ChatAPIView(View):
             else:
                 # Vector search for relevant products
                 from .services.vector_search import search_products
-                products, filters = search_products(user_message, top_k=8)
+                products, filters = search_products(clean_message, top_k=8)
 
             # Generate user account, cart, and order context
             from .services.groq_service import build_user_context
@@ -144,7 +148,7 @@ class ChatAPIView(View):
                     messages = build_messages(chat_history[:-1], user_message, product_context, user_context_str)
 
                     completion = client.chat.completions.create(
-                        model="llama-3.3-70b-versatile",
+                        model="llama-3.1-8b-instant",
                         messages=messages,
                         temperature=0.7,
                         max_tokens=1024,
@@ -206,8 +210,10 @@ class ChatAPIView(View):
 
                     yield "event: done\ndata: {}\n\n"
                 except Exception as stream_err:
-                    logger.error(f"Streaming error: {stream_err}", exc_info=True)
-                    yield f"event: error\ndata: {json.dumps({'message': 'I encountered an issue processing your request.'})}\n\n"
+                    import traceback
+                    err_str = traceback.format_exc()
+                    logger.error(f"Streaming error: {stream_err}\n{err_str}")
+                    yield f"event: error\ndata: {json.dumps({'message': 'I encountered an issue processing your request.', 'debug': str(stream_err)})}\n\n"
                 finally:
                     # Save assistant response to databases
                     ai_response = "".join(full_text)
