@@ -1,0 +1,20 @@
+Welcome to {{ app_name }}! 🎉
+
+Hi {{ user_name }},
+
+Your {{ app_name }} account is ready! We are excited to welcome you to the {{ app_name }} community.
+
+Here are a few things you can do next:
+- Explore the latest gear and tech setups
+- Customize your ultimate battlestation
+- Access customer support and live assistance
+
+Ready to jump in? Go to your dashboard:
+{{ dashboard_url }}
+
+If you have any questions or need help, feel free to reply to this email or reach out to us at {{ support_email }}.
+
+Regards,
+Team {{ app_name }}
+
+© {{ current_year }} {{ app_name }}. All rights reserved.

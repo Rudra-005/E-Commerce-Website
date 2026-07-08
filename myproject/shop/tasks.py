@@ -255,3 +255,17 @@ def send_ai_email_campaign_task(self):
             return {"status": "error", "message": f"Database error, skipping retry: {exc}"}
         raise self.retry(exc=exc)
 
+
+@shared_task(bind=True, max_retries=3, default_retry_delay=60, soft_time_limit=300)
+@log_task_execution("Send Welcome Email")
+def send_welcome_email_task(self, user_id):
+    try:
+        from shop.services.email_service import EmailService
+        success = EmailService.send_welcome_email(user_id)
+        if not success:
+            raise Exception("EmailService.send_welcome_email returned False")
+        return {"status": "success", "user_id": user_id}
+    except Exception as exc:
+        logger.error(f"Error in send_welcome_email_task for user {user_id}: {exc}")
+        raise self.retry(exc=exc)
+

@@ -217,6 +217,7 @@ CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_ROUTES = {
     'shop.tasks.generate_invoice_task': {'queue': 'invoice'},
     'shop.tasks.send_invoice_email_task': {'queue': 'email'},
+    'shop.tasks.send_welcome_email_task': {'queue': 'email'},
     'shop.tasks.award_reward_points_task': {'queue': 'default'},
     'shop.tasks.update_recommendation_cache_task': {'queue': 'recommendation'},
     'shop.tasks.verify_payment_and_log_task': {'queue': 'payments'},
@@ -229,3 +230,8 @@ CELERY_TASK_ROUTES = {
 }
 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'# Django Allauth Settings removed for custom Google OAuth and PyJWT integration
+
+# Site Configuration
+SITE_URL = os.getenv("SITE_URL", "http://localhost:8000")
+SITE_NAME = "Velora"
+SUPPORT_EMAIL = os.getenv("SUPPORT_EMAIL", EMAIL_HOST_USER)
