@@ -1,0 +1,147 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: ecom_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  celery_payments:
+    build: .
+    container_name: celery_payments
+    command: celery -A myproject worker -Q payments -n payments_worker@%h --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  celery_invoices:
+    build: .
+    container_name: celery_invoices
+    command: celery -A myproject worker -Q invoice -n invoice_worker@%h --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  celery_emails:
+    build: .
+    container_name: celery_emails
+    command: celery -A myproject worker -Q email -n email_worker@%h --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  celery_recommendations:
+    build: .
+    container_name: celery_recommendations
+    command: celery -A myproject worker -Q recommendation -n rec_worker@%h --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  celery_analytics:
+    build: .
+    container_name: celery_analytics
+    command: celery -A myproject worker -Q analytics,notifications -n analytics_worker@%h --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  celery_support:
+    build: .
+    container_name: celery_support
+    command: celery -A myproject worker -Q support -n support_worker@%h --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  celery_default:
+    build: .
+    container_name: celery_default
+    command: celery -A myproject worker -Q default -n default_worker@%h --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  celery_beat:
+    build: .
+    container_name: celery_beat
+    command: celery -A myproject beat -l info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  flower:
+    build: .
+    container_name: flower
+    command: celery -A myproject flower --port=5555
+    ports:
+      - "5555:5555"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  redis_data:

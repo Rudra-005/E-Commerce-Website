@@ -1,0 +1,190 @@
+# ============================================
+# AI/ML REQUIREMENTS - LangChain, LLMs, RAG
+# For: AI workers, recommendation engine, chatbot
+# ============================================
+
+-r base.txt
+
+# --- LangChain Ecosystem ---
+langchain
+langchain-classic
+langchain-community
+langchain-core
+langchain-google-genai
+langchain-groq
+langchain-protocol
+langchain-text-splitters
+langgraph
+langgraph-checkpoint
+langgraph-checkpoint-sqlite
+langgraph-prebuilt
+langgraph-sdk
+langsmith
+langcodes
+language_data
+
+# --- LLM Providers ---
+groq
+openai
+google-generativeai
+google-ai-generativelanguage
+google-adk
+
+# --- Google APIs ---
+google-api-core
+google-api-python-client
+google-auth
+google-auth-httplib2
+google-auth-oauthlib
+google-cloud-core
+google-cloud-firestore
+google-cloud-storage
+google-crc32c
+google-resumable-media
+google-pasta
+googleapis-common-protos
+proto-plus
+protobuf
+grpcio
+grpcio-status
+uritemplate
+
+# --- Vector Stores & Embeddings ---
+faiss-cpu
+chromadb
+sentence-transformers
+tiktoken
+tokenizers
+huggingface_hub
+hf-xet
+safetensors
+mmh3
+sqlite-vec
+
+# --- ML/DL Frameworks ---
+tensorflow
+tensorflow-estimator
+tensorflow-io-gcs-filesystem
+tensorflow-recommenders
+tf_keras
+keras
+torch
+catboost
+xgboost
+
+# --- ML Support Libraries ---
+numpy
+pandas
+scikit-learn
+scipy
+joblib
+threadpoolctl
+sympy
+mpmath
+networkx
+optree
+opt_einsum
+absl-py
+astunparse
+flatbuffers
+gast
+h5py
+libclang
+ml-dtypes
+namex
+tensorboard
+tensorboard-data-server
+termcolor
+
+# --- NLP ---
+nltk
+spacy
+spacy-legacy
+spacy-loggers
+textblob
+textstat
+language-tool-python
+blis
+catalogue
+confection
+cymem
+murmurhash
+preshed
+srsly
+thinc
+wasabi
+weasel
+smart-open
+cloudpathlib
+marisa-trie
+
+# --- Computer Vision ---
+opencv-python
+deepface
+dlib-binary
+mtcnn
+retina-face
+
+# --- Data Visualization ---
+matplotlib
+seaborn
+plotly
+contourpy
+cycler
+fonttools
+kiwisolver
+pyparsing
+matplotlib-inline
+
+# --- PDF & Document Processing ---
+pyarrow
+
+# --- Web Scraping / Search ---
+tavily-python
+duckduckgo_search
+ddgs
+curl_cffi
+primp
+
+# --- Stats ---
+statsmodels
+patsy
+mlxtend
+
+# --- File / Cloud ---
+boto3
+botocore
+s3transfer
+jmespath
+filelock
+fsspec
+gdown
+GitPython
+gitdb
+smmap
+
+# --- Misc AI deps ---
+Deprecated
+deprecation
+httpx-sse
+jiter
+tenacity
+xxhash
+pybase64
+overrides
+aiohttp
+aiosignal
+aiohappyeyeballs
+async-timeout
+msgpack
+onnxruntime
+opentelemetry-api
+opentelemetry-exporter-otlp-proto-common
+opentelemetry-exporter-otlp-proto-grpc
+opentelemetry-proto
+opentelemetry-sdk
+opentelemetry-semantic-conventions
+structlog
+coloredlogs
+humanfriendly
+transformers

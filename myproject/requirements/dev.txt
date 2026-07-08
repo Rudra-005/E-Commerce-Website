@@ -1,0 +1,92 @@
+# ============================================
+# DEV REQUIREMENTS - Development & Testing Tools
+# Only for local development, NOT for production
+# ============================================
+
+-r django.txt
+-r ai.txt
+
+# --- Jupyter / IPython ---
+ipykernel
+ipython
+ipywidgets
+jupyterlab_widgets
+widgetsnbextension
+jupyter_client
+jupyter_core
+comm
+
+# --- Testing ---
+pytest
+pytest-asyncio
+iniconfig
+pluggy
+
+# --- Debugging ---
+debugpy
+
+# --- IPython deps ---
+asttokens
+executing
+jedi
+parso
+prompt_toolkit
+pure_eval
+stack-data
+traitlets
+wcwidth
+pyreadline3
+nest-asyncio
+psutil
+tornado
+pyzmq
+Send2Trash
+pandocfilters
+exceptiongroup
+
+# --- FastAPI / Flask (if used for microservices) ---
+fastapi
+fastapi-cli
+Flask
+Flask-Cors>=4.0.1
+itsdangerous
+
+# --- Streamlit (if used for dashboards) ---
+streamlit
+streamlit-folium
+streamlit-lottie
+altair
+narwhals
+pydeck
+folium
+branca
+xyzservices
+watchdog
+blinker
+graphviz
+peewee
+
+# --- Data tools ---
+plotly
+seaborn
+matplotlib
+yfinance
+multitasking
+PySocks
+
+# --- Build tools ---
+build
+pyproject_hooks
+fastjsonschema
+tomli
+
+# --- Misc dev ---
+dill
+backports.asyncio.runner
+python-json-logger
+Deprecated
+uri-template
+rfc3339-validator
+rfc3986-validator
+webcolors
+uv

@@ -1,0 +1,13 @@
+# ============================================
+# CELERY REQUIREMENTS - Task Queue + Workers
+# For: celery workers, celery_beat, flower
+# ============================================
+
+-r base.txt
+
+celery
+redis
+flower
+django-celery-beat
+django-celery-results
+channels-redis

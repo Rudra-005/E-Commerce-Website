@@ -1,0 +1,60 @@
+# ============================================
+# DJANGO REQUIREMENTS - Django Web App
+# For: main Django web server (includes celery client)
+# ============================================
+
+-r celery.txt
+
+# --- Supabase ---
+supabase
+gotrue
+postgrest
+realtime
+storage3
+supafunc
+
+# --- Firebase ---
+firebase-admin
+cachetools
+
+# --- Neo4j ---
+neo4j
+
+# --- Additional web deps ---
+starlette
+rich
+rich-toolkit
+mdurl
+markdown-it-py
+Pygments
+typer
+typer-slim
+shellingham
+Werkzeug
+websocket-client
+websockets
+
+# --- Scheduling ---
+APScheduler
+tzlocal
+
+# --- Misc ---
+durationpy
+kubernetes
+CacheControl
+dnspython
+aiofiles
+aiosqlite
+asyncpg
+greenlet
+SQLAlchemy
+alembic
+Mako
+StrEnum
+mypy_extensions
+frozendict
+lz4
+zstandard
+ormsgpack
+pydicom
+fire

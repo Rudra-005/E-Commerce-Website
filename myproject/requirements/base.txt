@@ -1,0 +1,144 @@
+# ============================================
+# BASE REQUIREMENTS - Django Core + Essentials
+# Every service needs these packages
+# ============================================
+
+# --- Django Core ---
+Django
+djangorestframework
+asgiref
+sqlparse
+
+# --- Database ---
+psycopg2-binary
+pgvector
+pymongo
+
+# --- WebSockets / Channels ---
+channels
+daphne
+Twisted
+txaio
+autobahn
+Automat
+constantly
+hyperlink
+Incremental
+pyOpenSSL
+service-identity
+
+# --- Environment & Config ---
+python-dotenv
+python-decouple
+PyYAML
+toml
+
+# --- Security & Auth ---
+bcrypt
+cryptography
+cffi
+pycparser
+PyJWT
+python-jose
+passlib
+oauthlib
+requests-oauthlib
+rsa
+pyasn1
+pyasn1_modules
+ecdsa
+
+# --- HTTP & Networking ---
+requests
+requests-toolbelt
+urllib3
+certifi
+charset-normalizer
+idna
+httpx
+httpcore
+h11
+h2
+hpack
+hyperframe
+anyio
+sniffio
+httplib2
+
+# --- Serialization & Data ---
+orjson
+ujson
+pydantic
+pydantic_core
+pydantic-settings
+annotated-types
+typing_extensions
+typing-inspect
+typing-inspection
+marshmallow
+dataclasses-json
+jsonschema
+jsonschema-specifications
+referencing
+rpds-py
+jsonpatch
+jsonpointer
+
+# --- Template & Markup ---
+Jinja2
+MarkupSafe
+Markdown
+
+# --- Utilities ---
+python-dateutil
+pytz
+tzdata
+six
+click
+colorama
+decorator
+packaging>=23.2,<25
+platformdirs
+wrapt
+attrs
+frozenlist
+multidict
+propcache
+yarl
+zipp
+pathlib_abc
+importlib-metadata
+importlib_resources
+
+# --- PDF Generation ---
+fpdf
+PyMuPDF
+PyMuPDFb
+pypdf
+PyPDF2
+xhtml2pdf
+pyphen
+tinycss2
+webencodings
+
+# --- Payments ---
+razorpay
+
+# --- Server ---
+gunicorn
+uvicorn
+httptools
+watchfiles
+
+# --- Image Processing (basic) ---
+pillow
+
+# --- Other Utils ---
+python-multipart
+validators
+email-validator
+tqdm
+regex
+beautifulsoup4
+soupsieve
+lxml

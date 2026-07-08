@@ -713,9 +713,9 @@ class CheckoutView(View):
 
                 cart_items.delete()
 
-                # Generate Invoice for COD
-                from .services.invoice_service import InvoiceService
-                InvoiceService.generate_invoice(order)
+                # Generate Invoice for COD asynchronously
+                from .tasks import generate_invoice_task
+                generate_invoice_task.delay(order.id)
 
                 return JsonResponse({
                     "status": "success",
@@ -836,9 +836,9 @@ class VerifyPaymentView(View):
             order.razorpay_signature = razorpay_signature
             order.save()
 
-            # Automatically generate invoice
-            from .services.invoice_service import InvoiceService
-            InvoiceService.generate_invoice(order)
+            # Automatically generate invoice asynchronously
+            from .tasks import generate_invoice_task
+            generate_invoice_task.delay(order.id)
 
             return JsonResponse({"status": "success", "message": "Payment verified successfully!"})
 

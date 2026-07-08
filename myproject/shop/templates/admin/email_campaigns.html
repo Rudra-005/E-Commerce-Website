@@ -1,0 +1,395 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block title %}AI Email Campaigns{% endblock %}
+
+{% block extra_css %}
+.campaigns-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+@media (max-width: 1024px) {
+    .campaigns-container {
+        grid-template-columns: 1fr;
+    }
+}
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    display: block;
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+.form-control {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-family: inherit;
+    border: 3px solid #000;
+    border-radius: 6px;
+    box-sizing: border-box;
+    outline: none;
+    box-shadow: 2px 2px 0px #000;
+}
+.form-control:focus {
+    box-shadow: 4px 4px 0px #000;
+}
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #000;
+    cursor: pointer;
+}
+.campaign-table, .logs-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+.campaign-table th, .campaign-table td, .logs-table th, .logs-table td {
+    border: 3px solid #000;
+    padding: 12px;
+    text-align: left;
+    background: #fff;
+    font-size: 16px;
+}
+.campaign-table th, .logs-table th {
+    background: var(--secondary-color);
+    font-weight: bold;
+}
+.badge {
+    padding: 4px 10px;
+    border: 2px solid #000;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 14px;
+    display: inline-block;
+}
+.badge-active {
+    background: #86efac;
+}
+.badge-inactive {
+    background: #fca5a5;
+}
+.badge-success {
+    background: #86efac;
+}
+.badge-failed {
+    background: #fca5a5;
+}
+.badge-skipped {
+    background: #fde047;
+}
+.alert-messages {
+    margin-bottom: 20px;
+}
+.alert {
+    padding: 15px;
+    border: 3px solid #000;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow);
+}
+.alert-success {
+    background: #86efac;
+}
+.alert-error {
+    background: #fca5a5;
+}
+.preview-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 700px;
+    max-height: 80%;
+    background: #fff;
+    border: 4px solid #000;
+    box-shadow: 8px 8px 0px #000;
+    border-radius: 8px;
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 25px;
+}
+.preview-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+}
+{% endblock %}
+
+{% block content %}
+<div class="alert-messages">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<div class="admin-card" style="background: var(--primary-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+    <div>
+        <h1 style="margin: 0; font-size: 36px; text-transform: uppercase;">📧 AI Marketing Campaigns</h1>
+        <p style="margin: 5px 0 0 0; font-size: 18px; font-weight: bold;">Write your topic, let Llama 3 AI write and schedule marketing emails in multiple languages!</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <form method="post" action="{% url 'admin_email_campaigns' %}" style="margin: 0;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="trigger_now">
+            <button type="submit" class="admin-btn" style="background: #a855f7; color: #fff;">
+                <i class="fas fa-play"></i> Trigger Campaign Now
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="campaigns-container">
+    <!-- Left Column: Form & Config -->
+    <div>
+        <div class="admin-card">
+            <h2 style="margin-top: 0; border-bottom: 3px solid #000; padding-bottom: 10px; text-transform: uppercase;">
+                Configure Campaign
+            </h2>
+            <form method="post" action="{% url 'admin_email_campaigns' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="save_campaign">
+                <input type="hidden" id="campaign_id" name="campaign_id" value="">
+
+                <div class="form-group">
+                    <label for="topic">Campaign Topic</label>
+                    <input type="text" id="topic" name="topic" class="form-control" placeholder="e.g. Summer sale on shoes, New Year 50% discount..." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="languages">Target Languages (Comma-separated)</label>
+                    <input type="text" id="languages" name="languages" class="form-control" value="English, Hindi, Spanish, French, German" required>
+                    <small style="font-weight: bold; display: block; margin-top: 5px; color: #555;">
+                        AI will rotate through these languages sequentially every 1 minute.
+                    </small>
+                </div>
+
+                <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label for="schedule_value">Send Every</label>
+                        <input type="number" id="schedule_value" name="schedule_value" class="form-control" value="1" min="1" required>
+                    </div>
+                    <div>
+                        <label for="schedule_unit">Time Unit</label>
+                        <select id="schedule_unit" name="schedule_unit" class="form-control" style="background: #fff; height: 50px; font-weight: bold; cursor: pointer; border: 3px solid #000;">
+                            <option value="Minutes">Minutes</option>
+                            <option value="Hours">Hours</option>
+                            <option value="Days">Days</option>
+                            <option value="Weeks">Weeks</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="is_active" name="is_active" value="true" checked>
+                        Activate this campaign immediately
+                    </label>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 25px;">
+                    <button type="submit" class="admin-btn" style="flex: 1;">Save Campaign</button>
+                    <button type="button" class="admin-btn" style="background: #ccc; box-shadow: 2px 2px 0px #000;" onclick="resetForm()">Clear</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="admin-card">
+            <h2 style="margin-top: 0; border-bottom: 3px solid #000; padding-bottom: 10px; text-transform: uppercase;">
+                Campaign History List
+            </h2>
+            <div style="overflow-x: auto;">
+                <table class="campaign-table">
+                    <thead>
+                        <tr>
+                            <th>Topic</th>
+                            <th>Languages</th>
+                            <th>Schedule</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for camp in campaigns %}
+                        <tr>
+                            <td style="font-weight: bold;">{{ camp.topic }}</td>
+                            <td>{{ camp.languages }}</td>
+                            <td style="font-weight: bold; font-size: 14px;">Every {{ camp.schedule_value }} {{ camp.schedule_unit }}</td>
+                            <td>
+                                {% if camp.is_active %}
+                                    <span class="badge badge-active">ACTIVE</span>
+                                {% else %}
+                                    <span class="badge badge-inactive">INACTIVE</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 5px;">
+                                    <button class="admin-btn" style="padding: 4px 8px; font-size: 12px; background: #38bdf8;" onclick="editCampaign('{{ camp.id }}', '{{ camp.topic|escapejs }}', '{{ camp.languages|escapejs }}', '{{ camp.is_active|yesno:'true,false' }}', '{{ camp.schedule_value }}', '{{ camp.schedule_unit|escapejs }}')">
+                                        Edit
+                                    </button>
+                                    <form method="post" action="{% url 'admin_email_campaigns' %}" style="margin: 0; display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="toggle_active">
+                                        <input type="hidden" name="campaign_id" value="{{ camp.id }}">
+                                        <button type="submit" class="admin-btn" style="padding: 4px 8px; font-size: 12px; background: #fbbf24;">
+                                            Toggle
+                                        </button>
+                                    </form>
+                                    <form method="post" action="{% url 'admin_email_campaigns' %}" style="margin: 0; display: inline;" onsubmit="return confirm('Are you sure you want to delete this campaign?');">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="delete_campaign">
+                                        <input type="hidden" name="campaign_id" value="{{ camp.id }}">
+                                        <button type="submit" class="admin-btn" style="padding: 4px 8px; font-size: 12px; background: #f87171;">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" style="text-align: center; font-weight: bold; padding: 20px;">No campaigns configured yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Campaign Logs & Outputs -->
+    <div>
+        <div class="admin-card" style="height: calc(100vh - 250px); overflow-y: auto; margin-bottom: 0;">
+            <h2 style="margin-top: 0; border-bottom: 3px solid #000; padding-bottom: 10px; text-transform: uppercase;">
+                Live Delivery Logs {% if active_campaign %}(Every {{ active_campaign.schedule_value }} {{ active_campaign.schedule_unit|lower }}){% endif %}
+            </h2>
+            <div style="overflow-x: auto;">
+                <table class="logs-table">
+                    <thead>
+                        <tr>
+                            <th>Sent</th>
+                            <th>Lang</th>
+                            <th>Subject</th>
+                            <th>Recipients</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td style="font-size: 12px; font-weight: bold;">
+                                {{ log.sent_at|date:"h:i:s A" }}<br>
+                                <span style="color: #666;">{{ log.sent_at|date:"d M" }}</span>
+                            </td>
+                            <td style="font-weight: bold; text-transform: uppercase; font-size: 12px;">{{ log.language }}</td>
+                            <td style="font-size: 14px; font-weight: bold;">{{ log.subject }}</td>
+                            <td style="text-align: center; font-weight: bold;">{{ log.recipient_count }}</td>
+                            <td>
+                                {% if log.status == 'SENT' %}
+                                    <span class="badge badge-success">SENT</span>
+                                {% elif log.status|slice:":7" == 'SKIPPED' %}
+                                    <span class="badge badge-skipped">SKIP</span>
+                                {% else %}
+                                    <span class="badge badge-failed">FAIL</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button class="admin-btn" style="padding: 4px 8px; font-size: 12px; background: var(--primary-color);" onclick="showPreview('{{ log.id }}')">
+                                    View Email
+                                </button>
+                                <div id="body-content-{{ log.id }}" style="display: none;">
+                                    {{ log.body|safe }}
+                                </div>
+                                <div id="subject-content-{{ log.id }}" style="display: none;">
+                                    {{ log.subject }}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; font-weight: bold; padding: 20px;">Waiting for first campaign dispatch log...</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Email Preview Modal -->
+<div class="preview-overlay" onclick="closePreview()"></div>
+<div class="preview-modal" id="previewModal">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
+        <h2 id="modalSubject" style="margin: 0; font-size: 20px; font-weight: bold;">Subject</h2>
+        <button class="admin-btn" style="padding: 4px 10px; font-size: 14px; background: #ccc;" onclick="closePreview()">Close</button>
+    </div>
+    <div id="modalBody" style="border: 3px solid #000; padding: 15px; border-radius: 6px; background: #fff; max-height: 500px; overflow-y: auto;">
+        <!-- Email body goes here -->
+    </div>
+</div>
+
+<script>
+function editCampaign(id, topic, languages, isActive, scheduleValue, scheduleUnit) {
+    document.getElementById('campaign_id').value = id;
+    document.getElementById('topic').value = topic;
+    document.getElementById('languages').value = languages;
+    document.getElementById('is_active').checked = (isActive === 'true');
+    document.getElementById('schedule_value').value = scheduleValue;
+    document.getElementById('schedule_unit').value = scheduleUnit;
+    
+    // Highlight form
+    document.getElementById('topic').focus();
+}
+
+function resetForm() {
+    document.getElementById('campaign_id').value = '';
+    document.getElementById('topic').value = '';
+    document.getElementById('languages').value = 'English, Hindi, Spanish, French, German';
+    document.getElementById('is_active').checked = true;
+    document.getElementById('schedule_value').value = '1';
+    document.getElementById('schedule_unit').value = 'Minutes';
+}
+
+function showPreview(logId) {
+    const subject = document.getElementById('subject-content-' + logId).innerHTML;
+    const body = document.getElementById('body-content-' + logId).innerHTML;
+    
+    document.getElementById('modalSubject').innerText = "Subject: " + subject;
+    document.getElementById('modalBody').innerHTML = body;
+    
+    document.querySelector('.preview-overlay').style.display = 'block';
+    document.querySelector('#previewModal').style.display = 'block';
+}
+
+function closePreview() {
+    document.querySelector('.preview-overlay').style.display = 'none';
+    document.querySelector('#previewModal').style.display = 'none';
+}
+</script>
+{% endblock %}

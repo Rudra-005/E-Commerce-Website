@@ -100,6 +100,13 @@ class SupportChatConsumer(AsyncWebsocketConsumer):
         
         msg = await self.save_message(conversation_id, text, sender_type, message_type=message_type)
         
+        if "[AI SUMMARY]" in text:
+            try:
+                from chatbot.tasks import process_human_handoff_task
+                process_human_handoff_task.delay(conversation_id)
+            except Exception as e:
+                logger.error(f"Failed to dispatch human handoff task: {e}")
+                
         room_name = f'conversation_{conversation_id}'
         event = {
             'type': 'chat_message',

@@ -608,4 +608,45 @@ class Invoice(models.Model):
 
     def __str__(self):
         return f"Invoice {self.invoice_number} for Order #{self.order.id}"
-
+
+class TaskExecutionLog(models.Model):
+    task_name = models.CharField(max_length=255)
+    queue_name = models.CharField(max_length=100)
+    status = models.CharField(max_length=50, default='PENDING')
+    started_at = models.DateTimeField(null=True, blank=True)
+    finished_at = models.DateTimeField(null=True, blank=True)
+    execution_time = models.FloatField(null=True, blank=True, help_text="Execution time in seconds")
+    retry_count = models.IntegerField(default=0)
+    exception = models.TextField(null=True, blank=True)
+    payload = models.JSONField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.task_name} ({self.status})"
+
+class AIEmailCampaign(models.Model):
+    topic = models.CharField(max_length=255)
+    languages = models.CharField(max_length=255, default='English, Hindi, Spanish, French', help_text="Comma-separated list of languages")
+    schedule_value = models.IntegerField(default=1, help_text="Interval value")
+    schedule_unit = models.CharField(max_length=20, default='Minutes', help_text="Interval unit (Minutes, Hours, Days, Weeks)")
+    is_active = models.BooleanField(default=True)
+    current_language_index = models.IntegerField(default=0)
+    last_sent_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Campaign on: {self.topic} ({'Active' if self.is_active else 'Inactive'})"
+
+class AIEmailLog(models.Model):
+    campaign = models.ForeignKey(AIEmailCampaign, on_delete=models.CASCADE, related_name='logs')
+    subject = models.CharField(max_length=255)
+    body = models.TextField()
+    language = models.CharField(max_length=50)
+    recipient_count = models.IntegerField(default=0)
+    status = models.CharField(max_length=50, default='SENT')
+    exception = models.TextField(null=True, blank=True)
+    sent_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.campaign.topic} - {self.language} ({self.status})"

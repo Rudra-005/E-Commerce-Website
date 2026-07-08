@@ -21,6 +21,7 @@ urlpatterns = [
     path('admin/refunds/', views_admin.AdminRefundsView.as_view(), name='admin_refunds'),
     path('admin/refunds/process/', views_admin.AdminProcessRefundAPIView.as_view(), name='admin_process_refund'),
     path('admin/settings/', views_admin.AdminSettingsView.as_view(), name='admin_settings'),
+    path('admin/email-campaigns/', views_admin.AdminEmailCampaignsView.as_view(), name='admin_email_campaigns'),
     
     # Support APIs
     path('api/support/admin/conversations/', views_support_api.AdminConversationsAPIView.as_view(), name='api_admin_conversations'),
