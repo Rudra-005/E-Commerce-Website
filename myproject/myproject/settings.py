@@ -119,7 +119,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [os.getenv('REDIS_URL', 'redis://localhost:6379/0')],
+            "hosts": [os.getenv('REDIS_URL', os.getenv('CELERY_BROKER_URL', 'redis://localhost:6000/0'))],
         },
     },
 }
@@ -206,7 +206,7 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # CELERY CONFIGURATION
-CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6000/0")
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_CACHE_BACKEND = "default"
 CELERY_ACCEPT_CONTENT = ['application/json']

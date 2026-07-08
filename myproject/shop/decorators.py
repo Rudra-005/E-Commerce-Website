@@ -34,23 +34,24 @@ def require_role(allowed_roles):
         def _wrapped_view(request, *args, **kwargs):
             user = getattr(request, 'user', None)
             
-            if user and user.is_authenticated and hasattr(user, 'userprofile'):
-                if user.userprofile.role in allowed_roles:
+            if user and user.is_authenticated:
+                if user.is_superuser or (hasattr(user, 'userprofile') and user.userprofile.role in allowed_roles):
                     return view_func(request, *args, **kwargs)
 
             access_token = request.COOKIES.get("access_token")
             if access_token:
                 payload = verify_token(access_token, "access")
                 if payload:
-                    if payload.get("role") in allowed_roles:
-                        from django.contrib.auth.models import User
-                        try:
-                            request.user = User.objects.get(id=payload.get("user_id"))
-                        except User.DoesNotExist:
-                            pass
-                        return view_func(request, *args, **kwargs)
-                    else:
-                        return HttpResponseForbidden("You do not have permission to access this page.")
+                    from django.contrib.auth.models import User
+                    try:
+                        resolved_user = User.objects.get(id=payload.get("user_id"))
+                        if resolved_user.is_superuser or payload.get("role") in allowed_roles:
+                            request.user = resolved_user
+                            return view_func(request, *args, **kwargs)
+                    except User.DoesNotExist:
+                        pass
+                    
+                    return HttpResponseForbidden("You do not have permission to access this page.")
 
             # If no valid token and not authenticated, redirect to login
             return redirect("login")
@@ -66,15 +67,22 @@ def require_permission(permission_name):
         def _wrapped_view(request, *args, **kwargs):
             user = getattr(request, 'user', None)
             
-            if user and user.is_authenticated and hasattr(user, 'userprofile'):
-                if permission_name in user.userprofile.permissions:
+            if user and user.is_authenticated:
+                if user.is_superuser or (hasattr(user, 'userprofile') and permission_name in user.userprofile.permissions):
                     return view_func(request, *args, **kwargs)
 
             access_token = request.COOKIES.get("access_token")
             if access_token:
                 payload = verify_token(access_token, "access")
-                if payload and permission_name in payload.get("permissions", []):
-                    return view_func(request, *args, **kwargs)
+                if payload:
+                    from django.contrib.auth.models import User
+                    try:
+                        resolved_user = User.objects.get(id=payload.get("user_id"))
+                        if resolved_user.is_superuser or permission_name in payload.get("permissions", []):
+                            request.user = resolved_user
+                            return view_func(request, *args, **kwargs)
+                    except User.DoesNotExist:
+                        pass
 
             return HttpResponseForbidden(f"You require the '{permission_name}' permission to access this page.")
         return _wrapped_view

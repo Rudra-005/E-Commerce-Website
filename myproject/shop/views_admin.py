@@ -14,7 +14,7 @@ class AdminBaseRedirectView(View):
             return redirect("login")
             
         role = getattr(request.user.userprofile, 'role', 'customer')
-        if role == 'admin':
+        if role == 'admin' or request.user.is_superuser:
             return redirect("admin_dashboard")
         elif role == 'support':
             return redirect("admin_chat")

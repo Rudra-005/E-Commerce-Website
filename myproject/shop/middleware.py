@@ -11,7 +11,11 @@ class JWTAuthenticationMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-
+        if request.path.startswith('/django-admin/'):
+            if request.user.is_authenticated and not request.user.is_staff:
+                from django.contrib.auth import logout
+                logout(request)
+            return self.get_response(request)
 
         access_token = request.COOKIES.get("access_token")
         refresh_token = request.COOKIES.get("refresh_token")
