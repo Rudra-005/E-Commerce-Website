@@ -420,83 +420,119 @@ body {
 }
 
 .product-card {
-    min-width: 320px;
-    max-width: 320px;
+    position: relative;
+    min-width: 250px;
+    max-width: 250px;
     background: #fff;
     border: 4px solid var(--border-color);
-    box-shadow: 10px 10px 0px var(--border-color);
+    box-shadow: 6px 6px 0px var(--border-color);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: flex;
     flex-direction: column;
+    border-radius: 12px;
+    overflow: hidden;
 }
 
 .product-card:hover {
-    transform: translateY(-10px) scale(1.03) rotate(2deg);
-    box-shadow: 15px 15px 0px var(--border-color);
+    transform: translateY(-8px) scale(1.02) rotate(1.5deg);
+    box-shadow: 10px 10px 0px var(--border-color);
 }
 
 .product-card img {
     width: 100%;
-    height: 250px;
-    object-fit: cover;
+    height: 170px;
+    object-fit: contain;
+    background: #fff;
+    padding: 15px;
     border-bottom: 4px solid var(--border-color);
+    box-sizing: border-box;
 }
 
 .product-card-content {
-    padding: 20px;
+    padding: 15px;
     display: flex;
     flex-direction: column;
     flex: 1;
 }
 
 .product-card h3 {
-    
-    font-size: 26px;
+    font-size: 20px;
     color: #000;
-    margin-bottom: 10px;
+    margin-top: 0;
+    margin-bottom: 8px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
 }
 
 .product-rating {
     font-weight: 700;
-    color: #000;
-    margin-bottom: 15px;
-    font-size: 16px;
+    color: #555;
+    margin-bottom: 10px;
+    font-size: 14px;
 }
 
 .product-card p {
-    
     color: var(--primary-red);
-    font-size: 32px;
-    margin-bottom: 20px;
-    
+    font-size: 24px;
+    font-weight: 900;
+    margin-top: 0;
+    margin-bottom: 15px;
 }
 
 .product-buttons {
     display: flex;
-    gap: 15px;
+    flex-direction: column;
+    gap: 8px;
     margin-top: auto;
 }
 
-.cart-btn, .view-btn {
-    flex: 1;
+.product-buttons .cart-btn, .product-buttons .view-btn {
     text-align: center;
-    
-    font-size: 20px;
-    padding: 10px;
+    font-size: 14px;
+    padding: 8px;
     border: 3px solid var(--border-color);
-    box-shadow: 4px 4px 0px var(--border-color);
+    box-shadow: 3px 3px 0px var(--border-color);
     text-decoration: none;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     transition: all 0.1s ease;
     color: #000 !important;
+    box-sizing: border-box;
+    border-radius: 6px;
+    display: block;
+    width: 100%;
 }
 
-.cart-btn {
+.product-buttons .cart-btn {
     background: var(--primary-yellow);
+}
+
+.wishlist-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #fff;
+    border: 3px solid var(--border-color);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    text-decoration: none;
+    box-shadow: 2px 2px 0px var(--border-color);
+    transition: all 0.1s ease;
+    z-index: 10;
+}
+.wishlist-btn:hover {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px var(--border-color);
+    background: var(--primary-yellow);
+}
+.wishlist-btn.active {
+    background: var(--primary-red);
 }
 
 .view-btn {
@@ -1906,6 +1942,15 @@ footer p {
             {% for product in featured_products %}
 
             <div class="product-card" data-aos="zoom-in-up" data-aos-duration="1000" data-aos-delay="{% widthratio forloop.counter0 1 150 %}">
+                {% if product.id in wishlist_product_ids %}
+                <a href="{% url 'remove_from_wishlist' product.id %}" class="wishlist-btn active">
+                    💔
+                </a>
+                {% else %}
+                <a href="{% url 'add_to_wishlist' product.id %}" class="wishlist-btn">
+                    ❤️
+                </a>
+                {% endif %}
 
                 <img src="{{ product.image }}">
 
@@ -1930,7 +1975,7 @@ footer p {
                             Add To Cart
                         </a>
                         {% else %}
-                        <span class="cart-btn" style="background: var(--primary-red); color: #fff; cursor: not-allowed; opacity: 0.9; pointer-events: none; font-size: 16px;">
+                        <span class="cart-btn" style="background: var(--primary-red); color: #fff; cursor: not-allowed; opacity: 0.9; pointer-events: none; font-size: 14px;">
                             ❌ Out of Stock
                         </span>
                         {% endif %}
@@ -1938,16 +1983,6 @@ footer p {
                         <a href="{% url 'product_detail' product.id %}" class="view-btn">
                             View Product
                         </a>
-
-                        {% if product.id in wishlist_product_ids %}
-                        <a href="{% url 'remove_from_wishlist' product.id %}" class="view-btn" style="background:var(--primary-red); color:#fff; border-color:var(--border-color);">
-                            💔
-                        </a>
-                        {% else %}
-                        <a href="{% url 'add_to_wishlist' product.id %}" class="view-btn">
-                            ❤️
-                        </a>
-                        {% endif %}
 
                     </div>
 
@@ -1960,6 +1995,15 @@ footer p {
             {% for product in featured_products %}
 
             <div class="product-card" data-aos="flip-up" data-aos-delay="200">
+                {% if product.id in wishlist_product_ids %}
+                <a href="{% url 'remove_from_wishlist' product.id %}" class="wishlist-btn active">
+                    💔
+                </a>
+                {% else %}
+                <a href="{% url 'add_to_wishlist' product.id %}" class="wishlist-btn">
+                    ❤️
+                </a>
+                {% endif %}
 
                 <img src="{{ product.image }}">
 
@@ -1984,7 +2028,7 @@ footer p {
                             Add To Cart
                         </a>
                         {% else %}
-                        <span class="cart-btn" style="background: var(--primary-red); color: #fff; cursor: not-allowed; opacity: 0.9; pointer-events: none; font-size: 16px;">
+                        <span class="cart-btn" style="background: var(--primary-red); color: #fff; cursor: not-allowed; opacity: 0.9; pointer-events: none; font-size: 14px;">
                             ❌ Out of Stock
                         </span>
                         {% endif %}
@@ -1992,16 +2036,6 @@ footer p {
                         <a href="{% url 'product_detail' product.id %}" class="view-btn">
                             View Product
                         </a>
-
-                        {% if product.id in wishlist_product_ids %}
-                        <a href="{% url 'remove_from_wishlist' product.id %}" class="view-btn" style="background:var(--primary-red); color:#fff; border-color:var(--border-color);">
-                            💔
-                        </a>
-                        {% else %}
-                        <a href="{% url 'add_to_wishlist' product.id %}" class="view-btn">
-                            ❤️
-                        </a>
-                        {% endif %}
 
                     </div>
 
