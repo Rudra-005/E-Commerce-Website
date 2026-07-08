@@ -11,14 +11,21 @@ from shop.models import Invoice
 @method_decorator(login_required, name="dispatch")
 class InvoiceDownloadView(View):
     def get(self, request, order_id):
+        from shop.models import Order
+        from shop.services.invoice_service import InvoiceService
         # Allow user to download their own invoice, or allow admin to download any invoice
         if request.user.is_staff or hasattr(request.user, 'userprofile') and request.user.userprofile.role in ['admin', 'support']:
-            invoice = get_object_or_404(Invoice, order_id=order_id)
+            order = get_object_or_404(Order, id=order_id)
         else:
-            invoice = get_object_or_404(Invoice, order_id=order_id, user=request.user)
+            order = get_object_or_404(Order, id=order_id, user=request.user)
             
-        if not invoice.invoice_pdf:
-            raise Http404("Invoice PDF not generated yet.")
+        if hasattr(order, 'invoice'):
+            invoice = order.invoice
+        else:
+            invoice = InvoiceService.generate_invoice(order)
+            
+        if not invoice or not invoice.invoice_pdf:
+            raise Http404("Invoice PDF could not be generated.")
             
         file_path = invoice.invoice_pdf.path
         if not os.path.exists(file_path):
@@ -33,14 +40,21 @@ class InvoiceDownloadView(View):
 @method_decorator(login_required, name="dispatch")
 class InvoiceView(View):
     def get(self, request, order_id):
+        from shop.models import Order
+        from shop.services.invoice_service import InvoiceService
         # Allow user to view their own invoice, or allow admin to view any invoice
         if request.user.is_staff or hasattr(request.user, 'userprofile') and request.user.userprofile.role in ['admin', 'support']:
-            invoice = get_object_or_404(Invoice, order_id=order_id)
+            order = get_object_or_404(Order, id=order_id)
         else:
-            invoice = get_object_or_404(Invoice, order_id=order_id, user=request.user)
+            order = get_object_or_404(Order, id=order_id, user=request.user)
             
-        if not invoice.invoice_pdf:
-            raise Http404("Invoice PDF not generated yet.")
+        if hasattr(order, 'invoice'):
+            invoice = order.invoice
+        else:
+            invoice = InvoiceService.generate_invoice(order)
+            
+        if not invoice or not invoice.invoice_pdf:
+            raise Http404("Invoice PDF could not be generated.")
             
         file_path = invoice.invoice_pdf.path
         if not os.path.exists(file_path):

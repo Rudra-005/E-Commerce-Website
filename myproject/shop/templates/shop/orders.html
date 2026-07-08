@@ -154,6 +154,7 @@
                         ({% if order.payment_status == 'Paid' %}<span style="color: #059669;">Paid</span>{% elif order.payment_status == 'Failed' %}<span style="color: #dc2626;">Failed</span>{% else %}<span style="color: #d97706;">{{ order.payment_status }}</span>{% endif %})
                     </span>
                 </div>
+            </div> <!-- Close order-header -->
 
             <!-- Expandable Details Section -->
             <div id="order-details-{{ order.id }}" style="display: none; margin-top: 20px; border-top: 2px dashed #ccc; padding-top: 20px;">
@@ -203,7 +204,7 @@
                                 itemStatus: '{{ item.status }}',
                                 orderDate: '{{ order.created_at|date:"Y-m-d" }}',
                                 quantity: '{{ item.quantity }}',
-                                hasInvoice: {% if order.invoice %}true{% else %}false{% endif %},
+                                hasInvoice: true,
                                 orderItems: [
                                     {% for o_item in order.items.all %}
                                     { id: '{{ o_item.product.id }}', name: '{{ o_item.product.name|escapejs }}', price: '{{ o_item.price }}', image_url: '{{ o_item.product.image.url }}' }{% if not forloop.last %},{% endif %}
@@ -220,14 +221,12 @@
 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
                     <div style="display: flex; gap: 10px;">
-                        {% if order.invoice %}
                         <a href="{% url 'invoice_view' order.id %}" target="_blank" class="comic-btn" style="padding: 8px 15px; font-size: 14px; background: #f8fafc; color: #0f172a; border: 2px solid #000; box-shadow: 2px 2px 0px #000; text-decoration: none; display: flex; align-items: center; gap: 5px;">
                             📄 View Invoice
                         </a>
                         <a href="{% url 'invoice_download' order.id %}" class="comic-btn" style="padding: 8px 15px; font-size: 14px; background: var(--primary-blue); color: #fff; border: 2px solid #000; box-shadow: 2px 2px 0px #000; text-decoration: none; display: flex; align-items: center; gap: 5px;">
                             ⬇️ Download Invoice
                         </a>
-                        {% endif %}
                     </div>
                     <div class="order-total" style="margin-top: 0;">
                         Total: ₹{{ order.total_price }}

@@ -779,6 +779,32 @@ class CheckoutView(View):
 # =====================================
 
 @method_decorator(jwt_login_required, name="dispatch")
+class ValidateCODView(View):
+    def post(self, request):
+        from .models import Address, Cart
+        from .services.payment_service import PaymentService
+        
+        try:
+            data = json.loads(request.body)
+            address_id = data.get("address_id")
+            
+            if not address_id:
+                return JsonResponse({"eligible": False, "reason": "No address provided"})
+                
+            address = get_object_or_404(Address, id=address_id, user_profile__user=request.user)
+            cart_items = Cart.objects.filter(user=request.user)
+            
+            is_eligible, reason = PaymentService.validate_cod_eligibility(cart_items, address)
+            
+            return JsonResponse({
+                "eligible": is_eligible,
+                "reason": reason
+            })
+        except Exception as e:
+            return JsonResponse({"eligible": False, "reason": str(e)}, status=500)
+
+
+@method_decorator(jwt_login_required, name="dispatch")
 class VerifyPaymentView(View):
     def post(self, request):
         from .models import Order
