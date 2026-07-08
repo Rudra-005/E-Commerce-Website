@@ -13,6 +13,8 @@
 
 /* Globals restricted to Velora elements */
 .velora-widget-wrapper {
+    position: relative;
+    z-index: 2147483647; /* Ensure wrapper stays on top of sticky navbar */
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: #0f172a;
 }
@@ -55,7 +57,7 @@
     position: fixed;
     bottom: 100px; right: 24px;
     width: 420px; height: 640px;
-    max-height: calc(100vh - 120px);
+    max-height: calc(100vh - 200px); /* Leave 200px spacing (100px bottom + 100px top) to prevent cutting off at top of screen */
     max-width: calc(100vw - 48px);
     background: #F8FAFC;
     border-radius: 24px;
@@ -595,6 +597,10 @@
 @media (max-width: 768px) {
     .velora-chat-panel {
         flex-direction: column;
+        bottom: 80px;
+        right: 16px;
+        max-height: calc(100vh - 160px);
+        max-width: calc(100vw - 32px);
     }
     .velora-sidebar {
         position: absolute;
