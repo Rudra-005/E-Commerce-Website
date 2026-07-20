@@ -2346,186 +2346,202 @@ footer p {
 
 {% endblock %}
 
-<!-- PROFESSIONAL FOOTER -->
-<footer class="pro-footer">
+<!-- COMIC FOOTER -->
+<footer class="comic-footer">
     <div class="footer-container">
         <div class="footer-columns">
             <div class="footer-col">
-                <h4>Velora</h4>
+                <div class="footer-logo">⚡ VELORA</div>
+                <p class="footer-punchline">GEAR UP. HACK THE PLANET.</p>
                 <ul>
                     <li><a href="#">About Velora</a></li>
                     <li><a href="#">Terms & Conditions</a></li>
                     <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Fees & Payments</a></li>
-                    <li><a href="#">Returns & Refunds Policy</a></li>
-                    <li><a href="#">Promotions Terms & Conditions</a></li>
-                    <li><a href="#">Your Data</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h4>Help</h4>
+                <h4>HELP DESK</h4>
                 <ul>
-                    <li><a href="#">Track Your Order</a></li>
-                    <li><a href="#">Frequently Asked Questions</a></li>
-                    <li><a href="#">Returns</a></li>
-                    <li><a href="#">Cancellations</a></li>
-                    <li><a href="#">Payments</a></li>
-                    <li><a href="#">Customer Care</a></li>
+                    <li><a href="#">Track Your Loot</a></li>
+                    <li><a href="#">FAQ (Cheat Codes)</a></li>
+                    <li><a href="#">Returns & Cancellations</a></li>
+                    <li><a href="#">Customer Support</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h4>Shop by</h4>
+                <h4>SHOP BY CATEGORY</h4>
                 <ul>
                     <li><a href="/products/?search=Laptop">Laptops</a></li>
                     <li><a href="/products/?search=Gaming">Gaming</a></li>
                     <li><a href="/products/?search=Audio">Audio</a></li>
                     <li><a href="/products/?search=Accessories">Accessories</a></li>
-                    <li><a href="#">Shop Trending</a></li>
                 </ul>
             </div>
         </div>
         
-        <hr class="footer-divider">
+        <hr class="comic-footer-divider">
         
         <div class="footer-bottom">
             <div class="payment-methods">
-                <span class="bottom-heading">Payment methods</span>
-                <div class="payment-icons">
-                    <span class="pay-badge bg-white text-dark" style="font-weight: 500;">Net <strong style="font-weight: 800; font-size: 13px;">Banking</strong></span>
-                    <span class="pay-badge border-badge" style="text-align: right;"><em style="font-size: 9px; font-style: italic;">Verified by</em><br><strong style="font-weight: 900; font-size: 14px; letter-spacing: -0.5px;">VISA</strong></span>
-                    <span class="pay-badge border-badge" style="border-radius: 20px; padding: 6px 12px;">
-                        <div style="display:flex; align-items:center;">
-                            <div style="width:12px;height:12px;border-radius:50%;background:#EB001B;mix-blend-mode:multiply;margin-right:-4px;"></div>
-                            <div style="width:12px;height:12px;border-radius:50%;background:#F79E1B;mix-blend-mode:multiply;"></div>
-                        </div>
-                    </span>
-                    <span class="pay-badge text-badge" style="align-items: center; gap: 8px;">
-                        <span style="font-size: 20px;">₹</span>
-                        <strong style="font-size: 10px; line-height: 1;">CASH ON<br>DELIVERY</strong>
-                    </span>
+                <span class="bottom-heading">ACCEPTED CREDITS</span>
+                <div class="comic-badges">
+                    <span class="c-badge">NET BANKING</span>
+                    <span class="c-badge">VISA</span>
+                    <span class="c-badge">MASTERCARD</span>
+                    <span class="c-badge highlight-badge">COD</span>
                 </div>
             </div>
             <div class="secure-systems">
-                <span class="bottom-heading">Secure systems</span>
-                <div class="secure-icons">
-                    <span class="sec-badge" style="align-items: center; gap: 8px;">
-                        <span style="font-size: 18px;">🔒</span> 
-                        <span><strong style="font-size: 12px; font-weight: 800;">256 BIT</strong><br><small style="font-size: 8px; letter-spacing: 1px;">ENCRYPTION</small></span>
-                    </span>
+                <span class="bottom-heading">SECURITY</span>
+                <div class="comic-badges">
+                    <span class="c-badge">🔒 256-BIT ENCRYPTED</span>
                 </div>
             </div>
         </div>
     </div>
-    <div class="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-        <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+    <div class="comic-scroll-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        UP ⬆
     </div>
 </footer>
 
 <style>
-.pro-footer {
-    background-color: #2b3a42;
-    color: #E2E8F0;
+.comic-footer {
+    background-color: #f4f4f0;
+    color: #000;
     padding: 60px 0 40px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
     position: relative;
-    border-top: 5px solid #000;
+    border-top: 8px solid #000;
+    background-image: radial-gradient(#000 1px, transparent 1px);
+    background-size: 20px 20px;
 }
-.footer-container {
+.comic-footer .footer-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 40px;
+    background: #fff;
+    border: 5px solid #000;
+    box-shadow: 10px 10px 0px #000;
+    padding: 50px;
+    transform: rotate(-1deg);
+    position: relative;
 }
-.footer-columns {
+.comic-footer .footer-columns {
     display: flex;
-    justify-content: flex-start;
-    gap: 12vw;
-    margin-bottom: 60px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 40px;
+    margin-bottom: 40px;
 }
-.footer-col h4 {
-    color: #F8FAFC;
-    font-size: 15px;
-    font-weight: 500;
+.comic-footer .footer-col .footer-logo {
+    font-size: 38px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    text-shadow: 3px 3px 0px #fef08a;
+}
+.comic-footer .footer-punchline {
+    font-size: 14px;
+    font-weight: 900;
+    color: #dc2626;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+.comic-footer .footer-col h4 {
+    color: #000;
+    font-size: 22px;
+    font-weight: 900;
     margin-bottom: 25px;
-    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-bottom: 4px solid #000;
+    display: inline-block;
+    padding-bottom: 5px;
 }
-.footer-col ul {
+.comic-footer .footer-col ul {
     list-style: none;
     padding: 0;
     margin: 0;
 }
-.footer-col ul li {
+.comic-footer .footer-col ul li {
     margin-bottom: 14px;
 }
-.footer-col ul li a {
-    color: #94A3B8;
+.comic-footer .footer-col ul li a {
+    color: #000;
     text-decoration: none;
-    font-size: 13px;
-    transition: color 0.2s;
+    font-size: 16px;
+    font-weight: 800;
+    transition: all 0.2s;
+    position: relative;
 }
-.footer-col ul li a:hover {
-    color: #F8FAFC;
+.comic-footer .footer-col ul li a:hover {
+    color: #fff;
+    background: #000;
+    padding: 4px 10px;
+    margin-left: -10px;
+    border-radius: 4px;
 }
-.footer-divider {
+.comic-footer-divider {
     border: 0;
-    height: 1px;
-    background: #475569;
-    margin: 30px 0;
+    height: 6px;
+    background: #000;
+    margin: 40px 0;
 }
-.footer-bottom {
+.comic-footer .footer-bottom {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 20px;
 }
-.bottom-heading {
+.comic-footer .bottom-heading {
     display: block;
-    color: #94A3B8;
-    font-size: 13px;
+    color: #000;
+    font-size: 18px;
+    font-weight: 900;
     margin-bottom: 15px;
+    text-transform: uppercase;
 }
-.payment-icons, .secure-icons {
+.comic-badges {
     display: flex;
     gap: 15px;
-    align-items: center;
+    flex-wrap: wrap;
 }
-.pay-badge, .sec-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 6px 12px;
-    font-size: 12px;
-    line-height: 1.2;
-    border-radius: 4px;
-    text-align: center;
-    font-family: sans-serif;
-}
-.bg-white { background: #fff; color: #000; }
-.border-badge { border: 1px solid #94A3B8; color: #fff; padding: 6px 15px; }
-.text-badge { color: #fff; font-size: 12px; display:flex; text-align: left; }
-.sec-badge { color: #fff; text-align: left; padding: 0; }
-.scroll-top-btn {
-    position: absolute;
-    right: 40px;
-    bottom: 40px;
-    width: 45px;
-    height: 45px;
+.c-badge {
     background: #fff;
-    color: #2b3a42;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    border: 3px solid #000;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 900;
+    box-shadow: 4px 4px 0px #000;
+    text-transform: uppercase;
+}
+.highlight-badge {
+    background: #fef08a;
+}
+.comic-scroll-top {
+    position: absolute;
+    right: -20px;
+    bottom: -20px;
+    background: #fef08a;
+    color: #000;
+    border: 5px solid #000;
+    padding: 15px 25px;
+    font-weight: 900;
+    font-size: 20px;
     cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    box-shadow: 6px 6px 0px #000;
     transition: transform 0.2s;
     z-index: 100;
 }
-.scroll-top-btn:hover {
-    transform: translateY(-4px);
+.comic-scroll-top:hover {
+    transform: translateY(-8px);
+    background: #dc2626;
+    color: #fff;
 }
 @media (max-width: 900px) {
-    .footer-columns { flex-direction: column; gap: 40px; }
-    .footer-bottom { flex-direction: column; align-items: flex-start; gap: 30px; }
-    .scroll-top-btn { right: 20px; bottom: 20px; }
+    .comic-footer .footer-columns { flex-direction: column; gap: 40px; }
+    .comic-footer .footer-bottom { flex-direction: column; align-items: flex-start; gap: 30px; }
+    .comic-scroll-top { right: 20px; bottom: -20px; }
 }
 </style>
 
