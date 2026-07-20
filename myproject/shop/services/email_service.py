@@ -62,3 +62,42 @@ class EmailService:
         except Exception as e:
             logger.error(f"Failed to send welcome email to user {user_id}: {e}", exc_info=True)
             return False
+
+    @staticmethod
+    def send_order_confirmation(order):
+        try:
+            user = order.user
+            if not user.email:
+                logger.warning(f"Cannot send order email. User {user.id} has no email.")
+                return False
+
+            user_name = user.first_name if user.first_name else user.username
+            app_name = getattr(settings, "SITE_NAME", "Velora")
+            dashboard_url = getattr(settings, "SITE_URL", "http://localhost:8000")
+            
+            context = {
+                "user_name": user_name,
+                "order": order,
+                "app_name": app_name,
+                "dashboard_url": dashboard_url,
+                "support_email": getattr(settings, "SUPPORT_EMAIL", settings.EMAIL_HOST_USER),
+                "current_year": timezone.now().year,
+            }
+
+            html_content = render_to_string("emails/order_confirmation.html", context)
+            text_content = render_to_string("emails/order_confirmation.txt", context)
+
+            msg = EmailMultiAlternatives(
+                subject=f"Order Confirmed: #{order.id} - {app_name}",
+                body=text_content,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[user.email]
+            )
+            msg.attach_alternative(html_content, "text/html")
+            msg.send(fail_silently=False)
+
+            logger.info(f"Successfully sent order confirmation to {user.email}")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to send order email for order {order.id}: {e}", exc_info=True)
+            return False

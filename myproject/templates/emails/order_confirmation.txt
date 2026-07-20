@@ -1,0 +1,12 @@
+Subject: Your Order #{{ order.id }} Confirmation - Velora
+
+Hi {{ user_name }},
+
+Thank you for your order! Your order #{{ order.id }} has been confirmed.
+Total Amount: ₹{{ order.total_price }}
+Status: {{ order.status }}
+
+You can track your order in your dashboard.
+
+Thanks,
+The Velora Team

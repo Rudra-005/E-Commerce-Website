@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #f4f4f0; padding: 20px; }
+        .container { background-color: #ffffff; padding: 30px; border: 4px solid #000; box-shadow: 6px 6px 0px #000; max-width: 600px; margin: 0 auto; }
+        h1 { color: #000; font-weight: 900; text-transform: uppercase; }
+        .btn { display: inline-block; padding: 10px 20px; background-color: #fef08a; color: #000; border: 3px solid #000; text-decoration: none; font-weight: bold; margin-top: 20px; box-shadow: 3px 3px 0px #000; }
+        .footer { margin-top: 30px; font-size: 12px; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Order Confirmed! 🎉</h1>
+        <p>Hi {{ user_name }},</p>
+        <p>Thank you for shopping with <strong>{{ app_name }}</strong>. Your order <strong>#{{ order.id }}</strong> has been confirmed.</p>
+        
+        <h3>Order Details:</h3>
+        <ul>
+            <li><strong>Total Amount:</strong> ₹{{ order.total_price }}</li>
+            <li><strong>Status:</strong> {{ order.status }}</li>
+        </ul>
+
+        <a href="{{ dashboard_url }}/profile" class="btn">TRACK YOUR ORDER</a>
+        
+        <div class="footer">
+            <p>If you have any questions, reply to this email or contact {{ support_email }}.</p>
+            <p>&copy; {{ current_year }} {{ app_name }}</p>
+        </div>
+    </div>
+</body>
+</html>

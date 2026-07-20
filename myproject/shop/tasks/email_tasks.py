@@ -22,11 +22,12 @@ def send_order_confirmation_email_task(self, order_id):
     Retries automatically every 5 minutes on failure.
     """
     try:
-        from shop.services.email_service import EmailService # Assuming an enhanced EmailService
+        from shop.services.email_service import EmailService 
         order = Order.objects.get(id=order_id)
         
-        # Here we would normally call EmailService to send the email
-        # EmailService.send_order_confirmation(order)
+        success = EmailService.send_order_confirmation(order)
+        if not success:
+            raise Exception("EmailService.send_order_confirmation returned False")
         
         logger.info(f"Order confirmation email sent for Order #{order_id}")
         return {"status": "success", "order_id": order_id}
