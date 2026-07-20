@@ -16,6 +16,7 @@ from pathlib import Path
 import site
 import os
 from dotenv import load_dotenv
+import dj_database_url
 
 load_dotenv()
 
@@ -129,14 +130,11 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mydb',
-        'USER': 'postgres',
-        'PASSWORD': os.getenv('DB_PASSWORD', ''),
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3'),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 

@@ -1,4 +1,4 @@
-﻿absl-py
+absl-py
 aiofiles
 aiohappyeyeballs
 aiohttp
@@ -388,3 +388,4 @@ flower
 django-celery-beat
 django-celery-results
 channels-redis
+dj-database-url
