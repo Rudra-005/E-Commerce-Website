@@ -389,3 +389,6 @@ django-celery-beat
 django-celery-results
 channels-redis
 dj-database-url
+gunicorn
+uvicorn
+whitenoise
