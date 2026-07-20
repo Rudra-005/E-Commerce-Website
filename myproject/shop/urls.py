@@ -4,6 +4,7 @@ from . import views_admin
 from . import views_support_api
 from . import views_cancellations
 from . import views_invoice
+from . import views_subscription
 
 urlpatterns = [
     # Invoices
@@ -270,5 +271,27 @@ urlpatterns = [
         "api/recommendations/",
         views.RecommendationAPIView.as_view(),
         name="api_recommendations"
+    ),
+
+    # Subscriptions
+    path(
+        "membership/",
+        views_subscription.MembershipView.as_view(),
+        name="membership"
+    ),
+    path(
+        "api/subscription/subscribe/",
+        views_subscription.SubscribeAPIView.as_view(),
+        name="api_subscribe"
+    ),
+    path(
+        "api/subscription/manage/",
+        views_subscription.ManageSubscriptionAPIView.as_view(),
+        name="api_manage_subscription"
+    ),
+    path(
+        "api/webhooks/razorpay/",
+        views_subscription.RazorpayWebhookView.as_view(),
+        name="api_razorpay_webhook"
     ),
 ]

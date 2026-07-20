@@ -1,0 +1,4308 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Products - Velora</title>
+    
+    <style>
+    
+
+    :root {
+        --bg-color: #fcf8f2;
+        --border-color: #000000;
+        --primary-red: #ef476f;
+        --primary-yellow: #ffd166;
+        --primary-blue: #118ab2;
+        --shadow-solid: 6px 6px 0px #000000;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        
+    }
+
+    body {
+        background: var(--bg-color);
+        overflow-x: hidden;
+        color: #000;
+        background-image: radial-gradient(#d3ccc1 20%, transparent 20%);
+        background-size: 10px 10px;
+    }
+
+    /* COMIC NAVBAR */
+    .comic-navbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px 5%;
+        background: var(--bg-color);
+        border-bottom: 6px solid #000;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        flex-wrap: wrap;
+        gap: 20px;
+        box-shadow: 0 4px 0px rgba(0,0,0,0.05);
+    }
+
+    .comic-logo {
+        text-decoration: none;
+    }
+
+    .comic-logo-box {
+        display: flex;
+        align-items: center;
+        background: var(--primary-yellow);
+        border: 6px solid #000;
+        padding: 10px 20px;
+        transform: rotate(-2deg);
+        box-shadow: 8px 8px 0px #000;
+        color: #000;
+    }
+
+    .comic-logo-icon {
+        font-size: 50px;
+        margin-right: 10px;
+    }
+
+    .comic-logo-text {
+        
+        font-size: 36px;
+        line-height: 0.9;
+        text-transform: uppercase;
+    }
+
+    .comic-nav-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .comic-nav-links {
+        background: #fff;
+        border: 6px solid #000;
+        padding: 15px 30px;
+        display: flex;
+        gap: 30px;
+        transform: rotate(1deg);
+        box-shadow: 8px 8px 0px #000;
+    }
+
+    .comic-nav-links a {
+        
+        font-size: 24px;
+        color: #000;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .comic-nav-links a:hover {
+        color: var(--primary-red);
+    }
+
+    .comic-search {
+        background: #fff;
+        border: 6px solid #000;
+        padding: 5px;
+        transform: rotate(-1deg);
+        box-shadow: 8px 8px 0px #000;
+    }
+
+    .comic-search input {
+        border: none;
+        outline: none;
+        font-size: 20px;
+        
+        font-weight: bold;
+        padding: 0 10px;
+    }
+
+    .comic-search button {
+        background: var(--primary-yellow);
+        border: 4px solid #000;
+        
+        font-size: 24px;
+        padding: 5px 15px;
+        cursor: pointer;
+    }
+
+    .comic-search button:hover {
+        background: var(--primary-red);
+        color: #fff;
+    }
+
+    .comic-login-btn {
+        background: #fff;
+        border: 6px solid #000;
+        padding: 15px 25px;
+        
+        font-size: 24px;
+        color: #000;
+        text-decoration: none;
+        transform: rotate(-1deg);
+        box-shadow: 8px 8px 0px #000;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    .comic-cart-btn {
+        background: var(--primary-yellow);
+        border: 6px solid #000;
+        padding: 15px 25px;
+        
+        font-size: 24px;
+        color: #000;
+        text-decoration: none;
+        transform: rotate(2deg);
+        box-shadow: 8px 8px 0px #000;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .comic-cart-btn:hover {
+        background: var(--primary-red);
+        color: #fff;
+        transform: translateY(-2px) rotate(2deg);
+        box-shadow: 10px 10px 0px #000;
+    }
+
+    .comic-cart-btn:active {
+        transform: translateY(2px) rotate(2deg);
+        box-shadow: 4px 4px 0px #000;
+    }
+
+    /* User Profile Dropdown */
+    .user-profile { position: relative; }
+    .profile-dropdown {
+        position: absolute;
+        top: 70px;
+        right: 0;
+        width: 250px;
+        background: #fff !important;
+        border: 6px solid var(--border-color);
+        box-shadow: 8px 8px 0px #000;
+        display: none;
+        z-index: 9999;
+        height: auto !important;
+    }
+    .profile-dropdown.show { display: block !important; }
+    .profile-header {
+        padding: 18px;
+        background: var(--primary-yellow);
+        border-bottom: 4px solid var(--border-color);
+    }
+    .profile-name {  font-size: 22px; color: #000; }
+    .profile-email { 
+        font-weight: 700; 
+        font-size: 14px; 
+        color: #333; 
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis;
+        max-width: 180px;
+    }
+    .profile-link {
+        display: block !important;
+        padding: 14px 18px !important;
+        text-decoration: none !important;
+        color: #000 !important;
+        border-bottom: 4px solid var(--border-color) !important;
+        font-weight: 700;
+        font-size: 18px;
+    }
+    .profile-link:hover { background: var(--primary-yellow) !important; }
+    .logout-btn { border: none; cursor: pointer; width: 100%; text-align: left; background: #fff; }
+
+    /* DEDICATED BANNER */
+    .list-title-container {
+        padding: 10px 5% 0px 5%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        max-width: 1500px;
+        margin: 0 auto;
+    }
+
+    .list-title-box {
+        background: none;
+        border: none;
+        box-shadow: none;
+        display: block;
+        padding: 0;
+        transform: none;
+        text-align: center;
+    }
+
+    .list-title-box span {
+        font-size: 11px;
+        letter-spacing: 1px;
+        color: var(--primary-red);
+        display: block;
+        margin-bottom: 4px;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .list-title-box h1 {
+        font-size: 28px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        color: #000;
+        font-family: var(--font-heading);
+        font-weight: 800;
+    }
+
+    .list-title-metadata {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        align-items: center;
+    }
+
+    .breadcrumb-trail {
+        font-size: 13px;
+        font-weight: 700;
+        color: #555;
+    }
+
+    .breadcrumb-trail a {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.1s ease;
+    }
+
+    .breadcrumb-trail a:hover {
+        color: var(--primary-blue);
+        text-decoration: underline;
+    }
+
+    .active-crumb {
+        color: var(--primary-red);
+        font-weight: 800;
+    }
+
+    .search-term-badge {
+        display: inline-block;
+        background: var(--primary-yellow);
+        color: #000;
+        border: 3px solid #000;
+        box-shadow: 2px 2px 0px #000;
+        padding: 3px 10px;
+        font-size: 11px;
+        font-weight: 800;
+        border-radius: 4px;
+        align-self: center;
+    }
+
+    /* SORT BAR */
+    .sort-bar-container {
+        padding: 20px 5%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .sort-bar {
+        background: #fff;
+        border: 5px solid #000;
+        box-shadow: 6px 6px 0px #000;
+        padding: 15px 30px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        transform: rotate(0.5deg);
+        flex-wrap: wrap;
+    }
+
+    .sort-label {
+        
+        font-size: 22px;
+        letter-spacing: 1px;
+    }
+
+    .sort-links {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .sort-link {
+        
+        font-size: 18px;
+        color: #000;
+        text-decoration: none;
+        background: #f0f0f0;
+        border: 3px solid #000;
+        padding: 6px 15px;
+        box-shadow: 2px 2px 0px #000;
+        transition: all 0.2s ease;
+    }
+
+    .sort-link:hover, .sort-link.active {
+        background: var(--primary-red);
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 4px 4px 0px #000;
+    }
+
+    .sort-link:active {
+        transform: translateY(1px);
+        box-shadow: 1px 1px 0px #000;
+    }
+
+    /* SEARCH RESULTS & PRODUCTS GRID */
+    .search-results {
+        padding: 20px 5%;
+    }
+
+    .search-products {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .search-card {
+        background: #fff;
+        border: 6px solid #000;
+        box-shadow: 8px 8px 0px #000;
+        display: flex;
+        flex-direction: row;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .search-card:hover {
+        transform: translateY(-8px) scale(1.01);
+        box-shadow: 12px 12px 0px #000;
+    }
+
+    .search-card img {
+        width: 300px;
+        min-width: 300px;
+        object-fit: cover;
+        border-right: 6px solid #000;
+        border-bottom: none;
+    }
+
+    .search-info {
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        justify-content: space-between;
+    }
+
+    .search-info h2 {
+        
+        font-size: 28px;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+    }
+
+    .product-rating {
+        font-weight: 700;
+        color: #555;
+        margin-bottom: 15px;
+        font-size: 16px;
+    }
+
+    .search-price {
+        
+        font-size: 32px;
+        color: var(--primary-red);
+        margin-bottom: 15px;
+        
+    }
+
+    .search-info p {
+        font-size: 15px;
+        line-height: 1.5;
+        color: #333;
+        margin-bottom: 20px;
+        font-weight: 500;
+    }
+
+    .search-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: auto;
+    }
+
+    .cart-btn, .view-btn {
+        
+        font-size: 18px;
+        padding: 10px 15px;
+        border: 4px solid #000;
+        cursor: pointer;
+        text-decoration: none;
+        text-align: center;
+        box-shadow: 3px 3px 0px #000;
+        transition: all 0.2s ease;
+    }
+
+    .cart-btn {
+        background: var(--primary-yellow);
+        color: #000;
+        flex-grow: 1;
+    }
+
+    .cart-btn:hover {
+        background: var(--primary-red);
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 5px 5px 0px #000;
+    }
+
+    .view-btn {
+        background: #fff;
+        color: #000;
+    }
+
+    .view-btn:hover {
+        background: #000;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 5px 5px 0px #000;
+    }
+
+    .cart-btn:active, .view-btn:active {
+        transform: translateY(1px);
+        box-shadow: 1px 1px 0px #000;
+    }
+
+    /* PAGINATION */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 50px auto 20px auto;
+    }
+
+    .pagination a {
+        background: #fff;
+        border: 4px solid #000;
+        padding: 10px 18px;
+        
+        font-size: 20px;
+        color: #000;
+        text-decoration: none;
+        box-shadow: 4px 4px 0px #000;
+        transition: all 0.2s ease;
+    }
+
+    .pagination a.active, .pagination a:hover {
+        background: var(--primary-yellow);
+        transform: translateY(-2px);
+        box-shadow: 6px 6px 0px #000;
+    }
+
+    .pagination a:active {
+        transform: translateY(1px);
+        box-shadow: 1px 1px 0px #000;
+    }
+
+    /* FOOTER */
+    footer {
+        background: var(--primary-blue);
+        border-top: 6px solid #000;
+        padding: 40px 5%;
+        text-align: center;
+        margin-top: 50px;
+    }
+
+    footer h2 {
+        
+        font-size: 50px;
+        color: #fff;
+        
+        margin-bottom: 10px;
+        transform: rotate(-1deg);
+        display: inline-block;
+    }
+
+    footer p {
+        
+        font-weight: bold;
+        font-size: 20px;
+        color: #000;
+    }
+
+    /* COMIC BURST ANIMATION */
+    .comic-burst {
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        pointer-events: none;
+    }
+
+    .comic-burst-cloud {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: var(--primary-red);
+        border: 5px solid #000;
+        border-radius: 50%;
+        box-shadow: 6px 6px 0px #000;
+    }
+
+    .comic-burst-cloud::before, .comic-burst-cloud::after {
+        content: '';
+        position: absolute;
+        background: var(--primary-yellow);
+        border: 5px solid #000;
+        width: 80%;
+        height: 80%;
+        top: 10%;
+        left: 10%;
+        z-index: -1;
+        transform: rotate(30deg);
+    }
+
+    .comic-burst-cloud::after {
+        background: var(--primary-blue);
+        transform: rotate(60deg);
+    }
+
+    .comic-burst-text {
+        position: relative;
+        
+        font-size: 32px;
+        color: #fff;
+        
+        transform: rotate(-10deg);
+        z-index: 10;
+        white-space: nowrap;
+    }
+
+    .scroll-follower {
+        filter: drop-shadow(3px 3px 0px #000);
+    }
+
+    /* MOBILE RESPONSIVE */
+    @media(max-width: 1000px) {
+        .comic-navbar { flex-direction: column; gap: 15px; padding: 15px; }
+        .list-title-box h1 { font-size: 40px; }
+        .search-card { flex-direction: column; }
+        .search-card img {
+            width: 100%;
+            min-width: 100%;
+            height: 250px;
+            border-right: none;
+            border-bottom: 6px solid #000;
+        }
+    }
+
+    @media(max-width: 600px) {
+        .sort-bar { flex-direction: column; width: 100%; align-items: stretch; }
+        .sort-links { flex-direction: column; }
+        .sort-link { text-align: center; }
+    }
+    
+    #load-more-trigger { height: 20px; }
+    .loading {
+        text-align: center;
+        
+        font-size: 30px;
+        padding: 40px;
+        color: var(--primary-red);
+        
+        display: none;
+    }
+    .hidden { display: none !important; }
+    
+    /* SEARCH AUTOCOMPLETE */
+    .comic-search { position: relative; }
+    .search-suggestions {
+        position: absolute;
+        top: calc(100% + 5px);
+        left: 0;
+        width: 100%;
+        background: #fff;
+        border: 4px solid #000;
+        box-shadow: 6px 6px 0px #000;
+        z-index: 10001;
+        display: none;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .suggestion-item {
+        padding: 10px 15px;
+        border-bottom: 3px solid #000;
+        
+        font-size: 18px;
+        color: #000;
+        cursor: pointer;
+        display: block;
+        transition: all 0.2s ease;
+    }
+    .suggestion-item:last-child {
+        border-bottom: none;
+    }
+    .suggestion-item:hover {
+        background: var(--primary-yellow);
+        padding-left: 20px;
+    }
+    .suggestion-price {
+        
+        color: var(--primary-red);
+        font-size: 20px;
+    }
+    
+    /* MOBILE NAVBAR FIX */
+    @media (max-width: 950px) {
+        .comic-navbar {
+            justify-content: center;
+            padding: 15px 10px;
+            gap: 15px;
+            position: static; /* Let it scroll up on mobile to save space */
+        }
+        .comic-nav-right {
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+        .comic-search {
+            width: 100%;
+            margin: 0;
+        }
+        .comic-search form {
+            width: 100%;
+        }
+        .comic-search input {
+            width: 100%;
+            font-size: 16px;
+        }
+        .comic-nav-links {
+            width: 100%;
+            padding: 10px;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .comic-nav-links a {
+            font-size: 18px;
+        }
+        .user-profile {
+            flex: 1;
+            display: flex;
+        }
+        .comic-login-btn {
+            width: 100%;
+            justify-content: center;
+            padding: 12px;
+            font-size: 20px;
+        }
+        .comic-cart-btn {
+            flex: 1;
+            justify-content: center;
+            padding: 12px;
+            font-size: 20px;
+        }
+    }
+
+    /* ====================================================================
+       PRODUCT LISTING REDESIGN STYLE SYSTEM (Flipkart/Amazon Layout)
+       ==================================================================== */
+    .shop-layout {
+        display: flex;
+        gap: 24px;
+        padding: 0 5%;
+        margin: 0px auto 50px auto;
+        max-width: 1500px;
+    }
+
+    .filter-sidebar {
+        width: 280px;
+        min-width: 280px;
+        background: #fff;
+        border: 4px solid #000;
+        box-shadow: 6px 6px 0px #000;
+        padding: 20px;
+        align-self: flex-start;
+        position: sticky;
+        top: 90px;
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+        border-radius: 12px;
+        z-index: 99;
+    }
+
+    .filter-sidebar::-webkit-scrollbar {
+        width: 6px;
+    }
+    .filter-sidebar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    .filter-sidebar::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 3px;
+    }
+
+    .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 12px;
+        border-bottom: 3px solid #000;
+        margin-bottom: 15px;
+    }
+    .filter-header h2 {
+        font-size: 20px;
+        text-transform: uppercase;
+        margin: 0;
+        font-family: var(--font-heading);
+        font-weight: 700;
+    }
+    .clear-filters-btn {
+        font-size: 13px;
+        color: var(--primary-red);
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-weight: 700;
+        text-decoration: underline;
+        font-family: var(--font-heading);
+    }
+
+    .filter-group {
+        margin-bottom: 18px;
+        border-bottom: 2px dashed #000;
+        padding-bottom: 15px;
+    }
+    .filter-group:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    .filter-title {
+        font-size: 15px;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        font-family: var(--font-heading);
+    }
+    .filter-options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .filter-checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-dark);
+        cursor: pointer;
+        user-select: none;
+    }
+    .filter-checkbox-label input {
+        width: 16px;
+        height: 16px;
+        accent-color: #000;
+        cursor: pointer;
+    }
+
+    /* Price range styling */
+    .price-slider-container {
+        padding: 5px 0;
+    }
+    .price-slider-container input[type="range"] {
+        width: 100%;
+        accent-color: #000;
+        cursor: pointer;
+        margin-bottom: 10px;
+    }
+    .price-inputs {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+    }
+    .price-input-box {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .price-inputs label {
+        font-size: 11px;
+        font-weight: 700;
+        margin: 0;
+    }
+    .price-inputs input {
+        width: 100%;
+        border: 3px solid #000;
+        padding: 4px 6px;
+        font-size: 13px;
+        font-weight: 700;
+        font-family: var(--font-heading);
+    }
+
+    .products-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* Sort Bar Redesign */
+    .sort-header-bar {
+        background: #fff;
+        border: 4px solid #000;
+        box-shadow: 6px 6px 0px #000;
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-radius: 12px;
+    }
+    .sort-left {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    .sort-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-muted);
+    }
+    .sort-options-tabs {
+        display: flex;
+        gap: 8px;
+    }
+    .sort-tab {
+        padding: 4px 12px;
+        background: #f3f4f6;
+        border: 3px solid #000;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        text-decoration: none;
+        box-shadow: 2px 2px 0px #000;
+        transition: all 0.1s ease;
+        color: #000;
+    }
+    .sort-tab:hover, .sort-tab.active {
+        background: var(--primary-yellow);
+        transform: translateY(-1px);
+        box-shadow: 3px 3px 0px #000;
+    }
+    .sort-tab:active {
+        transform: translateY(0);
+        box-shadow: 2px 2px 0px #000;
+    }
+    .results-count {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-muted);
+    }
+
+    /* Product Cards layout */
+    .products-grid-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .horizontal-product-card {
+        background: #fff;
+        border: 4px solid #000;
+        box-shadow: 6px 6px 0px #000;
+        display: flex;
+        flex-direction: row;
+        min-height: 240px;
+        max-height: 280px;
+        overflow: hidden;
+        border-radius: 12px;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+    }
+
+    .horizontal-product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 10px 10px 0px #000;
+    }
+
+    .card-image-left {
+        width: 220px;
+        min-width: 220px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px;
+        position: relative;
+        border-right: 4px solid #000;
+    }
+
+    .card-image-left img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    /* Badges overlay */
+    .badge-overlay {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        padding: 3px 8px;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        border: 3px solid #000;
+        box-shadow: 2px 2px 0px #000;
+        z-index: 10;
+    }
+    .badge-sale { background: var(--primary-red); color: #fff; }
+    .badge-new { background: var(--primary-blue); color: #fff; }
+    .badge-limited { background: var(--primary-yellow); color: #000; }
+    .badge-stockout { background: #9ca3af; color: #fff; }
+
+    /* Details Right styling */
+    .card-details-right {
+        flex: 1;
+        padding: 18px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 15px;
+        min-width: 0; /* Fix flex child expanding beyond container */
+    }
+
+    .details-info-col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-width: 0; /* Fix long text expanding the container */
+    }
+
+    .details-info-col h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 6px;
+        text-transform: none;
+        line-height: 1.35;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-family: var(--font-heading);
+    }
+
+    .details-info-col h3 a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .details-info-col h3 a:hover {
+        color: var(--primary-blue);
+    }
+
+    .rating-review-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    .rating-badge {
+        background: #388e3c;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 1px 5px;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+    }
+
+    .review-count {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-muted);
+    }
+
+    .card-desc-short {
+        font-size: 13px;
+        color: var(--text-muted);
+        line-height: 1.45;
+        margin-bottom: 8px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .availability-row {
+        margin-top: auto;
+    }
+
+    .badge-status {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 1px 6px;
+        border: 2px solid #000;
+        box-shadow: 1px 1px 0px #000;
+    }
+    .badge-instock { background: #e8f5e9; color: #2e7d32; }
+    .badge-outofstock { background: #ffebee; color: #c62828; }
+
+    /* Price Column styling */
+    .details-price-col {
+        width: 180px;
+        min-width: 180px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-end;
+        border-left: 2px dashed #000;
+        padding-left: 15px;
+    }
+
+    .price-wrapper {
+        text-align: right;
+    }
+
+    .current-price {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--text-dark);
+        display: block;
+        font-family: var(--font-heading);
+    }
+
+    .original-price-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        justify-content: flex-end;
+        margin-top: 1px;
+    }
+
+    .original-price {
+        font-size: 13px;
+        color: var(--text-light);
+        text-decoration: line-through;
+    }
+
+    .discount-percentage {
+        font-size: 12px;
+        color: #388e3c;
+        font-weight: 700;
+    }
+
+    /* Action Buttons */
+    .action-buttons-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+        margin-top: auto;
+    }
+
+    .action-buttons-wrapper .btn-main {
+        width: 100%;
+        height: 38px;
+        border: 3px solid #000;
+        font-size: 13px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.1s ease;
+        box-shadow: 2px 2px 0px #000;
+    }
+
+    .btn-cart-add {
+        background: var(--primary-yellow);
+        color: #000;
+    }
+
+    .btn-cart-add:hover {
+        background: var(--primary-red);
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 3px 3px 0px #000;
+    }
+
+    .btn-product-view {
+        background: #fff;
+        color: #000;
+    }
+
+    .btn-product-view:hover {
+        background: #000;
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 3px 3px 0px #000;
+    }
+
+    .btn-wishlist-toggle {
+        width: 38px !important;
+        height: 38px;
+        border: 3px solid #000;
+        background: #fff;
+        box-shadow: 2px 2px 0px #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.1s ease;
+        text-decoration: none;
+    }
+    .btn-wishlist-toggle.in-wishlist {
+        background: var(--primary-red);
+        color: #fff;
+    }
+    .btn-wishlist-toggle:hover {
+        transform: translateY(-1px);
+        box-shadow: 3px 3px 0px #000;
+    }
+
+    .wishlist-btn-row {
+        display: flex;
+        gap: 6px;
+        width: 100%;
+    }
+    .wishlist-btn-row .btn-main {
+        flex: 1;
+    }
+
+    /* Empty/No products box */
+    .no-products-box {
+        background: #fff;
+        border: 4px solid #000;
+        box-shadow: 6px 6px 0px #000;
+        padding: 50px 20px;
+        text-align: center;
+        border-radius: 12px;
+        width: 100%;
+    }
+    .no-products-box h3 {
+        font-size: 24px;
+        margin-bottom: 8px;
+        font-family: var(--font-heading);
+    }
+
+    /* RESPONSIVE FILTER DRAWER */
+    .filter-mobile-toggle-btn {
+        display: none;
+    }
+
+    @media(max-width: 1024px) {
+        .shop-layout {
+            flex-direction: column;
+            padding: 0 15px;
+        }
+        .filter-sidebar {
+            width: 100%;
+            min-width: 100%;
+            position: relative;
+            top: 0;
+            max-height: none;
+            margin-bottom: 10px;
+        }
+        .filter-options {
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+    }
+
+    @media(max-width: 768px) {
+        .filter-mobile-toggle-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #fff;
+            border: 4px solid #000;
+            box-shadow: 4px 4px 0px #000;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        .filter-sidebar {
+            display: none;
+        }
+        .filter-sidebar.mobile-open {
+            display: block !important;
+        }
+        .horizontal-product-card {
+            flex-direction: column;
+            max-height: none;
+            min-height: auto;
+        }
+        .card-image-left {
+            width: 100%;
+            min-width: 100%;
+            height: 180px;
+            border-right: none;
+            border-bottom: 4px solid #000;
+        }
+        .card-details-right {
+            flex-direction: column;
+            gap: 12px;
+        }
+        .details-price-col {
+            width: 100%;
+            min-width: 100%;
+            border-left: none;
+            padding-left: 0;
+            align-items: flex-start;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        .price-wrapper {
+            text-align: left;
+        }
+        .original-price-row {
+            justify-content: flex-start;
+        }
+        .action-buttons-wrapper {
+            width: 100%;
+            margin-top: 10px;
+        }
+    }
+</style>
+
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/shop/css/global.css">
+</head>
+
+<body>
+
+<nav class="comic-navbar" data-aos="fade-down">
+    <a href="/" class="comic-logo">
+        <div class="comic-logo-box">
+            <span class="comic-logo-icon">⚡</span>
+            <span class="comic-logo-text">Velora</span>
+        </div>
+    </a>
+
+    <div class="comic-nav-right">
+        <div class="comic-search">
+            <form method="GET" action="/products/" style="display: flex;">
+                <input type="text" name="search" placeholder="Search gear..." value="" id="searchInput" autocomplete="off">
+                <button type="submit">GO</button>
+            </form>
+            <div id="suggestions" class="search-suggestions"></div>
+        </div>
+
+        <div class="comic-nav-links">
+            <a href="/#featured-products">SHOP ˅</a>
+            <a href="/#customizer">BUILD SETUP</a>
+            <a href="/#contact">CONTACT</a>
+        </div>
+
+        
+        <div class="user-profile">
+            <a href="/login/" class="comic-login-btn" onclick="toggleProfile(); return false;">
+                👤 Log In
+            </a>
+            <div id="profileDropdown" class="profile-dropdown">
+                <div class="profile-header">
+                    <div class="profile-name">Hello, Sign in</div>
+                </div>
+                <a href="/login/" class="profile-link">🔑 Login</a>
+                <a href="/cart/" class="profile-link">🛒 My Cart</a>
+                <a href="/wishlist/" class="profile-link">❤️ My Wishlist</a>
+            </div>
+        </div>
+        
+
+        <a href="/cart/" class="comic-cart-btn">
+            🛒 CART (0)
+        </a>
+    </div>
+</nav>
+
+<!-- TITLE SPLASH -->
+<div class="list-title-container" data-aos="zoom-in">
+    <div class="list-title-box">
+        
+        <span>📦 TECH CATEGORY 📦</span>
+        
+        <h1>All Products</h1>
+    </div>
+</div>
+
+<!-- Mobile Filter Toggle Button -->
+<div style="padding: 0 5%; max-width: 1500px; margin: 10px auto;">
+    <button class="filter-mobile-toggle-btn" onclick="toggleMobileSidebar()">
+        ⚙️ FILTER & SORT GEAR
+    </button>
+</div>
+
+<!-- Shop Page Container (Grid Layout) -->
+<div class="shop-layout" data-aos="fade-up">
+    <!-- Left Filter Sidebar -->
+    <aside class="filter-sidebar">
+        <div class="filter-header">
+            <h2>Filters</h2>
+            <button class="clear-filters-btn" onclick="clearAllFilters()">Clear All</button>
+        </div>
+
+        <!-- Category Group -->
+        <div class="filter-group">
+            <div class="filter-title">
+                Category <span>▼</span>
+            </div>
+            <div class="filter-options">
+                <a href="?" class="filter-checkbox-label" style="text-decoration:none; color:var(--primary-red); font-weight:800;">
+                    All Categories
+                </a>
+                
+                <a href="?category=1" class="filter-checkbox-label" style="text-decoration:none; color:inherit; font-weight:600;">
+                    Laptop
+                </a>
+                
+                <a href="?category=2" class="filter-checkbox-label" style="text-decoration:none; color:inherit; font-weight:600;">
+                    Mobile
+                </a>
+                
+                <a href="?category=3" class="filter-checkbox-label" style="text-decoration:none; color:inherit; font-weight:600;">
+                    Headphones
+                </a>
+                
+                <a href="?category=4" class="filter-checkbox-label" style="text-decoration:none; color:inherit; font-weight:600;">
+                    Shoes
+                </a>
+                
+                <a href="?category=5" class="filter-checkbox-label" style="text-decoration:none; color:inherit; font-weight:600;">
+                    Watch
+                </a>
+                
+                <a href="?category=6" class="filter-checkbox-label" style="text-decoration:none; color:inherit; font-weight:600;">
+                    Speaker
+                </a>
+                
+                <a href="?category=7" class="filter-checkbox-label" style="text-decoration:none; color:inherit; font-weight:600;">
+                    Camera
+                </a>
+                
+                <a href="?category=8" class="filter-checkbox-label" style="text-decoration:none; color:inherit; font-weight:600;">
+                    TV
+                </a>
+                
+                <a href="?category=9" class="filter-checkbox-label" style="text-decoration:none; color:inherit; font-weight:600;">
+                    Keyboard
+                </a>
+                
+                <a href="?category=10" class="filter-checkbox-label" style="text-decoration:none; color:inherit; font-weight:600;">
+                    Mouse
+                </a>
+                
+            </div>
+        </div>
+
+        <!-- Availability Group -->
+        <div class="filter-group">
+            <div class="filter-title">
+                Availability <span>▼</span>
+            </div>
+            <div class="filter-options">
+                <label class="filter-checkbox-label">
+                    <input type="checkbox" id="filter-instock" onchange="applyFilters()"> In Stock
+                </label>
+                <label class="filter-checkbox-label">
+                    <input type="checkbox" id="filter-outofstock" onchange="applyFilters()"> Out of Stock
+                </label>
+            </div>
+        </div>
+
+        <!-- Price Range Group -->
+        <div class="filter-group">
+            <div class="filter-title">
+                Price Range <span>▼</span>
+            </div>
+            <div class="price-slider-container">
+                <input type="range" id="price-slider" min="0" max="250000" step="1000" value="250000" oninput="updatePriceLabel(this.value); applyFilters()">
+                <div class="price-inputs">
+                    <div class="price-input-box">
+                        <label>Max Price</label>
+                        <input type="number" id="price-max-input" min="0" max="250000" value="250000" onchange="updatePriceSlider(this.value); applyFilters()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Rating Group -->
+        <div class="filter-group">
+            <div class="filter-title">
+                Customer Rating <span>▼</span>
+            </div>
+            <div class="filter-options">
+                <label class="filter-checkbox-label">
+                    <input type="radio" name="rating-filter" value="4" onchange="applyFilters()"> 4★ & above
+                </label>
+                <label class="filter-checkbox-label">
+                    <input type="radio" name="rating-filter" value="3" onchange="applyFilters()"> 3★ & above
+                </label>
+                <label class="filter-checkbox-label">
+                    <input type="radio" name="rating-filter" value="2" onchange="applyFilters()"> 2★ & above
+                </label>
+                <label class="filter-checkbox-label">
+                    <input type="radio" name="rating-filter" value="0" checked onchange="applyFilters()"> Show All
+                </label>
+            </div>
+        </div>
+
+        <!-- Brand Group (Dynamically populated by JS) -->
+        <div class="filter-group" id="brand-filter-group" style="display:none;">
+            <div class="filter-title">
+                Brand <span>▼</span>
+            </div>
+            <div class="filter-options" id="brand-options-container">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </aside>
+
+    <!-- Right Content Area -->
+    <main class="products-main">
+        <!-- Horizontal Sort Bar -->
+        <div class="sort-header-bar">
+            <div class="sort-left">
+                <span class="sort-title">SORT BY:</span>
+                <div class="sort-options-tabs">
+                    <a href="?sort=latest" class="sort-tab active">Latest</a>
+                    <a href="?sort=price_low" class="sort-tab ">Price: Low-High</a>
+                    <a href="?sort=price_high" class="sort-tab ">Price: High-Low</a>
+                    <a href="?sort=popular" class="sort-tab ">Popularity</a>
+                </div>
+            </div>
+            <div class="results-count" id="results-count-label">
+                Showing 12 products
+            </div>
+        </div>
+
+        
+
+        <!-- Products Listing Grid -->
+        <div class="products-grid-list" id="products-container">
+            
+            <div class="horizontal-product-card product-card-item" data-price="6545.00" data-rating="3.4" data-stock="17" data-name="logitech bluetooth mouse ergonomic" data-aos="zoom-in-up" data-aos-duration="600" data-aos-delay="0">
+                <!-- Left Image -->
+                <div class="card-image-left">
+                    
+                    <img src="https://images.unsplash.com/photo-1527814050087-3793815479db?w=1200" alt="Logitech Bluetooth Mouse Ergonomic">
+                </div>
+
+                <!-- Right Details -->
+                <div class="card-details-right">
+                    <!-- Info Column -->
+                    <div class="details-info-col">
+                        <h3><a href="/product/601/">Logitech Bluetooth Mouse Ergonomic</a></h3>
+                        
+                        <div class="rating-review-row">
+                            <span class="rating-badge">
+                                3.4 ★
+                            </span>
+                            <span class="review-count">
+                                (7 Reviews)
+                            </span>
+                        </div>
+
+                        <p class="card-desc-short">Logitech Mouse with premium quality. Perfect for gaming, office work, entertainment and daily usage.</p>
+
+                        <div class="availability-row">
+                            
+                            <span class="badge-status badge-instock">In Stock</span>
+                            
+                        </div>
+                    </div>
+
+                    <!-- Price Column -->
+                    <div class="details-price-col">
+                        <div class="price-wrapper">
+                            <span class="current-price">₹6545.00</span>
+                            <div class="original-price-row">
+                                <span class="original-price" data-original-price-for="601">₹6545.00</span>
+                                <span class="discount-percentage">20% OFF</span>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons-wrapper">
+                            <div class="wishlist-btn-row">
+                                
+                                <a href="/add-to-wishlist/601/" class="btn-wishlist-toggle">
+                                    ❤️
+                                </a>
+                                
+                                
+                                
+                                    
+                                    <a href="/add-to-cart/601/" class="btn-main btn-cart-add cart-btn">
+                                        Add to Cart
+                                    </a>
+                                    
+                                
+                            </div>
+                            <a href="/product/601/" class="btn-main btn-product-view">
+                                View Product
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="horizontal-product-card product-card-item" data-price="938.00" data-rating="3.8" data-stock="29" data-name="razer gaming mouse ergonomic" data-aos="zoom-in-up" data-aos-duration="600" data-aos-delay="50">
+                <!-- Left Image -->
+                <div class="card-image-left">
+                    
+                    <span class="badge-overlay badge-new">New</span>
+                    
+                    <img src="https://images.unsplash.com/photo-1527814050087-3793815479db?w=1200" alt="Razer Gaming Mouse Ergonomic">
+                </div>
+
+                <!-- Right Details -->
+                <div class="card-details-right">
+                    <!-- Info Column -->
+                    <div class="details-info-col">
+                        <h3><a href="/product/600/">Razer Gaming Mouse Ergonomic</a></h3>
+                        
+                        <div class="rating-review-row">
+                            <span class="rating-badge">
+                                3.8 ★
+                            </span>
+                            <span class="review-count">
+                                (13 Reviews)
+                            </span>
+                        </div>
+
+                        <p class="card-desc-short">Razer Mouse with premium quality. Perfect for gaming, office work, entertainment and daily usage.</p>
+
+                        <div class="availability-row">
+                            
+                            <span class="badge-status badge-instock">In Stock</span>
+                            
+                        </div>
+                    </div>
+
+                    <!-- Price Column -->
+                    <div class="details-price-col">
+                        <div class="price-wrapper">
+                            <span class="current-price">₹938.00</span>
+                            <div class="original-price-row">
+                                <span class="original-price" data-original-price-for="600">₹938.00</span>
+                                <span class="discount-percentage">20% OFF</span>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons-wrapper">
+                            <div class="wishlist-btn-row">
+                                
+                                <a href="/add-to-wishlist/600/" class="btn-wishlist-toggle">
+                                    ❤️
+                                </a>
+                                
+                                
+                                
+                                    
+                                    <a href="/add-to-cart/600/" class="btn-main btn-cart-add cart-btn">
+                                        Add to Cart
+                                    </a>
+                                    
+                                
+                            </div>
+                            <a href="/product/600/" class="btn-main btn-product-view">
+                                View Product
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="horizontal-product-card product-card-item" data-price="8076.00" data-rating="2.1" data-stock="9" data-name="razer gaming mouse fast" data-aos="zoom-in-up" data-aos-duration="600" data-aos-delay="100">
+                <!-- Left Image -->
+                <div class="card-image-left">
+                    
+                    <img src="https://images.unsplash.com/photo-1527814050087-3793815479db?w=1200" alt="Razer Gaming Mouse Fast">
+                </div>
+
+                <!-- Right Details -->
+                <div class="card-details-right">
+                    <!-- Info Column -->
+                    <div class="details-info-col">
+                        <h3><a href="/product/599/">Razer Gaming Mouse Fast</a></h3>
+                        
+                        <div class="rating-review-row">
+                            <span class="rating-badge">
+                                2.1 ★
+                            </span>
+                            <span class="review-count">
+                                (10 Reviews)
+                            </span>
+                        </div>
+
+                        <p class="card-desc-short">Razer Mouse with premium quality. Perfect for gaming, office work, entertainment and daily usage.</p>
+
+                        <div class="availability-row">
+                            
+                            <span class="badge-status badge-instock">In Stock</span>
+                            
+                        </div>
+                    </div>
+
+                    <!-- Price Column -->
+                    <div class="details-price-col">
+                        <div class="price-wrapper">
+                            <span class="current-price">₹8076.00</span>
+                            <div class="original-price-row">
+                                <span class="original-price" data-original-price-for="599">₹8076.00</span>
+                                <span class="discount-percentage">20% OFF</span>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons-wrapper">
+                            <div class="wishlist-btn-row">
+                                
+                                <a href="/add-to-wishlist/599/" class="btn-wishlist-toggle">
+                                    ❤️
+                                </a>
+                                
+                                
+                                
+                                    
+                                    <a href="/add-to-cart/599/" class="btn-main btn-cart-add cart-btn">
+                                        Add to Cart
+                                    </a>
+                                    
+                                
+                            </div>
+                            <a href="/product/599/" class="btn-main btn-product-view">
+                                View Product
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="horizontal-product-card product-card-item" data-price="632.00" data-rating="3.4" data-stock="72" data-name="razer rgb mouse fast" data-aos="zoom-in-up" data-aos-duration="600" data-aos-delay="150">
+                <!-- Left Image -->
+                <div class="card-image-left">
+                    
+                    <span class="badge-overlay badge-new">New</span>
+                    
+                    <img src="https://images.unsplash.com/photo-1527814050087-3793815479db?w=1200" alt="Razer RGB Mouse Fast">
+                </div>
+
+                <!-- Right Details -->
+                <div class="card-details-right">
+                    <!-- Info Column -->
+                    <div class="details-info-col">
+                        <h3><a href="/product/598/">Razer RGB Mouse Fast</a></h3>
+                        
+                        <div class="rating-review-row">
+                            <span class="rating-badge">
+                                3.4 ★
+                            </span>
+                            <span class="review-count">
+                                (8 Reviews)
+                            </span>
+                        </div>
+
+                        <p class="card-desc-short">Razer Mouse with premium quality. Perfect for gaming, office work, entertainment and daily usage.</p>
+
+                        <div class="availability-row">
+                            
+                            <span class="badge-status badge-instock">In Stock</span>
+                            
+                        </div>
+                    </div>
+
+                    <!-- Price Column -->
+                    <div class="details-price-col">
+                        <div class="price-wrapper">
+                            <span class="current-price">₹632.00</span>
+                            <div class="original-price-row">
+                                <span class="original-price" data-original-price-for="598">₹632.00</span>
+                                <span class="discount-percentage">20% OFF</span>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons-wrapper">
+                            <div class="wishlist-btn-row">
+                                
+                                <a href="/add-to-wishlist/598/" class="btn-wishlist-toggle">
+                                    ❤️
+                                </a>
+                                
+                                
+                                
+                                    
+                                    <a href="/add-to-cart/598/" class="btn-main btn-cart-add cart-btn">
+                                        Add to Cart
+                                    </a>
+                                    
+                                
+                            </div>
+                            <a href="/product/598/" class="btn-main btn-product-view">
+                                View Product
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="horizontal-product-card product-card-item" data-price="2989.00" data-rating="2.0" data-stock="13" data-name="dell bluetooth mouse fast" data-aos="zoom-in-up" data-aos-duration="600" data-aos-delay="200">
+                <!-- Left Image -->
+                <div class="card-image-left">
+                    
+                    <span class="badge-overlay badge-new">New</span>
+                    
+                    <img src="https://images.unsplash.com/photo-1527814050087-3793815479db?w=1200" alt="Dell Bluetooth Mouse Fast">
+                </div>
+
+                <!-- Right Details -->
+                <div class="card-details-right">
+                    <!-- Info Column -->
+                    <div class="details-info-col">
+                        <h3><a href="/product/597/">Dell Bluetooth Mouse Fast</a></h3>
+                        
+                        <div class="rating-review-row">
+                            <span class="rating-badge">
+                                2.0 ★
+                            </span>
+                            <span class="review-count">
+                                (6 Reviews)
+                            </span>
+                        </div>
+
+                        <p class="card-desc-short">Dell Mouse with premium quality. Perfect for gaming, office work, entertainment and daily usage.</p>
+
+                        <div class="availability-row">
+                            
+                            <span class="badge-status badge-instock">In Stock</span>
+                            
+                        </div>
+                    </div>
+
+                    <!-- Price Column -->
+                    <div class="details-price-col">
+                        <div class="price-wrapper">
+                            <span class="current-price">₹2989.00</span>
+                            <div class="original-price-row">
+                                <span class="original-price" data-original-price-for="597">₹2989.00</span>
+                                <span class="discount-percentage">20% OFF</span>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons-wrapper">
+                            <div class="wishlist-btn-row">
+                                
+                                <a href="/add-to-wishlist/597/" class="btn-wishlist-toggle">
+                                    ❤️
+                                </a>
+                                
+                                
+                                
+                                    
+                                    <a href="/add-to-cart/597/" class="btn-main btn-cart-add cart-btn">
+                                        Add to Cart
+                                    </a>
+                                    
+                                
+                            </div>
+                            <a href="/product/597/" class="btn-main btn-product-view">
+                                View Product
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="horizontal-product-card product-card-item" data-price="5453.00" data-rating="2.8" data-stock="55" data-name="dell bluetooth mouse rechargeable" data-aos="zoom-in-up" data-aos-duration="600" data-aos-delay="250">
+                <!-- Left Image -->
+                <div class="card-image-left">
+                    
+                    <img src="https://images.unsplash.com/photo-1527814050087-3793815479db?w=1200" alt="Dell Bluetooth Mouse Rechargeable">
+                </div>
+
+                <!-- Right Details -->
+                <div class="card-details-right">
+                    <!-- Info Column -->
+                    <div class="details-info-col">
+                        <h3><a href="/product/596/">Dell Bluetooth Mouse Rechargeable</a></h3>
+                        
+                        <div class="rating-review-row">
+                            <span class="rating-badge">
+                                2.8 ★
+                            </span>
+                            <span class="review-count">
+                                (11 Reviews)
+                            </span>
+                        </div>
+
+                        <p class="card-desc-short">Dell Mouse with premium quality. Perfect for gaming, office work, entertainment and daily usage.</p>
+
+                        <div class="availability-row">
+                            
+                            <span class="badge-status badge-instock">In Stock</span>
+                            
+                        </div>
+                    </div>
+
+                    <!-- Price Column -->
+                    <div class="details-price-col">
+                        <div class="price-wrapper">
+                            <span class="current-price">₹5453.00</span>
+                            <div class="original-price-row">
+                                <span class="original-price" data-original-price-for="596">₹5453.00</span>
+                                <span class="discount-percentage">20% OFF</span>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons-wrapper">
+                            <div class="wishlist-btn-row">
+                                
+                                <a href="/add-to-wishlist/596/" class="btn-wishlist-toggle">
+                                    ❤️
+                                </a>
+                                
+                                
+                                
+                                    
+                                    <a href="/add-to-cart/596/" class="btn-main btn-cart-add cart-btn">
+                                        Add to Cart
+                                    </a>
+                                    
+                                
+                            </div>
+                            <a href="/product/596/" class="btn-main btn-product-view">
+                                View Product
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="horizontal-product-card product-card-item" data-price="867.00" data-rating="3.2" data-stock="90" data-name="dell rgb mouse fast" data-aos="zoom-in-up" data-aos-duration="600" data-aos-delay="300">
+                <!-- Left Image -->
+                <div class="card-image-left">
+                    
+                    <span class="badge-overlay badge-new">New</span>
+                    
+                    <img src="https://images.unsplash.com/photo-1527814050087-3793815479db?w=1200" alt="Dell RGB Mouse Fast">
+                </div>
+
+                <!-- Right Details -->
+                <div class="card-details-right">
+                    <!-- Info Column -->
+                    <div class="details-info-col">
+                        <h3><a href="/product/595/">Dell RGB Mouse Fast</a></h3>
+                        
+                        <div class="rating-review-row">
+                            <span class="rating-badge">
+                                3.2 ★
+                            </span>
+                            <span class="review-count">
+                                (11 Reviews)
+                            </span>
+                        </div>
+
+                        <p class="card-desc-short">Dell Mouse with premium quality. Perfect for gaming, office work, entertainment and daily usage.</p>
+
+                        <div class="availability-row">
+                            
+                            <span class="badge-status badge-instock">In Stock</span>
+                            
+                        </div>
+                    </div>
+
+                    <!-- Price Column -->
+                    <div class="details-price-col">
+                        <div class="price-wrapper">
+                            <span class="current-price">₹867.00</span>
+                            <div class="original-price-row">
+                                <span class="original-price" data-original-price-for="595">₹867.00</span>
+                                <span class="discount-percentage">20% OFF</span>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons-wrapper">
+                            <div class="wishlist-btn-row">
+                                
+                                <a href="/add-to-wishlist/595/" class="btn-wishlist-toggle">
+                                    ❤️
+                                </a>
+                                
+                                
+                                
+                                    
+                                    <a href="/add-to-cart/595/" class="btn-main btn-cart-add cart-btn">
+                                        Add to Cart
+                                    </a>
+                                    
+                                
+                            </div>
+                            <a href="/product/595/" class="btn-main btn-product-view">
+                                View Product
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="horizontal-product-card product-card-item" data-price="7808.00" data-rating="2.7" data-stock="85" data-name="razer bluetooth mouse ergonomic" data-aos="zoom-in-up" data-aos-duration="600" data-aos-delay="350">
+                <!-- Left Image -->
+                <div class="card-image-left">
+                    
+                    <img src="https://images.unsplash.com/photo-1527814050087-3793815479db?w=1200" alt="Razer Bluetooth Mouse Ergonomic">
+                </div>
+
+                <!-- Right Details -->
+                <div class="card-details-right">
+                    <!-- Info Column -->
+                    <div class="details-info-col">
+                        <h3><a href="/product/594/">Razer Bluetooth Mouse Ergonomic</a></h3>
+                        
+                        <div class="rating-review-row">
+                            <span class="rating-badge">
+                                2.7 ★
+                            </span>
+                            <span class="review-count">
+                                (13 Reviews)
+                            </span>
+                        </div>
+
+                        <p class="card-desc-short">Razer Mouse with premium quality. Perfect for gaming, office work, entertainment and daily usage.</p>
+
+                        <div class="availability-row">
+                            
+                            <span class="badge-status badge-instock">In Stock</span>
+                            
+                        </div>
+                    </div>
+
+                    <!-- Price Column -->
+                    <div class="details-price-col">
+                        <div class="price-wrapper">
+                            <span class="current-price">₹7808.00</span>
+                            <div class="original-price-row">
+                                <span class="original-price" data-original-price-for="594">₹7808.00</span>
+                                <span class="discount-percentage">20% OFF</span>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons-wrapper">
+                            <div class="wishlist-btn-row">
+                                
+                                <a href="/add-to-wishlist/594/" class="btn-wishlist-toggle">
+                                    ❤️
+                                </a>
+                                
+                                
+                                
+                                    
+                                    <a href="/add-to-cart/594/" class="btn-main btn-cart-add cart-btn">
+                                        Add to Cart
+                                    </a>
+                                    
+                                
+                            </div>
+                            <a href="/product/594/" class="btn-main btn-product-view">
+                                View Product
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="horizontal-product-card product-card-item" data-price="5724.00" data-rating="2.9" data-stock="46" data-name="dell gaming mouse premium" data-aos="zoom-in-up" data-aos-duration="600" data-aos-delay="400">
+                <!-- Left Image -->
+                <div class="card-image-left">
+                    
+                    <img src="https://images.unsplash.com/photo-1527814050087-3793815479db?w=1200" alt="Dell Gaming Mouse Premium">
+                </div>
+
+                <!-- Right Details -->
+                <div class="card-details-right">
+                    <!-- Info Column -->
+                    <div class="details-info-col">
+                        <h3><a href="/product/593/">Dell Gaming Mouse Premium</a></h3>
+                        
+                        <div class="rating-review-row">
+                            <span class="rating-badge">
+                                2.9 ★
+                            </span>
+                            <span class="review-count">
+                                (15 Reviews)
+                            </span>
+                        </div>
+
+                        <p class="card-desc-short">Dell Mouse with premium quality. Perfect for gaming, office work, entertainment and daily usage.</p>
+
+                        <div class="availability-row">
+                            
+                            <span class="badge-status badge-instock">In Stock</span>
+                            
+                        </div>
+                    </div>
+
+                    <!-- Price Column -->
+                    <div class="details-price-col">
+                        <div class="price-wrapper">
+                            <span class="current-price">₹5724.00</span>
+                            <div class="original-price-row">
+                                <span class="original-price" data-original-price-for="593">₹5724.00</span>
+                                <span class="discount-percentage">20% OFF</span>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons-wrapper">
+                            <div class="wishlist-btn-row">
+                                
+                                <a href="/add-to-wishlist/593/" class="btn-wishlist-toggle">
+                                    ❤️
+                                </a>
+                                
+                                
+                                
+                                    
+                                    <a href="/add-to-cart/593/" class="btn-main btn-cart-add cart-btn">
+                                        Add to Cart
+                                    </a>
+                                    
+                                
+                            </div>
+                            <a href="/product/593/" class="btn-main btn-product-view">
+                                View Product
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="horizontal-product-card product-card-item" data-price="3170.00" data-rating="3.0" data-stock="28" data-name="dell rgb mouse ergonomic" data-aos="zoom-in-up" data-aos-duration="600" data-aos-delay="450">
+                <!-- Left Image -->
+                <div class="card-image-left">
+                    
+                    <span class="badge-overlay badge-new">New</span>
+                    
+                    <img src="https://images.unsplash.com/photo-1527814050087-3793815479db?w=1200" alt="Dell RGB Mouse Ergonomic">
+                </div>
+
+                <!-- Right Details -->
+                <div class="card-details-right">
+                    <!-- Info Column -->
+                    <div class="details-info-col">
+                        <h3><a href="/product/592/">Dell RGB Mouse Ergonomic</a></h3>
+                        
+                        <div class="rating-review-row">
+                            <span class="rating-badge">
+                                3.0 ★
+                            </span>
+                            <span class="review-count">
+                                (20 Reviews)
+                            </span>
+                        </div>
+
+                        <p class="card-desc-short">Dell Mouse with premium quality. Perfect for gaming, office work, entertainment and daily usage.</p>
+
+                        <div class="availability-row">
+                            
+                            <span class="badge-status badge-instock">In Stock</span>
+                            
+                        </div>
+                    </div>
+
+                    <!-- Price Column -->
+                    <div class="details-price-col">
+                        <div class="price-wrapper">
+                            <span class="current-price">₹3170.00</span>
+                            <div class="original-price-row">
+                                <span class="original-price" data-original-price-for="592">₹3170.00</span>
+                                <span class="discount-percentage">20% OFF</span>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons-wrapper">
+                            <div class="wishlist-btn-row">
+                                
+                                <a href="/add-to-wishlist/592/" class="btn-wishlist-toggle">
+                                    ❤️
+                                </a>
+                                
+                                
+                                
+                                    
+                                    <a href="/add-to-cart/592/" class="btn-main btn-cart-add cart-btn">
+                                        Add to Cart
+                                    </a>
+                                    
+                                
+                            </div>
+                            <a href="/product/592/" class="btn-main btn-product-view">
+                                View Product
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="horizontal-product-card product-card-item" data-price="1218.00" data-rating="2.5" data-stock="29" data-name="hp gaming mouse fast" data-aos="zoom-in-up" data-aos-duration="600" data-aos-delay="500">
+                <!-- Left Image -->
+                <div class="card-image-left">
+                    
+                    <span class="badge-overlay badge-new">New</span>
+                    
+                    <img src="https://images.unsplash.com/photo-1527814050087-3793815479db?w=1200" alt="HP Gaming Mouse Fast">
+                </div>
+
+                <!-- Right Details -->
+                <div class="card-details-right">
+                    <!-- Info Column -->
+                    <div class="details-info-col">
+                        <h3><a href="/product/591/">HP Gaming Mouse Fast</a></h3>
+                        
+                        <div class="rating-review-row">
+                            <span class="rating-badge">
+                                2.5 ★
+                            </span>
+                            <span class="review-count">
+                                (17 Reviews)
+                            </span>
+                        </div>
+
+                        <p class="card-desc-short">HP Mouse with premium quality. Perfect for gaming, office work, entertainment and daily usage.</p>
+
+                        <div class="availability-row">
+                            
+                            <span class="badge-status badge-instock">In Stock</span>
+                            
+                        </div>
+                    </div>
+
+                    <!-- Price Column -->
+                    <div class="details-price-col">
+                        <div class="price-wrapper">
+                            <span class="current-price">₹1218.00</span>
+                            <div class="original-price-row">
+                                <span class="original-price" data-original-price-for="591">₹1218.00</span>
+                                <span class="discount-percentage">20% OFF</span>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons-wrapper">
+                            <div class="wishlist-btn-row">
+                                
+                                <a href="/add-to-wishlist/591/" class="btn-wishlist-toggle">
+                                    ❤️
+                                </a>
+                                
+                                
+                                
+                                    
+                                    <a href="/add-to-cart/591/" class="btn-main btn-cart-add cart-btn">
+                                        Add to Cart
+                                    </a>
+                                    
+                                
+                            </div>
+                            <a href="/product/591/" class="btn-main btn-product-view">
+                                View Product
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="horizontal-product-card product-card-item" data-price="3202.00" data-rating="2.6" data-stock="96" data-name="logitech gaming mouse rechargeable" data-aos="zoom-in-up" data-aos-duration="600" data-aos-delay="550">
+                <!-- Left Image -->
+                <div class="card-image-left">
+                    
+                    <span class="badge-overlay badge-new">New</span>
+                    
+                    <img src="https://images.unsplash.com/photo-1527814050087-3793815479db?w=1200" alt="Logitech Gaming Mouse Rechargeable">
+                </div>
+
+                <!-- Right Details -->
+                <div class="card-details-right">
+                    <!-- Info Column -->
+                    <div class="details-info-col">
+                        <h3><a href="/product/590/">Logitech Gaming Mouse Rechargeable</a></h3>
+                        
+                        <div class="rating-review-row">
+                            <span class="rating-badge">
+                                2.6 ★
+                            </span>
+                            <span class="review-count">
+                                (5 Reviews)
+                            </span>
+                        </div>
+
+                        <p class="card-desc-short">Logitech Mouse with premium quality. Perfect for gaming, office work, entertainment and daily usage.</p>
+
+                        <div class="availability-row">
+                            
+                            <span class="badge-status badge-instock">In Stock</span>
+                            
+                        </div>
+                    </div>
+
+                    <!-- Price Column -->
+                    <div class="details-price-col">
+                        <div class="price-wrapper">
+                            <span class="current-price">₹3202.00</span>
+                            <div class="original-price-row">
+                                <span class="original-price" data-original-price-for="590">₹3202.00</span>
+                                <span class="discount-percentage">20% OFF</span>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons-wrapper">
+                            <div class="wishlist-btn-row">
+                                
+                                <a href="/add-to-wishlist/590/" class="btn-wishlist-toggle">
+                                    ❤️
+                                </a>
+                                
+                                
+                                
+                                    
+                                    <a href="/add-to-cart/590/" class="btn-main btn-cart-add cart-btn">
+                                        Add to Cart
+                                    </a>
+                                    
+                                
+                            </div>
+                            <a href="/product/590/" class="btn-main btn-product-view">
+                                View Product
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="pagination">
+            
+
+            
+                
+                <a class="active">1</a>
+                
+            
+                
+                <a href="?page=2">
+                    2
+                </a>
+                
+            
+                
+                <a href="?page=3">
+                    3
+                </a>
+                
+            
+                
+                <a href="?page=4">
+                    4
+                </a>
+                
+            
+                
+                <a href="?page=5">
+                    5
+                </a>
+                
+            
+                
+                <a href="?page=6">
+                    6
+                </a>
+                
+            
+                
+                <a href="?page=7">
+                    7
+                </a>
+                
+            
+                
+                <a href="?page=8">
+                    8
+                </a>
+                
+            
+                
+                <a href="?page=9">
+                    9
+                </a>
+                
+            
+                
+                <a href="?page=10">
+                    10
+                </a>
+                
+            
+                
+                <a href="?page=11">
+                    11
+                </a>
+                
+            
+                
+                <a href="?page=12">
+                    12
+                </a>
+                
+            
+                
+                <a href="?page=13">
+                    13
+                </a>
+                
+            
+                
+                <a href="?page=14">
+                    14
+                </a>
+                
+            
+                
+                <a href="?page=15">
+                    15
+                </a>
+                
+            
+                
+                <a href="?page=16">
+                    16
+                </a>
+                
+            
+                
+                <a href="?page=17">
+                    17
+                </a>
+                
+            
+                
+                <a href="?page=18">
+                    18
+                </a>
+                
+            
+                
+                <a href="?page=19">
+                    19
+                </a>
+                
+            
+                
+                <a href="?page=20">
+                    20
+                </a>
+                
+            
+                
+                <a href="?page=21">
+                    21
+                </a>
+                
+            
+                
+                <a href="?page=22">
+                    22
+                </a>
+                
+            
+                
+                <a href="?page=23">
+                    23
+                </a>
+                
+            
+                
+                <a href="?page=24">
+                    24
+                </a>
+                
+            
+                
+                <a href="?page=25">
+                    25
+                </a>
+                
+            
+                
+                <a href="?page=26">
+                    26
+                </a>
+                
+            
+                
+                <a href="?page=27">
+                    27
+                </a>
+                
+            
+                
+                <a href="?page=28">
+                    28
+                </a>
+                
+            
+                
+                <a href="?page=29">
+                    29
+                </a>
+                
+            
+                
+                <a href="?page=30">
+                    30
+                </a>
+                
+            
+                
+                <a href="?page=31">
+                    31
+                </a>
+                
+            
+                
+                <a href="?page=32">
+                    32
+                </a>
+                
+            
+                
+                <a href="?page=33">
+                    33
+                </a>
+                
+            
+                
+                <a href="?page=34">
+                    34
+                </a>
+                
+            
+                
+                <a href="?page=35">
+                    35
+                </a>
+                
+            
+                
+                <a href="?page=36">
+                    36
+                </a>
+                
+            
+                
+                <a href="?page=37">
+                    37
+                </a>
+                
+            
+                
+                <a href="?page=38">
+                    38
+                </a>
+                
+            
+                
+                <a href="?page=39">
+                    39
+                </a>
+                
+            
+                
+                <a href="?page=40">
+                    40
+                </a>
+                
+            
+                
+                <a href="?page=41">
+                    41
+                </a>
+                
+            
+                
+                <a href="?page=42">
+                    42
+                </a>
+                
+            
+                
+                <a href="?page=43">
+                    43
+                </a>
+                
+            
+                
+                <a href="?page=44">
+                    44
+                </a>
+                
+            
+                
+                <a href="?page=45">
+                    45
+                </a>
+                
+            
+                
+                <a href="?page=46">
+                    46
+                </a>
+                
+            
+                
+                <a href="?page=47">
+                    47
+                </a>
+                
+            
+                
+                <a href="?page=48">
+                    48
+                </a>
+                
+            
+                
+                <a href="?page=49">
+                    49
+                </a>
+                
+            
+                
+                <a href="?page=50">
+                    50
+                </a>
+                
+            
+
+            
+            <a href="?page=2">
+                Next
+            </a>
+            
+        </div>
+
+        <div id="load-more-trigger"></div>
+        <div class="loading" id="loading-text">
+            Loading More Products...
+        </div>
+    </main>
+</div>
+
+
+
+<script>
+function toggleProfile(){
+    const dropdown = document.getElementById("profileDropdown");
+    if (dropdown) {
+        dropdown.classList.toggle("show");
+    }
+}
+
+document.addEventListener("click", function(e){
+    if (!e.target.closest(".user-profile")) {
+        const dropdown = document.getElementById("profileDropdown");
+        if (dropdown) {
+            dropdown.classList.remove("show");
+        }
+    }
+});
+
+document.querySelectorAll(".cart-btn").forEach(btn => {
+    btn.addEventListener("click", function(e) {
+        
+        e.preventDefault();
+        alert("You have to login to add items to cart!");
+        window.location.href = "/login/";
+        
+    });
+});
+
+// Dynamic MSRP (Original Price) Calculator
+document.querySelectorAll('[data-original-price-for]').forEach(span => {
+    const currentPrice = parseFloat(span.textContent.replace('₹', ''));
+    if (!isNaN(currentPrice)) {
+        const originalPrice = (currentPrice * 1.25).toFixed(2);
+        span.textContent = '₹' + originalPrice;
+    }
+});
+
+// Mobile Filter Sidebar Toggle
+function toggleMobileSidebar() {
+    const sidebar = document.querySelector('.filter-sidebar');
+    if (sidebar) {
+        sidebar.classList.toggle('mobile-open');
+    }
+}
+
+// Brand Dynamic Extractor and Checkbox Populator
+const brandOptionsContainer = document.getElementById('brand-options-container');
+const brandFilterGroup = document.getElementById('brand-filter-group');
+const productItems = document.querySelectorAll('.product-card-item');
+
+const brands = new Set();
+productItems.forEach(card => {
+    const titleLink = card.querySelector('.details-info-col h3 a');
+    if (titleLink) {
+        const nameText = titleLink.textContent.trim();
+        const firstWord = nameText.split(' ')[0];
+        if (firstWord && firstWord.length > 1 && !firstWord.startsWith('(')) {
+            brands.add(firstWord);
+            card.setAttribute('data-brand', firstWord.toLowerCase());
+        }
+    }
+});
+
+if (brands.size > 0 && brandOptionsContainer && brandFilterGroup) {
+    brandFilterGroup.style.display = 'block';
+    const sortedBrands = Array.from(brands).sort();
+    sortedBrands.forEach(brand => {
+        const label = document.createElement('label');
+        label.className = 'filter-checkbox-label';
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'brand-checkbox';
+        checkbox.value = brand.toLowerCase();
+        checkbox.onchange = applyFilters;
+        
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(' ' + brand));
+        brandOptionsContainer.appendChild(label);
+    });
+}
+
+function updatePriceLabel(val) {
+    document.getElementById('price-max-input').value = val;
+}
+
+function updatePriceSlider(val) {
+    document.getElementById('price-slider').value = val;
+}
+
+// Interactive Client-Side Filter Engine
+function applyFilters() {
+    const showInStock = document.getElementById('filter-instock').checked;
+    const showOutOfStock = document.getElementById('filter-outofstock').checked;
+    const maxPrice = parseFloat(document.getElementById('price-slider').value);
+    
+    // Rating Filter
+    const selectedRatingRadio = document.querySelector('input[name="rating-filter"]:checked');
+    const minRating = selectedRatingRadio ? parseFloat(selectedRatingRadio.value) : 0;
+    
+    // Brand Filter
+    const selectedBrands = Array.from(document.querySelectorAll('.brand-checkbox:checked')).map(cb => cb.value);
+    
+    let visibleCount = 0;
+    
+    productItems.forEach(card => {
+        const price = parseFloat(card.getAttribute('data-price') || 0);
+        const rating = parseFloat(card.getAttribute('data-rating') || 0);
+        const stock = parseInt(card.getAttribute('data-stock') || 0);
+        const brand = card.getAttribute('data-brand') || '';
+        
+        let matchStock = true;
+        if (showInStock || showOutOfStock) {
+            matchStock = false;
+            if (showInStock && stock > 0) matchStock = true;
+            if (showOutOfStock && stock <= 0) matchStock = true;
+        }
+        
+        let matchPrice = price <= maxPrice;
+        let matchRating = rating >= minRating;
+        
+        let matchBrand = true;
+        if (selectedBrands.length > 0) {
+            matchBrand = selectedBrands.includes(brand);
+        }
+        
+        if (matchStock && matchPrice && matchRating && matchBrand) {
+            card.classList.remove('hidden');
+            visibleCount++;
+        } else {
+            card.classList.add('hidden');
+        }
+    });
+    
+    const resultsCountLabel = document.getElementById('results-count-label');
+    if (resultsCountLabel) {
+        resultsCountLabel.textContent = `Showing ${visibleCount} products`;
+    }
+}
+
+// Reset/Clear Filters
+function clearAllFilters() {
+    document.getElementById('filter-instock').checked = false;
+    document.getElementById('filter-outofstock').checked = false;
+    
+    const maxPrice = 250000;
+    document.getElementById('price-slider').value = maxPrice;
+    document.getElementById('price-max-input').value = maxPrice;
+    
+    const allRatingRadio = document.querySelector('input[name="rating-filter"][value="0"]');
+    if (allRatingRadio) allRatingRadio.checked = true;
+    
+    document.querySelectorAll('.brand-checkbox').forEach(cb => cb.checked = false);
+    
+    applyFilters();
+}
+</script>
+
+<script>
+const searchInput = document.getElementById("searchInput");
+const suggestions = document.getElementById("suggestions");
+let debounceTimer;
+
+if(searchInput){
+    searchInput.addEventListener("input", function(){
+        clearTimeout(debounceTimer);
+        const query = this.value.trim();
+
+        if(query.length === 0){
+            suggestions.style.display = "none";
+            return;
+        }
+
+        debounceTimer = setTimeout(()=>{
+            fetch(`/search-suggestions/?term=${encodeURIComponent(query)}`)
+            .then(res=>res.json())
+            .then(data=>{
+                let html = "";
+                data.forEach(product=>{
+                    html += `
+                    <div class="suggestion-item" onclick="window.location='/product/${product.id}/'">
+                        <strong>${product.name}</strong><br>
+                        <span class="suggestion-price">₹${product.price}</span>
+                    </div>`;
+                });
+                suggestions.innerHTML = html;
+                suggestions.style.display = "block";
+            });
+        }, 300);
+    });
+}
+
+document.addEventListener("click", function(e){
+    if(searchInput && suggestions && !searchInput.contains(e.target) && !suggestions.contains(e.target)){
+        suggestions.style.display = "none";
+    }
+});
+
+/* MOBILE INFINITE SCROLL */
+function isMobile(){
+    return window.innerWidth <= 900;
+}
+
+const trigger = document.getElementById("load-more-trigger");
+const loadingText = document.getElementById("loading-text");
+const container = document.getElementById("products-container");
+let currentPage = parseInt("1");
+let loading = false;
+let hasNext = true;
+
+async function loadMoreProducts(){
+    if(loading || !hasNext || !isMobile()){
+        return;
+    }
+    loading = true;
+    loadingText.style.display = "block";
+
+    try {
+        const nextPage = currentPage + 1;
+        const response = await fetch(
+            `/products/?search=&category=&collection=&page=${nextPage}`,
+            {
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            }
+        );
+        const data = await response.json();
+        if(!data.products || data.products.length === 0){
+            hasNext = false;
+            loadingText.innerHTML = "No More Products";
+            return;
+        }
+
+        data.products.forEach(product=>{
+            const html = `
+            <div class="search-card" data-aos="slide-up">
+                <img src="${product.image}">
+                <div class="search-info">
+                    <h2>${product.name}</h2>
+                    <div class="product-rating">
+                        ⭐ ${product.rating}/5 (${product.reviews} Reviews)
+                    </div>
+                    <div class="search-price">
+                        ₹${product.price}
+                    </div>
+                    <p>${product.description}</p>
+                    <div class="search-buttons">
+                        <a href="/add-to-cart/${product.id}/" class="cart-btn">Add To Cart</a>
+                        <a href="/product/${product.id}/" class="view-btn">View Product</a>
+                    </div>
+                </div>
+            </div>`;
+            container.insertAdjacentHTML("beforeend", html);
+        });
+
+        currentPage = nextPage;
+        hasNext = data.has_next;
+
+        const url = new URL(window.location);
+        url.searchParams.set("page", currentPage);
+        window.history.replaceState({}, "", url);
+
+        if(!hasNext){
+            loadingText.innerHTML = "No More Products";
+        }
+    } catch(error) {
+        console.log(error);
+    }
+    loading = false;
+}
+
+if(trigger){
+    const observer = new IntersectionObserver(
+        entries => {
+            if(entries[0].isIntersecting){
+                loadMoreProducts();
+            }
+        },
+        { threshold: 0.1 }
+    );
+    observer.observe(trigger);
+}
+</script>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        AOS.init({
+            duration: 800,
+            easing: 'ease-out-back',
+            once: true,
+            offset: 50
+        });
+    });
+</script>
+
+
+
+<!-- Markdown & Purify Dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.5/purify.min.js"></script>
+
+<style>
+/* ============================================
+   VELORA AI CHATBOT WIDGET - SaaS Redesign
+   Isolated styles with .velora- prefix
+   ============================================ */
+
+/* Globals restricted to Velora elements */
+.velora-widget-wrapper {
+    position: relative;
+    z-index: 2147483647; /* Ensure wrapper stays on top of sticky navbar */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #0f172a;
+}
+.velora-widget-wrapper * {
+    box-sizing: border-box;
+}
+
+/* Floating Action Button (Closed State) */
+.velora-chat-fab {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #0f172a; /* Dark Teal / Slate */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15), 0 8px 24px rgba(0,0,0,0.1);
+    cursor: pointer;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.velora-chat-fab:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2), 0 12px 32px rgba(0,0,0,0.15);
+}
+.velora-chat-fab svg {
+    width: 32px;
+    height: 32px;
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2;
+    transition: transform 0.3s ease;
+}
+
+/* Floating Widget Panel */
+.velora-chat-panel {
+    position: fixed;
+    bottom: 100px; right: 24px;
+    width: 420px; height: 640px;
+    max-height: calc(100vh - 200px); /* Leave 200px spacing (100px bottom + 100px top) to prevent cutting off at top of screen */
+    max-width: calc(100vw - 48px);
+    background: #F8FAFC;
+    border-radius: 24px;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.15), 0 4px 16px rgba(0,0,0,0.1);
+    z-index: 99998;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.95) translateY(20px);
+    transform-origin: bottom right;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.velora-chat-panel.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1) translateY(0);
+}
+
+/* Sidebar as an Overlay Drawer */
+.velora-sidebar {
+    position: absolute;
+    top: 0; left: 0; height: 100%;
+    width: 280px;
+    background: #0f172a;
+    color: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 50;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.2);
+}
+.velora-sidebar.closed {
+    transform: translateX(-100%);
+}
+.velora-sidebar-header {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.velora-new-chat-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+}
+.velora-new-chat-btn:hover {
+    background: rgba(255,255,255,0.15);
+}
+.velora-toggle-sidebar-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 8px;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+}
+.velora-toggle-sidebar-btn:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+}
+
+.velora-history-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+/* Scrollbar for sidebar */
+.velora-history-list::-webkit-scrollbar { width: 4px; }
+.velora-history-list::-webkit-scrollbar-track { background: transparent; }
+.velora-history-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+.velora-chat-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-radius: 8px;
+    color: #cbd5e1;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+    border: 1px solid transparent;
+}
+.velora-chat-item .title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.velora-chat-item .title svg {
+    flex-shrink: 0;
+    opacity: 0.6;
+}
+.velora-chat-item:hover {
+    background: rgba(255,255,255,0.05);
+}
+.velora-chat-item.active {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-weight: 500;
+}
+.velora-chat-item-delete {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    opacity: 0;
+    transition: 0.2s;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.velora-chat-item:hover .velora-chat-item-delete {
+    opacity: 1;
+}
+.velora-chat-item-delete:hover {
+    color: #ef4444;
+}
+
+/* Main Chat Area */
+.velora-main-chat {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #F8FAFC;
+    position: relative;
+    min-width: 0;
+}
+
+/* Header */
+.velora-main-header {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    background: #fff;
+    border-bottom: 1px solid #e2e8f0;
+    flex-shrink: 0;
+}
+.velora-header-left, .velora-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.velora-header-right {
+    justify-content: flex-end;
+}
+.velora-icon-btn {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.2s;
+    flex-shrink: 0;
+}
+.velora-icon-btn:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+.velora-logo {
+    display: none; /* Hide logo to save space in small widget */
+}
+
+/* Segmented Control */
+.velora-segmented-control {
+    display: flex;
+    background: #f1f5f9;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    margin: 0 8px;
+}
+.velora-segment {
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+.velora-segment.active {
+    background: #fff;
+    color: #0f172a;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Messages Container */
+.velora-messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    scroll-behavior: smooth;
+}
+.velora-messages-container::-webkit-scrollbar { width: 6px; }
+.velora-messages-container::-webkit-scrollbar-track { background: transparent; }
+.velora-messages-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+.velora-messages-container::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+.velora-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #475569;
+    text-align: center;
+    animation: velora-fade-in 0.5s ease;
+}
+.velora-empty-icon {
+    font-size: 48px;
+    margin-bottom: 24px;
+}
+.velora-empty-state h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #0f172a;
+}
+.velora-empty-state p {
+    font-size: 15px;
+    color: #64748b;
+    max-width: 400px;
+    line-height: 1.5;
+}
+
+/* Message Bubbles */
+.velora-msg {
+    display: flex;
+    flex-direction: column;
+    max-width: 75%;
+    animation: velora-slide-up 0.3s ease;
+}
+@keyframes velora-slide-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes velora-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.velora-msg-user {
+    align-self: flex-end;
+}
+.velora-msg-user .velora-msg-bubble {
+    background: linear-gradient(135deg, #F59E0B, #D97706);
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 18px;
+    border-bottom-right-radius: 4px;
+    font-size: 15px;
+    line-height: 1.5;
+    box-shadow: 0 2px 4px rgba(217, 119, 6, 0.2);
+}
+
+.velora-msg-assistant {
+    align-self: flex-start;
+}
+.velora-msg-assistant .velora-msg-bubble {
+    background: #fff;
+    color: #1e293b;
+    padding: 16px 20px;
+    border-radius: 18px;
+    border-bottom-left-radius: 4px;
+    font-size: 15px;
+    line-height: 1.6;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+}
+
+.velora-msg-system {
+    align-self: center;
+    background: #f1f5f9;
+    color: #475569;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    margin: 8px 0;
+    border: 1px solid #e2e8f0;
+}
+
+.velora-msg-time {
+    font-size: 11px;
+    margin-top: 6px;
+    opacity: 0.7;
+    text-align: right;
+}
+.velora-msg-user .velora-msg-time {
+    color: #fff;
+}
+.velora-msg-assistant .velora-msg-time {
+    color: #94a3b8;
+}
+
+/* Markdown Styling */
+.velora-markdown p { margin-bottom: 12px; }
+.velora-markdown p:last-child { margin-bottom: 0; }
+.velora-markdown strong { font-weight: 600; color: #0f172a; }
+.velora-markdown ul, .velora-markdown ol { margin-left: 20px; margin-bottom: 12px; }
+.velora-markdown li { margin-bottom: 4px; }
+.velora-markdown code {
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 13px;
+    color: #ef4444;
+}
+.velora-markdown pre {
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 12px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin-bottom: 12px;
+}
+.velora-markdown pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+}
+
+/* Typing Indicator */
+.velora-typing {
+    display: none;
+    align-self: flex-start;
+    background: #fff;
+    padding: 12px 18px;
+    border-radius: 18px;
+    border-bottom-left-radius: 4px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    align-items: center;
+    gap: 6px;
+}
+.velora-typing.show {
+    display: flex;
+}
+.velora-typing span {
+    width: 6px; height: 6px;
+    background: #94a3b8;
+    border-radius: 50%;
+    animation: velora-typing-dot 1s infinite;
+}
+.velora-typing span:nth-child(2) { animation-delay: 0.2s; }
+.velora-typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes velora-typing-dot {
+    0%, 100% { transform: translateY(0); opacity: 0.5; }
+    50% { transform: translateY(-4px); opacity: 1; }
+}
+
+/* Input Area */
+.velora-input-container {
+    padding: 20px;
+    background: transparent;
+    flex-shrink: 0;
+}
+.velora-input-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.velora-input-box {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    border-radius: 20px;
+    padding: 8px 12px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    transition: 0.2s;
+}
+.velora-input-box:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+.velora-attach-btn {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: 0.2s; flex-shrink: 0;
+}
+.velora-attach-btn:hover:not(:disabled) {
+    background: #f1f5f9; color: #0f172a;
+}
+.velora-chat-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 15px;
+    resize: none;
+    max-height: 200px;
+    padding: 8px 4px;
+    color: #0f172a;
+    line-height: 1.5;
+}
+.velora-chat-input::placeholder {
+    color: #94a3b8;
+}
+.velora-send-btn {
+    background: #f1f5f9;
+    color: #94a3b8;
+    border: none;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: 0.2s; flex-shrink: 0;
+}
+.velora-send-btn.active {
+    background: #0f172a;
+    color: #fff;
+}
+.velora-send-btn.active:hover {
+    background: #1e293b;
+    transform: translateY(-1px);
+}
+.velora-footer-text {
+    text-align: center;
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+/* Product Cards */
+.velora-chat-products {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 12px;
+}
+.velora-chat-product-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px;
+    width: 220px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: 0.2s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.velora-chat-product-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transform: translateY(-2px);
+}
+.product-img-wrapper {
+    width: 100%;
+    height: 120px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.product-img-wrapper img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+.product-info h4 {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #0f172a;
+}
+.product-price {
+    font-size: 14px;
+    font-weight: 700;
+    color: #10b981;
+    margin-bottom: 8px;
+}
+.product-btn {
+    background: #f1f5f9;
+    color: #0f172a;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    padding: 6px;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+.velora-chat-product-card:hover .product-btn {
+    background: #e2e8f0;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .velora-chat-panel {
+        flex-direction: column;
+        bottom: 80px;
+        right: 16px;
+        max-height: calc(100vh - 160px);
+        max-width: calc(100vw - 32px);
+    }
+    .velora-sidebar {
+        position: absolute;
+        top: 0; left: 0; height: 100%;
+        z-index: 10;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.2);
+    }
+    .velora-msg {
+        max-width: 90%;
+    }
+    .velora-header-left, .velora-header-right {
+        width: auto;
+    }
+    .velora-logo { display: none; }
+    .velora-sidebar-header { margin-top: 40px; }
+}
+
+/* Floating Back Button Override */
+.velora-back-fab {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    cursor: pointer;
+    z-index: 99999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+.velora-back-fab:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+.velora-back-fab svg {
+    width: 24px; height: 24px;
+    stroke: #0f172a; stroke-width: 2; fill: none;
+}
+</style>
+
+<div class="velora-widget-wrapper">
+    <!-- Floating Back Button -->
+    <div class="velora-back-fab" id="veloraBackFab" title="Go Back">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+    </div>
+
+    <!-- Floating Chat Button -->
+    <div class="velora-chat-fab" id="veloraChatFab" title="Chat with Velora AI">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+    </div>
+
+    <!-- Main Full Screen Panel -->
+    <div class="velora-chat-panel" id="veloraChatPanel">
+        
+        <!-- Sidebar -->
+        <div class="velora-sidebar closed" id="veloraSidebar">
+            <div class="velora-sidebar-header">
+                <button class="velora-toggle-sidebar-btn" id="veloraMobileCloseSidebar" style="display:none;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                </button>
+                <button class="velora-new-chat-btn" id="veloraNewChatBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                    New Chat
+                </button>
+            </div>
+            <div class="velora-history-list" id="veloraChatList">
+                <!-- populated by JS -->
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="velora-main-chat">
+            
+            <!-- Header -->
+            <div class="velora-main-header">
+                <div class="velora-header-left">
+                    <button class="velora-icon-btn" id="veloraToggleSidebarBtn" title="Toggle Sidebar">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    </button>
+                    <div class="velora-logo">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                        Velora AI
+                    </div>
+                </div>
+                
+                <div class="velora-segmented-control">
+                    <div class="velora-segment active" id="segShopping">Shopping AI</div>
+                    <div class="velora-segment" id="segSupport">Live Support</div>
+                </div>
+
+                <div class="velora-header-right">
+                    <button class="velora-icon-btn" id="veloraClosePanelBtn" title="Close Chat">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            <div class="velora-messages-container" id="veloraMessages">
+                <div class="velora-empty-state" id="veloraWelcome">
+                    <div class="velora-empty-icon">👋</div>
+                    <h2>Welcome to Velora</h2>
+                    <p>Ask me about products, find laptops, compare mobiles, or search fashion.</p>
+                </div>
+                <!-- messages go here -->
+                
+                <div class="velora-typing" id="veloraTyping">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="velora-input-container">
+                <div class="velora-input-wrapper">
+                    <div class="velora-input-box">
+                        <button class="velora-attach-btn" id="veloraChatAttach" title="Attach Image" style="display:none;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                        </button>
+                        <input type="file" id="veloraChatFileInput" accept="image/*" style="display:none;">
+                        
+                        <textarea class="velora-chat-input" id="veloraChatInput" placeholder="Message Velora AI..." rows="1"></textarea>
+                        
+                        <button class="velora-send-btn" id="veloraChatSend" disabled>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        </button>
+                    </div>
+                    <div class="velora-footer-text">Velora AI can make mistakes. Check important info.</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    // Configure Marked.js
+    if (typeof marked !== 'undefined') {
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            headerIds: false
+        });
+    }
+
+    // ── Elements ──
+    const fab = document.getElementById('veloraChatFab');
+    const panel = document.getElementById('veloraChatPanel');
+    const closePanelBtn = document.getElementById('veloraClosePanelBtn');
+    const sidebar = document.getElementById('veloraSidebar');
+    const toggleSidebarBtn = document.getElementById('veloraToggleSidebarBtn');
+    const mobileCloseSidebar = document.getElementById('veloraMobileCloseSidebar');
+    const newChatBtn = document.getElementById('veloraNewChatBtn');
+    const chatListEl = document.getElementById('veloraChatList');
+    
+    const messagesEl = document.getElementById('veloraMessages');
+    const welcomeEl = document.getElementById('veloraWelcome');
+    const typingEl = document.getElementById('veloraTyping');
+    
+    const input = document.getElementById('veloraChatInput');
+    const sendBtn = document.getElementById('veloraChatSend');
+    
+    const segShopping = document.getElementById('segShopping');
+    const segSupport = document.getElementById('segSupport');
+    const attachBtn = document.getElementById('veloraChatAttach');
+
+    // ── State ──
+    let isSending = false;
+    let currentConversationId = null;
+    let loadedForUser = '__not_loaded__';
+    let currentMode = 'ai'; // 'ai' or 'support'
+    
+    // Live Support State
+    let supportWs = null;
+    let supportConvId = null;
+    let idleTimer = null;
+    let warningTimer = null;
+    const isAuthenticated = "false" === "true";
+    const currentUserId = "null";
+
+    // ── Initialization ──
+    // Sidebar starts closed by default for overlay layout
+
+    // Toggle Panel
+    fab.addEventListener('click', () => {
+        panel.classList.add('open');
+        if (loadedForUser === '__not_loaded__') {
+            loadHistory();
+        }
+    });
+    closePanelBtn.addEventListener('click', () => {
+        panel.classList.remove('open');
+    });
+
+    // Toggle Sidebar
+    toggleSidebarBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('closed');
+    });
+    if (mobileCloseSidebar) {
+        mobileCloseSidebar.addEventListener('click', () => {
+            sidebar.classList.add('closed');
+        });
+    }
+
+    // Auto-resize textarea
+    input.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight < 200 ? this.scrollHeight : 200) + 'px';
+        if(this.value.trim() !== '') {
+            sendBtn.disabled = false;
+            sendBtn.classList.add('active');
+        } else {
+            sendBtn.disabled = true;
+            sendBtn.classList.remove('active');
+        }
+    });
+
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            if(!sendBtn.disabled) sendMessage();
+        }
+    });
+
+    sendBtn.addEventListener('click', sendMessage);
+
+    // ── Core Functions ──
+    function clearChatDOM() {
+        // Remove all messages and product containers
+        const msgs = messagesEl.querySelectorAll('.velora-msg, .velora-msg-system, .velora-chat-products');
+        msgs.forEach(m => m.remove());
+        welcomeEl.style.display = 'flex';
+    }
+
+    function scrollToBottom() {
+        setTimeout(() => {
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }, 50);
+    }
+
+    function addMessage(role, text, messageType = 'text') {
+        const div = document.createElement('div');
+        div.className = 'velora-msg velora-msg-' + role;
+
+        let contentHtml = '';
+        if (messageType === 'image') {
+            contentHtml = `<img src="${text}" style="max-width:250px; border-radius:12px; cursor:pointer;" onclick="window.open('${text}', '_blank')"/>`;
+        } else {
+            // Apply markdown if available
+            if (typeof marked !== 'undefined' && typeof DOMPurify !== 'undefined') {
+                contentHtml = `<div class="velora-markdown">${DOMPurify.sanitize(marked.parse(text || ''))}</div>`;
+            } else {
+                contentHtml = (text || '').replace(/\n/g, '<br>');
+            }
+        }
+
+        const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+        div.innerHTML = `
+            <div class="velora-msg-bubble">
+                ${contentHtml}
+            </div>
+            <div class="velora-msg-time">${timeStr}</div>
+        `;
+
+        messagesEl.insertBefore(div, typingEl);
+        scrollToBottom();
+    }
+
+    function addSystemMessage(text) {
+        const div = document.createElement('div');
+        div.className = 'velora-msg-system';
+        div.innerText = text;
+        messagesEl.insertBefore(div, typingEl);
+        scrollToBottom();
+    }
+
+    // ── Streaming Message Helper ──
+    function addStreamingMessageBubble(role) {
+        const div = document.createElement('div');
+        div.className = 'velora-msg velora-msg-' + role;
+        
+        const bubble = document.createElement('div');
+        bubble.className = 'velora-msg-bubble velora-markdown';
+        
+        const timeDiv = document.createElement('div');
+        timeDiv.className = 'velora-msg-time';
+        timeDiv.innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+        div.appendChild(bubble);
+        div.appendChild(timeDiv);
+        
+        messagesEl.insertBefore(div, typingEl);
+        return bubble;
+    }
+
+    function addProductCards(products) {
+        if (!products || products.length === 0) return;
+        const container = document.createElement('div');
+        container.className = 'velora-chat-products';
+        
+        products.forEach(p => {
+            const card = document.createElement('a');
+            card.href = `/product/${p.id}/`;
+            card.className = 'velora-chat-product-card';
+            card.target = '_blank';
+            
+            let priceHtml = `₹${p.price}`;
+            if (p.discount_price) {
+                priceHtml = `<span style="text-decoration:line-through; color:#94a3b8; font-size:12px; margin-right:6px;">₹${p.price}</span>₹${p.discount_price}`;
+            }
+
+            card.innerHTML = `
+                <div class="product-img-wrapper">
+                    <img src="${p.image_url}" alt="${p.name}">
+                </div>
+                <div class="product-info">
+                    <h4>${p.name}</h4>
+                    <div class="product-price">${priceHtml}</div>
+                    <div class="product-btn">View Product</div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        messagesEl.insertBefore(container, typingEl);
+        scrollToBottom();
+    }
+
+    // ── API Interactions (AI Mode) ──
+    function loadHistory() {
+        fetch('/api/chat/history/')
+        .then(res => res.json())
+        .then(data => {
+            const serverUser = data.current_user || '__anonymous__';
+
+            if (loadedForUser !== '__not_loaded__' && loadedForUser !== serverUser) {
+                clearChatDOM();
+                currentConversationId = null;
+            }
+            loadedForUser = serverUser;
+
+            // Render Sidebar
+            if (data.conversations) {
+                chatListEl.innerHTML = '';
+                data.conversations.forEach(c => {
+                    const item = document.createElement('div');
+                    item.className = `velora-chat-item ${c.id === currentConversationId ? 'active' : ''}`;
+                    
+                    item.innerHTML = `
+                        <div class="title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                            ${c.title}
+                        </div>
+                    `;
+                    
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'velora-chat-item-delete';
+                    delBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>';
+                    delBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        if (confirm('Delete this chat?')) deleteConversation(c.id);
+                    };
+                    item.appendChild(delBtn);
+
+                    item.onclick = () => {
+                        sidebar.classList.add('closed');
+                        loadConversation(c.id);
+                    };
+                    chatListEl.appendChild(item);
+                });
+            }
+
+            const existingMsgs = messagesEl.querySelectorAll('.velora-msg');
+            if (existingMsgs.length > 0) return;
+
+            if (data.history && data.history.length > 0 && !currentConversationId && (!data.conversations || data.conversations.length===0)) {
+                // Legacy fallback
+                welcomeEl.style.display = 'none';
+                data.history.forEach(msg => {
+                    addMessage(msg.role, msg.content);
+                    if (msg.role === 'assistant' && msg.products && msg.products.length > 0) {
+                        addProductCards(msg.products);
+                    }
+                });
+            }
+            // Removed auto-load of most recent chat to allow starting fresh chats
+        })
+        .catch(err => console.error('Failed to load history:', err));
+    }
+
+    function loadConversation(convId) {
+        currentConversationId = convId;
+        clearChatDOM();
+        
+        // Highlight active
+        document.querySelectorAll('.velora-chat-item').forEach(el => el.classList.remove('active'));
+        
+        // Find and add active class
+        loadHistory(); 
+
+        fetch(`/api/chat/conversations/${convId}/`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.history) {
+                welcomeEl.style.display = 'none';
+                data.history.forEach(msg => {
+                    addMessage(msg.role, msg.content);
+                    if (msg.role === 'assistant' && msg.products && msg.products.length > 0) {
+                        addProductCards(msg.products);
+                    }
+                });
+            }
+        });
+    }
+
+    function deleteConversation(convId) {
+        fetch(`/api/chat/conversations/${convId}/`, {
+            method: 'DELETE',
+            headers: { 'X-CSRFToken': getCSRFToken() }
+        }).then(() => {
+            if (currentConversationId === convId) {
+                currentConversationId = null;
+                clearChatDOM();
+            }
+            loadHistory();
+        });
+    }
+
+    newChatBtn.addEventListener('click', () => {
+        currentConversationId = null;
+        clearChatDOM();
+        sidebar.classList.add('closed');
+        loadHistory(); // update highlights
+    });
+
+    async function sendMessage() {
+        const text = input.value.trim();
+        if (!text || isSending) return;
+
+        welcomeEl.style.display = 'none';
+        addMessage('user', text);
+        
+        input.value = '';
+        input.style.height = 'auto'; // reset textarea
+        sendBtn.disabled = true;
+        sendBtn.classList.remove('active');
+        isSending = true;
+
+        if (currentMode === 'support') {
+            if (supportWs && supportConvId) {
+                supportWs.send(JSON.stringify({
+                    type: 'send_message',
+                    payload: { conversation_id: supportConvId, message: text }
+                }));
+                supportWs.send(JSON.stringify({ type: 'stop_typing', payload: { conversation_id: supportConvId }}));
+            }
+            isSending = false;
+            input.focus();
+            scrollToBottom();
+            resetIdleTimer();
+            return;
+        }
+
+        typingEl.classList.add('show');
+        scrollToBottom();
+
+        try {
+            const response = await fetch('/api/chat/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({ 
+                    message: text,
+                    conversation_id: currentConversationId
+                })
+            });
+
+            if (!response.ok) throw new Error('Network response was not ok');
+
+            const newConvId = response.headers.get('X-Conversation-Id');
+            if (newConvId && currentConversationId !== newConvId) {
+                currentConversationId = newConvId;
+                loadHistory(); // Refresh sidebar to show new chat title
+            }
+
+            typingEl.classList.remove('show');
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder('utf-8');
+            let buffer = '';
+            
+            let contentSpan = null;
+            let fullRawText = '';
+
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const blocks = buffer.split('\n\n');
+                buffer = blocks.pop(); 
+
+                for (const block of blocks) {
+                    if (!block.trim()) continue;
+
+                    let event = 'content';
+                    let dataStr = '';
+
+                    const lines = block.split('\n');
+                    for (const line of lines) {
+                        if (line.startsWith('event:')) event = line.replace('event:', '').trim();
+                        else if (line.startsWith('data:')) dataStr = line.replace('data:', '').trim();
+                    }
+
+                    if (dataStr) {
+                        try {
+                            const parsedData = JSON.parse(dataStr);
+                            
+                            if (event === 'products') {
+                                if (parsedData && parsedData.length > 0) addProductCards(parsedData);
+                            } else if (event === 'content') {
+                                if (!contentSpan) contentSpan = addStreamingMessageBubble('assistant');
+                                
+                                fullRawText += parsedData;
+                                
+                                // Render markdown
+                                if (typeof marked !== 'undefined' && typeof DOMPurify !== 'undefined') {
+                                    contentSpan.innerHTML = DOMPurify.sanitize(marked.parse(fullRawText));
+                                } else {
+                                    contentSpan.innerHTML = fullRawText.replace(/\n/g, '<br>');
+                                }
+                                scrollToBottom();
+                            } else if (event === 'error') {
+                                if (!contentSpan) contentSpan = addStreamingMessageBubble('assistant');
+                                contentSpan.innerHTML += `<span style="color: #ef4444;">${parsedData.message || "An error occurred."}</span>`;
+                                scrollToBottom();
+                            }
+                        } catch (e) {
+                            console.error('Parse stream error:', e);
+                        }
+                    }
+                }
+            }
+        } catch (err) {
+            typingEl.classList.remove('show');
+            addMessage('assistant', "Oops! I encountered an error. Please try again.");
+            console.error(err);
+        } finally {
+            isSending = false;
+            input.focus();
+            scrollToBottom();
+        }
+    }
+
+    // ── Segmented Control Logic (Mode Switch) ──
+    segShopping.addEventListener('click', () => switchMode('ai'));
+    segSupport.addEventListener('click', () => switchMode('support'));
+
+    function switchMode(mode) {
+        if (mode === 'support' && !isAuthenticated) {
+            alert('Please log in to use Live Support.');
+            return;
+        }
+        
+        currentMode = mode;
+        if (mode === 'support') {
+            segShopping.classList.remove('active');
+            segSupport.classList.add('active');
+            input.placeholder = "Message Live Support...";
+            attachBtn.style.display = 'flex';
+            sidebar.classList.add('closed'); // collapse sidebar for support chat
+            
+            clearChatDOM();
+            if (!supportWs) initSupportChat();
+            else loadSupportHistory();
+            
+        } else {
+            segSupport.classList.remove('active');
+            segShopping.classList.add('active');
+            input.placeholder = "Message Velora AI...";
+            attachBtn.style.display = 'none';
+            if (window.innerWidth > 768) sidebar.classList.remove('closed'); // reopen sidebar on desktop
+            
+            clearChatDOM();
+            loadHistory(); // this restores the AI chat
+        }
+    }
+
+    // ── Live Support Logic ──
+    async function initSupportChat() {
+        try {
+            const res = await fetch('/api/support/customer/conversation/');
+            if (!res.ok) return;
+            const data = await res.json();
+            supportConvId = data.conversation_id;
+            
+            loadSupportHistory();
+            connectSupportWebSocket();
+            resetIdleTimer();
+        } catch(e) {
+            console.error("Support Chat Init Error", e);
+        }
+    }
+
+    async function loadSupportHistory() {
+        if (!supportConvId) return;
+        const msgRes = await fetch(`/api/support/conversation/${supportConvId}/messages/`);
+        if (msgRes.ok) {
+            const msgData = await msgRes.json();
+            clearChatDOM();
+            msgData.messages.forEach(m => {
+                const role = m.sender_type === 'customer' ? 'user' : 'assistant';
+                addMessage(role, m.message, m.message_type);
+            });
+        }
+    }
+
+    function connectSupportWebSocket() {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        supportWs = new WebSocket(`${protocol}//${window.location.host}/ws/support/`);
+        
+        supportWs.onopen = () => {
+            if (supportConvId) supportWs.send(JSON.stringify({ type: 'join_conversation', payload: { conversation_id: supportConvId }}));
+        };
+        
+        supportWs.onmessage = (e) => {
+            const data = JSON.parse(e.data);
+            if (data.type === 'receiveMessage') {
+                const msg = data.payload;
+                if (String(msg.conversation_id) === String(supportConvId)) {
+                    if (currentMode === 'support') {
+                        if (msg.sender_type === 'admin') {
+                            addMessage('assistant', msg.message, msg.message_type);
+                            supportWs.send(JSON.stringify({ type: 'mark_read', payload: { conversation_id: supportConvId }}));
+                            resetIdleTimer();
+                            typingEl.classList.remove('show');
+                        }
+                    } else {
+                        if (msg.sender_type === 'admin') {
+                            segSupport.style.color = '#ef4444'; // Notification state
+                            typingEl.classList.remove('show');
+                        }
+                    }
+                }
+            }
+            if (data.type === 'typing') {
+                if (String(data.payload.conversation_id) === String(supportConvId) && data.payload.user_id !== currentUserId && currentMode === 'support') {
+                    typingEl.classList.add('show');
+                    scrollToBottom();
+                }
+            }
+            if (data.type === 'stopTyping') {
+                if (String(data.payload.conversation_id) === String(supportConvId) && data.payload.user_id !== currentUserId) {
+                    typingEl.classList.remove('show');
+                }
+            }
+            if (data.type === 'idleWarning') {
+                if (String(data.payload.conversation_id) === String(supportConvId) && currentMode === 'support') {
+                    addSystemMessage(data.payload.message);
+                }
+            }
+            if (data.type === 'chatClosed') {
+                if (String(data.payload.conversation_id) === String(supportConvId) && currentMode === 'support') {
+                    addSystemMessage("This conversation has been automatically closed due to inactivity.");
+                    input.disabled = true;
+                    sendBtn.disabled = true;
+                    input.placeholder = "Chat closed.";
+                    clearTimeout(idleTimer);
+                    clearTimeout(warningTimer);
+                }
+            }
+        };
+        
+        supportWs.onclose = () => {
+            setTimeout(connectSupportWebSocket, 5000);
+        };
+    }
+
+    function resetIdleTimer() {
+        if(currentMode !== 'support') return;
+        clearTimeout(idleTimer);
+        clearTimeout(warningTimer);
+        warningTimer = setTimeout(() => {
+            if(supportWs && supportWs.readyState === WebSocket.OPEN && supportConvId) {
+                supportWs.send(JSON.stringify({ type: 'idle_warning', payload: { conversation_id: supportConvId }}));
+            }
+        }, 150000);
+        idleTimer = setTimeout(() => {
+            if(supportWs && supportWs.readyState === WebSocket.OPEN && supportConvId) {
+                supportWs.send(JSON.stringify({ type: 'close_chat', payload: { conversation_id: supportConvId, reason: 'timeout' }}));
+            }
+        }, 180000);
+    }
+
+    // ── Image Upload ──
+    const fileInput = document.getElementById('veloraChatFileInput');
+    if (attachBtn && fileInput) {
+        attachBtn.addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file || !supportConvId || !supportWs || currentMode !== 'support') return;
+            
+            attachBtn.style.opacity = '0.5';
+            attachBtn.disabled = true;
+            
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            try {
+                const response = await fetch('/api/support/upload_image/', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addMessage('user', data.url, 'image');
+                    supportWs.send(JSON.stringify({
+                        type: 'send_message',
+                        payload: { conversation_id: supportConvId, message: data.url, message_type: 'image' }
+                    }));
+                    supportWs.send(JSON.stringify({ type: 'stop_typing', payload: { conversation_id: supportConvId }}));
+                    resetIdleTimer();
+                } else alert("Image upload failed.");
+            } catch (err) {
+                console.error("Upload error:", err);
+            } finally {
+                attachBtn.style.opacity = '1';
+                attachBtn.disabled = false;
+                fileInput.value = '';
+            }
+        });
+    }
+
+    function getCSRFToken() {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.startsWith('csrftoken=')) return cookie.substring('csrftoken='.length);
+        }
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.content : '';
+    }
+
+    // Floating Back Button Logic (unchanged)
+    const backFab = document.getElementById('veloraBackFab');
+    if (backFab) {
+        const path = window.location.pathname;
+        if (path !== '/' && path !== '/home/' && path !== '/shop/') {
+            backFab.style.display = 'flex';
+        }
+        backFab.addEventListener('click', function() {
+            if (document.referrer && document.referrer.includes(window.location.host)) {
+                window.history.back();
+            } else {
+                window.location.href = '/';
+            }
+        });
+    }
+
+})();
+</script>
+
+</body>
+
+</html>

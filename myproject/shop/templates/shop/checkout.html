@@ -466,10 +466,32 @@ body {
                     <span>₹{{ item.subtotal }}</span>
                 </div>
             {% endfor %}
+            <div class="summary-item" style="border-top: 2px solid var(--border-color); padding-top: 20px;">
+                <span>Subtotal</span>
+                <span>₹{{ total }}</span>
+            </div>
+            
+            <div class="summary-item">
+                <span>Shipping Charge</span>
+                <span>₹{{ benefits.shipping_charge }}</span>
+            </div>
+
+            {% if benefits.subscription_used %}
+                <div class="summary-item" style="color: var(--primary-blue);">
+                    <span>Membership Discount 🌟</span>
+                    <span>- ₹{{ benefits.membership_discount }}</span>
+                </div>
+                {% if benefits.shipping_discount > 0 %}
+                <div class="summary-item" style="color: var(--primary-red);">
+                    <span>Free Delivery Savings 🚚</span>
+                    <span>- ₹{{ benefits.shipping_discount }}</span>
+                </div>
+                {% endif %}
+            {% endif %}
         </div>
 
         <div class="checkout-total-box">
-            <h3>Grand Total: ₹{{ total }}</h3>
+            <h3>Grand Total: ₹{{ final_amount }}</h3>
             <button type="button" id="placeOrderBtn" class="checkout-btn">PLACE ORDER NOW ⚡</button>
         </div>
     </div>
@@ -575,6 +597,7 @@ body {
                     return;
                 }
 
+                console.log("Initializing Razorpay with options:", data);
                 var options = {
                     "key": data.key_id,
                     "amount": data.amount,
@@ -602,16 +625,25 @@ body {
                             if (verifyData.status === 'success') {
                                 window.location.href = '/order-confirmation/' + data.order_id + '/';
                             } else {
-                                alert('Payment verification failed: ' + verifyData.error);
-                                document.getElementById('placeOrderBtn').disabled = false;
-                                document.getElementById('placeOrderBtn').innerText = 'PLACE ORDER NOW ⚡';
+                                showCustomAlert('Payment verification failed: ' + verifyData.error).then(() => {
+                                    document.getElementById('placeOrderBtn').disabled = false;
+                                    document.getElementById('placeOrderBtn').innerText = 'PLACE ORDER NOW ⚡';
+                                });
                             }
                         })
                         .catch(err => {
-                            alert('Verification Error: ' + err.message);
+                            showCustomAlert('Verification Error: ' + err.message).then(() => {
+                                document.getElementById('placeOrderBtn').disabled = false;
+                                document.getElementById('placeOrderBtn').innerText = 'PLACE ORDER NOW ⚡';
+                            });
+                        });
+                    },
+                    "modal": {
+                        "ondismiss": function(){
+                            // Restore button state if user closes the modal
                             document.getElementById('placeOrderBtn').disabled = false;
                             document.getElementById('placeOrderBtn').innerText = 'PLACE ORDER NOW ⚡';
-                        });
+                        }
                     },
                     "theme": {
                         "color": "#ef476f"
@@ -620,22 +652,25 @@ body {
                 
                 var rzp1 = new Razorpay(options);
                 rzp1.on('payment.failed', function (response){
-                    alert("Payment Failed: " + response.error.description);
-                    document.getElementById('placeOrderBtn').disabled = false;
-                    document.getElementById('placeOrderBtn').innerText = 'PLACE ORDER NOW ⚡';
+                    showCustomAlert("Payment Failed: " + response.error.description).then(() => {
+                        document.getElementById('placeOrderBtn').disabled = false;
+                        document.getElementById('placeOrderBtn').innerText = 'PLACE ORDER NOW ⚡';
+                    });
                 });
                 rzp1.open();
                 
             } else {
-                alert('Checkout failed: ' + data.error);
-                document.getElementById('placeOrderBtn').disabled = false;
-                document.getElementById('placeOrderBtn').innerText = 'PLACE ORDER NOW ⚡';
+                showCustomAlert('Checkout failed: ' + data.error).then(() => {
+                    document.getElementById('placeOrderBtn').disabled = false;
+                    document.getElementById('placeOrderBtn').innerText = 'PLACE ORDER NOW ⚡';
+                });
             }
         })
         .catch(error => {
-            alert('Error placing order: ' + error.message);
-            document.getElementById('placeOrderBtn').disabled = false;
-            document.getElementById('placeOrderBtn').innerText = 'PLACE ORDER NOW ⚡';
+            showCustomAlert('Error placing order: ' + error.message).then(() => {
+                document.getElementById('placeOrderBtn').disabled = false;
+                document.getElementById('placeOrderBtn').innerText = 'PLACE ORDER NOW ⚡';
+            });
         });
     });
 

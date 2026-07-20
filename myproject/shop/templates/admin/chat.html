@@ -1043,11 +1043,11 @@
                 
                 ws.send(JSON.stringify({ type: 'stop_typing', payload: { conversation_id: activeConversationId }}));
             } else {
-                alert("Image upload failed.");
+                showCustomAlert("Image upload failed.");
             }
         } catch (error) {
             console.error("Upload error:", error);
-            alert("An error occurred during upload.");
+            showCustomAlert("An error occurred during upload.");
         } finally {
             // Reset button
             attachBtn.innerHTML = '<i class="fas fa-paperclip"></i>';

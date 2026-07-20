@@ -1,5 +1,6 @@
 from .models import Cart, UserProfile
 from django.db.models import Sum
+from shop.services.subscription_service import get_active_subscription
 
 
 def cart_count(request):
@@ -25,9 +26,17 @@ def cart_count(request):
         except UserProfile.DoesNotExist:
             pass
 
+    active_subscription = None
+    if request.user.is_authenticated:
+        try:
+            active_subscription = get_active_subscription(request.user)
+        except Exception:
+            pass
+
     return {
         'cart_count': total,
         'user_avatar_url': user_avatar_url,
         'user_avatar_emoji': user_avatar_emoji,
         'user_profile_obj': user_profile,
+        'active_subscription': active_subscription,
     }

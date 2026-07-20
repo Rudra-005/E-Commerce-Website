@@ -2,7 +2,7 @@ function detectLocation(btnId, address1Id, cityId, stateId, pincodeId) {
     const btn = document.getElementById(btnId);
     
     if (!navigator.geolocation) {
-        alert("Geolocation is not supported by your browser.");
+        showCustomAlert("Geolocation is not supported by your browser.");
         return;
     }
 
@@ -57,14 +57,14 @@ function detectLocation(btnId, address1Id, cityId, stateId, pincodeId) {
             })
             .catch(error => {
                 console.error("Error fetching location details:", error);
-                alert("Failed to get address from location. Please try manually.");
+                showCustomAlert("Failed to get address from location. Please try manually.");
                 btn.innerText = originalText;
                 btn.disabled = false;
             });
         },
         (error) => {
             console.error("Geolocation Error:", error);
-            alert("Location access denied or unavailable. Please fill manually.");
+            showCustomAlert("Location access denied or unavailable. Please fill manually.");
             btn.innerText = originalText;
             btn.disabled = false;
         }

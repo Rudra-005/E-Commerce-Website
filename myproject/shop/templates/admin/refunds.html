@@ -70,39 +70,41 @@
     }
 
     async function processRefund(refundId, action) {
-        if (!confirm(`Are you sure you want to ${action} this refund?`)) {
-            return;
-        }
-
         const actionsContainer = document.getElementById(`actions-${refundId}`);
-        actionsContainer.innerHTML = `<span style="font-style: italic; color: #118ab2; font-weight: bold;">Processing...</span>`;
-
-        try {
-            const res = await fetch("{% url 'admin_process_refund' %}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCookie('csrftoken')
-                },
-                body: JSON.stringify({
-                    refund_id: refundId,
-                    action: action
-                })
-            });
-
-            const data = await res.json();
-            if (data.success) {
-                alert(data.message);
-                window.location.reload();
-            } else {
-                alert(`Error: ${data.error}`);
-                window.location.reload();
+        
+        showCustomConfirm(`Are you sure you want to ${action} this refund?`).then(confirmed => {
+            if (!confirmed) {
+                return;
             }
-        } catch (error) {
-            console.error('Error processing refund:', error);
-            alert('An unexpected error occurred.');
-            window.location.reload();
-        }
+            
+            actionsContainer.innerHTML = `<span style="font-style: italic; color: #118ab2; font-weight: bold;">Processing...</span>`;
+
+            fetch(`/admin/refunds/${refundId}/${action}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    showCustomAlert(data.message).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    showCustomAlert(`Error: ${data.error}`).then(() => {
+                        window.location.reload();
+                    });
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                showCustomAlert('An unexpected error occurred.').then(() => {
+                    window.location.reload();
+                });
+            });
+        });
     }
 </script>
 {% endblock %}

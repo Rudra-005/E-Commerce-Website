@@ -89,6 +89,7 @@ MIDDLEWARE = [
 
 
     'shop.middleware.JWTAuthenticationMiddleware',
+    'shop.middleware.CartSessionSyncMiddleware',
 
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -119,7 +120,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [os.getenv('REDIS_URL', os.getenv('CELERY_BROKER_URL', 'redis://localhost:6000/0'))],
+            "hosts": [os.getenv('REDIS_URL', os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0'))],
         },
     },
 }
@@ -206,7 +207,7 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # CELERY CONFIGURATION
-CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6000/0")
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_CACHE_BACKEND = "default"
 CELERY_ACCEPT_CONTENT = ['application/json']
@@ -215,18 +216,19 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 
 CELERY_TASK_ROUTES = {
-    'shop.tasks.generate_invoice_task': {'queue': 'invoice'},
-    'shop.tasks.send_invoice_email_task': {'queue': 'email'},
-    'shop.tasks.send_welcome_email_task': {'queue': 'email'},
-    'shop.tasks.award_reward_points_task': {'queue': 'default'},
-    'shop.tasks.update_recommendation_cache_task': {'queue': 'recommendation'},
-    'shop.tasks.verify_payment_and_log_task': {'queue': 'payments'},
-    
-    'chatbot.tasks.process_human_handoff_task': {'queue': 'support'},
-    'chatbot.tasks.generate_conversation_summary_task': {'queue': 'support'},
-    'chatbot.tasks.classify_issue_task': {'queue': 'support'},
-    
-    'shop.tasks.generate_business_insights_task': {'queue': 'analytics'},
+    'shop.tasks.invoice_tasks.*': {'queue': 'invoice'},
+    'shop.tasks.email_tasks.*': {'queue': 'email'},
+    'shop.tasks.recommendation_tasks.*': {'queue': 'recommendation'},
+    'shop.tasks.order_tasks.*': {'queue': 'orders'},
+    'shop.tasks.cart_tasks.*': {'queue': 'cart'},
+    'shop.tasks.cleanup_tasks.*': {'queue': 'cleanup'},
+    'shop.tasks.coupon_tasks.*': {'queue': 'cleanup'},
+    'shop.tasks.notification_tasks.*': {'queue': 'cleanup'},
+    'shop.tasks.analytics_tasks.*': {'queue': 'analytics'},
+    'shop.tasks.search_tasks.*': {'queue': 'search'},
+    'shop.tasks.backup_tasks.*': {'queue': 'backups'},
+    'chatbot.tasks.*': {'queue': 'support'},
+    '*': {'queue': 'default'}
 }
 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'# Django Allauth Settings removed for custom Google OAuth and PyJWT integration
@@ -235,3 +237,6 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'# Djang
 SITE_URL = os.getenv("SITE_URL", "http://localhost:8000")
 SITE_NAME = "Velora"
 SUPPORT_EMAIL = os.getenv("SUPPORT_EMAIL", EMAIL_HOST_USER)
+
+# Fix for Google Identity Services (GSI) Popup
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'

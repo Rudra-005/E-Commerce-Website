@@ -1,0 +1,251 @@
+{% extends 'shop/home.html' %}
+
+{% block content %}
+<style>
+    .membership-container {
+        max-width: 1200px;
+        margin: 50px auto;
+        padding: 0 20px;
+        text-align: center;
+    }
+    
+    .membership-header {
+        font-size: 50px;
+        text-transform: uppercase;
+        color: var(--text-dark);
+        letter-spacing: 2px;
+        margin-bottom: 20px;
+        background: var(--primary-yellow);
+        padding: 20px 40px;
+        border: 5px solid #000;
+        box-shadow: 8px 8px 0px #000;
+        display: inline-block;
+        transform: rotate(-1deg);
+    }
+    
+    .membership-subtitle {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 50px;
+    }
+
+    .plans-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 40px;
+        justify-content: center;
+    }
+    
+    .plan-card {
+        background: #fff;
+        border: 4px solid #000;
+        box-shadow: 8px 8px 0px #000;
+        padding: 40px;
+        text-align: left;
+        transition: transform 0.2s ease;
+        position: relative;
+    }
+    
+    .plan-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 12px 12px 0px #000;
+    }
+    
+    .plan-card.premium {
+        background: #fdf2f8; /* Light pink background */
+        border-color: var(--primary-red);
+    }
+    
+    .plan-badge {
+        position: absolute;
+        top: -15px;
+        right: 20px;
+        background: var(--primary-red);
+        color: #fff;
+        font-weight: bold;
+        padding: 5px 15px;
+        border: 2px solid #000;
+        transform: rotate(5deg);
+        text-transform: uppercase;
+    }
+
+    .plan-name {
+        font-size: 32px;
+        text-transform: uppercase;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+    
+    .plan-price {
+        font-size: 48px;
+        font-weight: 900;
+        color: var(--primary-blue);
+        margin-bottom: 20px;
+        border-bottom: 4px dashed #000;
+        padding-bottom: 20px;
+    }
+    
+    .plan-price span {
+        font-size: 20px;
+        color: #555;
+    }
+    
+    .plan-features {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 30px;
+    }
+    
+    .plan-features li {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .plan-features li::before {
+        content: '✔';
+        color: #fff;
+        background: #000;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 14px;
+    }
+    
+    .subscribe-btn {
+        width: 100%;
+        padding: 15px;
+        font-size: 24px;
+        font-weight: bold;
+        text-transform: uppercase;
+        border: 4px solid #000;
+        box-shadow: 4px 4px 0px #000;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: var(--primary-yellow);
+        color: #000;
+    }
+    
+    .subscribe-btn:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0px #000;
+        background: #000;
+        color: #fff;
+    }
+    
+    .active-badge {
+        background: var(--primary-blue);
+        color: #fff;
+        padding: 15px;
+        font-size: 24px;
+        font-weight: bold;
+        text-transform: uppercase;
+        border: 4px solid #000;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+</style>
+
+<div class="membership-container">
+    <h1 class="membership-header" data-aos="fade-down">Join the Elite Club 🌟</h1>
+    <p class="membership-subtitle">Unlock massive discounts, free shipping, and priority support.</p>
+
+    <div class="plans-grid">
+        {% for plan in plans %}
+        <div class="plan-card {% if plan.billing_cycle == 'yearly' %}premium{% endif %}" data-aos="fade-up">
+            {% if plan.billing_cycle == 'yearly' %}
+                <div class="plan-badge">Best Value!</div>
+            {% endif %}
+            <h2 class="plan-name">{{ plan.name }}</h2>
+            <div class="plan-price">
+                ₹{{ plan.amount }} <span>/ {{ plan.billing_cycle }}</span>
+            </div>
+            <ul class="plan-features">
+                {% if plan.discount_percentage > 0 %}
+                <li>{{ plan.discount_percentage }}% Extra Discount on ALL Orders</li>
+                {% endif %}
+                {% if plan.free_delivery %}
+                <li>Unlimited Free Delivery 🚚</li>
+                {% endif %}
+                {% if plan.priority_support %}
+                <li>Priority Customer Support ⚡</li>
+                {% endif %}
+                {% if plan.early_access %}
+                <li>Early Access to Sales & New Drops</li>
+                {% endif %}
+                {% if plan.premium_access %}
+                <li>Access to Premium Only Products</li>
+                {% endif %}
+            </ul>
+            
+            {% if active_sub and active_sub.subscription_plan.id == plan.id %}
+                <div class="active-badge">Currently Active</div>
+            {% else %}
+                <button class="subscribe-btn" onclick="initiateSubscription('{{ plan.id }}')">
+                    Subscribe Now
+                </button>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    function initiateSubscription(planId) {
+        if (!'{{ user.is_authenticated }}' || '{{ user.is_authenticated }}' === 'False') {
+            window.location.href = "{% url 'login' %}?next={% url 'membership' %}";
+            return;
+        }
+
+        fetch("{% url 'api_subscribe' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({ plan_id: planId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                showCustomAlert("Error: " + data.error);
+                return;
+            }
+
+            var options = {
+                "key": data.key_id,
+                "subscription_id": data.subscription_id,
+                "name": "Velora Premium",
+                "description": "Premium Membership",
+                "handler": function (response){
+                    showCustomAlert('Subscription Successful!').then(() => {
+                        window.location.href = "{% url 'profile' %}";
+                    });
+                },
+                "prefill": {
+                    "name": data.user_name,
+                    "email": data.user_email,
+                },
+                "theme": {
+                    "color": "#ef476f"
+                }
+            };
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+        })
+        .catch(err => {
+            showCustomAlert('Failed to initiate subscription');
+            console.error(err);
+        });
+    }
+</script>
+
+{% endblock %}

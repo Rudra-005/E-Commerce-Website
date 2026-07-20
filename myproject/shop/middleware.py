@@ -102,3 +102,63 @@ class JWTAuthenticationMiddleware:
             )
 
         return response
+import time
+
+def force_sync_session_cart(request):
+    """Force synchronize all items in the session cart to the database immediately."""
+    if not getattr(request, 'user', None) or not request.user.is_authenticated:
+        return
+        
+    cart = request.session.get('session_cart', {})
+    if not cart:
+        return
+        
+    from shop.models import Cart
+    to_remove = []
+    
+    for pid, data in cart.items():
+        c, created = Cart.objects.get_or_create(user=request.user, product_id=pid)
+        if not created:
+            c.quantity += data.get('quantity', 1)
+        else:
+            c.quantity = data.get('quantity', 1)
+        c.save()
+        to_remove.append(pid)
+        
+    for pid in to_remove:
+        del cart[pid]
+        
+    request.session['session_cart'] = cart
+    request.session.modified = True
+
+class CartSessionSyncMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if getattr(request, 'user', None) and request.user.is_authenticated:
+            cart = request.session.get('session_cart', {})
+            now = time.time()
+            to_remove = []
+            modified = False
+            
+            for pid, data in cart.items():
+                if now - data.get('added_at', now) > 300: # 5 minutes
+                    from shop.models import Cart
+                    c, created = Cart.objects.get_or_create(user=request.user, product_id=pid)
+                    if not created:
+                        c.quantity += data.get('quantity', 1)
+                    else:
+                        c.quantity = data.get('quantity', 1)
+                    c.save()
+                    to_remove.append(pid)
+                    modified = True
+            
+            for pid in to_remove:
+                del cart[pid]
+                
+            if modified:
+                request.session['session_cart'] = cart
+                request.session.modified = True
+                
+        return self.get_response(request)

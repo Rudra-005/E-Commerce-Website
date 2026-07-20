@@ -68,13 +68,18 @@
 
 <script>
     async function processCancellation(id, action) {
-        let notes = '';
         if (action === 'reject') {
-            notes = prompt("Reason for rejection:");
-            if (notes === null) return;
+            // Use the specialized rejection modal which handles its own API call and validation
+            const success = await window.ModalSystem.showRejectionModal(id, `/api/admin/cancellations/${id}/process/`, '{{ csrf_token }}');
+            if (success) {
+                // Modal handles the toast, just optionally reload or update DOM after a short delay
+                setTimeout(() => window.location.reload(), 1500);
+            }
+            return;
         }
         
-        if (!confirm(`Are you sure you want to ${action} this cancellation?`)) return;
+        let confirmed = await showCustomConfirm(`Are you sure you want to ${action} this cancellation?`);
+        if (!confirmed) return;
 
         try {
             const res = await fetch(`/api/admin/cancellations/${id}/process/`, {
@@ -83,17 +88,17 @@
                     'Content-Type': 'application/json',
                     'X-CSRFToken': '{{ csrf_token }}'
                 },
-                body: JSON.stringify({ action: action, notes: notes })
+                body: JSON.stringify({ action: action, notes: '' })
             });
             const data = await res.json();
             if (data.success) {
-                alert(data.message);
-                window.location.reload();
+                showCustomToast(data.message, 'success');
+                setTimeout(() => window.location.reload(), 1500);
             } else {
-                alert('Error: ' + data.error);
+                showCustomToast('Error: ' + data.error, 'error');
             }
         } catch(err) {
-            alert('Error processing cancellation.');
+            showCustomToast('Error processing cancellation.', 'error');
         }
     }
 </script>

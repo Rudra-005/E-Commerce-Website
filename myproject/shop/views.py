@@ -1,6 +1,7 @@
 import json
 import random
 import logging
+import time
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
@@ -422,13 +423,15 @@ class AddToCartView(View):
             messages.error(request, f"{product.name} is currently out of stock!")
             return redirect("product_detail", product_id=product.id)
 
-        cart_item, created = Cart.objects.get_or_create(
-            user=request.user,
-            product=product,
-        )
-        if not created:
-            cart_item.quantity += 1
-            cart_item.save()
+        pid_str = str(product_id)
+        cart = request.session.get('session_cart', {})
+        if pid_str in cart:
+            cart[pid_str]['quantity'] += 1
+        else:
+            cart[pid_str] = {'quantity': 1, 'added_at': time.time()}
+        
+        request.session['session_cart'] = cart
+        request.session.modified = True
             
         track_interaction(request.user, product, 'cart')
         
@@ -438,6 +441,8 @@ class AddToCartView(View):
 @method_decorator(jwt_login_required, name="dispatch")
 class CartView(View):
     def get(self, request):
+        from shop.middleware import force_sync_session_cart
+        force_sync_session_cart(request)
         cart_items = Cart.objects.filter(user=request.user)
         total = sum(item.product.price * item.quantity for item in cart_items)
         return render(request, "shop/cart.html", {
@@ -449,6 +454,8 @@ class CartView(View):
 @method_decorator(login_required(login_url="/login/"), name="dispatch")
 class IncreaseQuantityView(View):
     def get(self, request, product_id):
+        from shop.middleware import force_sync_session_cart
+        force_sync_session_cart(request)
         item = get_object_or_404(Cart, user=request.user, product_id=product_id)
         item.quantity += 1
         item.save()
@@ -458,6 +465,8 @@ class IncreaseQuantityView(View):
 @method_decorator(login_required(login_url="/login/"), name="dispatch")
 class DecreaseQuantityView(View):
     def get(self, request, product_id):
+        from shop.middleware import force_sync_session_cart
+        force_sync_session_cart(request)
         item = get_object_or_404(Cart, user=request.user, product_id=product_id)
         item.quantity -= 1
         if item.quantity <= 0:
@@ -470,6 +479,8 @@ class DecreaseQuantityView(View):
 @method_decorator(login_required(login_url="/login/"), name="dispatch")
 class RemoveFromCartView(View):
     def get(self, request, product_id):
+        from shop.middleware import force_sync_session_cart
+        force_sync_session_cart(request)
         Cart.objects.filter(user=request.user, product_id=product_id).delete()
         return redirect("cart")
 
@@ -477,6 +488,8 @@ class RemoveFromCartView(View):
 @method_decorator(login_required(login_url="/login/"), name="dispatch")
 class ClearCartView(View):
     def get(self, request):
+        from shop.middleware import force_sync_session_cart
+        force_sync_session_cart(request)
         Cart.objects.filter(user=request.user).delete()
         return redirect("cart")
 
@@ -602,6 +615,8 @@ class SignupView(View):
 @method_decorator(jwt_login_required, name="dispatch")
 class CheckoutView(View):
     def get(self, request):
+        from shop.middleware import force_sync_session_cart
+        force_sync_session_cart(request)
         from .models import ShippingAddress, Order, OrderItem
 
         cart_items = Cart.objects.filter(user=request.user)
@@ -609,6 +624,10 @@ class CheckoutView(View):
             return redirect("cart")
 
         total = sum(item.product.price * item.quantity for item in cart_items)
+        
+        from shop.services.subscription_service import calculate_subscription_benefits
+        benefits = calculate_subscription_benefits(total, request.user)
+
         saved_addresses = Address.objects.filter(user_profile__user=request.user)
         default_address = saved_addresses.filter(is_default=True).first()
         if not default_address:
@@ -617,18 +636,26 @@ class CheckoutView(View):
         return render(request, "shop/checkout.html", {
             "cart_items": cart_items,
             "total": total,
+            "benefits": benefits,
+            "final_amount": benefits['final_total'] + benefits['shipping_charge'],
             "saved_addresses": saved_addresses,
             "default_address": default_address,
         })
 
     def post(self, request):
+        from shop.middleware import force_sync_session_cart
+        force_sync_session_cart(request)
         from .models import ShippingAddress, Order, OrderItem
 
         cart_items = Cart.objects.filter(user=request.user)
         if not cart_items.exists():
             return redirect("cart")
 
-        total = sum(item.product.price * item.quantity for item in cart_items)
+        cart_subtotal = sum(item.product.price * item.quantity for item in cart_items)
+        
+        from shop.services.subscription_service import calculate_subscription_benefits
+        benefits = calculate_subscription_benefits(cart_subtotal, request.user)
+        total = benefits['final_total'] + benefits['shipping_charge']
 
         try:
             data = json.loads(request.body)
@@ -695,14 +722,31 @@ class CheckoutView(View):
                     return JsonResponse({"error": reason}, status=400)
                 
                 # Create Order for COD
-                order = Order.objects.create(
-                    user=request.user,
-                    shipping_address=shipping_address,
-                    total_price=total,
-                    status="Pending",
-                    payment_method="COD",
-                    payment_status="Pending"
-                )
+                from django.db import transaction
+                from shop.services.inventory_service import InventoryService, OutOfStockError
+                
+                try:
+                    with transaction.atomic():
+                        order = Order.objects.create(
+                            user=request.user,
+                            shipping_address=shipping_address,
+                            total_price=total,
+                            status="Pending",
+                            payment_method="COD",
+                            payment_status="Pending",
+                            subscription_used=benefits['subscription_used'],
+                            membership_discount=benefits['membership_discount'],
+                            shipping_discount=benefits['shipping_discount']
+                        )
+                        
+                        InventoryService.reserve_stock(
+                            reference_id=f"ORDER_{order.id}",
+                            user=request.user,
+                            items=cart_items,
+                            idempotency_key_prefix="COD"
+                        )
+                except OutOfStockError as e:
+                    return JsonResponse({"error": str(e)}, status=400)
 
                 # Create OrderItems
                 for item in cart_items:
@@ -713,9 +757,23 @@ class CheckoutView(View):
 
                 cart_items.delete()
 
-                # Generate Invoice for COD asynchronously
-                from .tasks import generate_invoice_task
-                generate_invoice_task.delay(order.id)
+                # Generate Invoice for COD asynchronously without Celery to avoid timeouts
+                try:
+                    import threading
+                    from shop.services.invoice_service import InvoiceService
+                    
+                    def generate_invoice_bg_cod(oid):
+                        try:
+                            from shop.models import Order
+                            order_obj = Order.objects.get(id=oid)
+                            if not hasattr(order_obj, 'invoice'):
+                                InvoiceService.generate_invoice(order_obj)
+                        except Exception as e:
+                            print(f"Background invoice error: {e}")
+                            
+                    threading.Thread(target=generate_invoice_bg_cod, args=(order.id,)).start()
+                except Exception as e:
+                    print(f"Failed to start invoice thread for COD: {e}")
 
                 return JsonResponse({
                     "status": "success",
@@ -738,15 +796,32 @@ class CheckoutView(View):
                 })
 
                 # Create Order for Online Payment
-                order = Order.objects.create(
-                    user=request.user,
-                    shipping_address=shipping_address,
-                    total_price=total,
-                    status="Pending",
-                    payment_method="Online",
-                    payment_status="Pending",
-                    razorpay_order_id=razorpay_order['id']
-                )
+                from django.db import transaction
+                from shop.services.inventory_service import InventoryService, OutOfStockError
+                
+                try:
+                    with transaction.atomic():
+                        order = Order.objects.create(
+                            user=request.user,
+                            shipping_address=shipping_address,
+                            total_price=total,
+                            status="Pending",
+                            payment_method="Online",
+                            payment_status="Pending",
+                            razorpay_order_id=razorpay_order['id'],
+                            subscription_used=benefits['subscription_used'],
+                            membership_discount=benefits['membership_discount'],
+                            shipping_discount=benefits['shipping_discount']
+                        )
+                        
+                        InventoryService.reserve_stock(
+                            reference_id=f"ORDER_{order.id}",
+                            user=request.user,
+                            items=cart_items,
+                            idempotency_key_prefix="ONLINE"
+                        )
+                except OutOfStockError as e:
+                    return JsonResponse({"error": str(e)}, status=400)
 
                 # Create OrderItems
                 for item in cart_items:
@@ -754,8 +829,6 @@ class CheckoutView(View):
                         order=order, product=item.product, quantity=item.quantity, price=item.product.price
                     )
                     track_interaction(request.user, item.product, 'purchase')
-
-                cart_items.delete()
 
                 return JsonResponse({
                     "status": "success",
@@ -835,17 +908,47 @@ class VerifyPaymentView(View):
             order.razorpay_payment_id = razorpay_payment_id
             order.razorpay_signature = razorpay_signature
             order.save()
+            
+            from shop.services.inventory_service import InventoryService
+            InventoryService.commit_stock(
+                reference_id=f"ORDER_{order.id}",
+                idempotency_key_prefix="VERIFY"
+            )
 
-            # Automatically generate invoice asynchronously
-            from .tasks import generate_invoice_task
-            generate_invoice_task.delay(order.id)
+            # Generate invoice asynchronously without Celery to avoid connection timeouts
+            try:
+                import threading
+                from shop.services.invoice_service import InvoiceService
+                
+                def generate_invoice_bg(oid):
+                    try:
+                        from shop.models import Order
+                        order_obj = Order.objects.get(id=oid)
+                        if not hasattr(order_obj, 'invoice'):
+                            InvoiceService.generate_invoice(order_obj)
+                    except Exception as e:
+                        print(f"Background invoice error: {e}")
+                        
+                threading.Thread(target=generate_invoice_bg, args=(order.id,)).start()
+            except Exception as e:
+                print(f"Failed to start invoice thread: {e}")
+
+            # Clear the cart after successful payment
+            from .models import Cart
+            Cart.objects.filter(user=request.user).delete()
 
             return JsonResponse({"status": "success", "message": "Payment verified successfully!"})
 
         except razorpay.errors.SignatureVerificationError:
+            # Note: A failed verification doesn't automatically release stock here,
+            # because the user might try paying again. The order stays Pending.
+            # If they never pay, Celery Checkout Expiration or COD cancellation handles it.
             return JsonResponse({"error": "Payment signature verification failed."}, status=400)
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             return JsonResponse({"error": str(e)}, status=500)
+
 
 
 # =====================================
@@ -941,18 +1044,9 @@ class NotifyStockView(View):
 # =====================================
 
 class SendOTPTestView(View):
+    """Test view — email sending disabled to prevent spam."""
     def get(self, request):
-        otp = random.randint(100000, 999999)
-
-        send_mail(
-            "Velora Email Verification",
-            f"Your OTP is {otp}",
-            settings.EMAIL_HOST_USER,
-            ["singh005rudra@gmail.com"],
-            fail_silently=False,
-        )
-
-        return JsonResponse({"message": "OTP Sent", "otp": otp})
+        return JsonResponse({"message": "OTP test endpoint is disabled.", "status": "disabled"})
 
 
 class VerifyOTPView(View):

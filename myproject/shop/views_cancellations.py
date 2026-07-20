@@ -92,6 +92,14 @@ class AdminProcessCancellationAPIView(UserPassesTestMixin, View):
                 cancellation.admin_notes = notes
                 cancellation.order_item.status = 'Cancelled'
                 cancellation.order_item.save()
+                
+                # Release stock via InventoryService
+                from shop.services.inventory_service import InventoryService
+                InventoryService.release_stock(
+                    reference_id=f"ORDER_{cancellation.order.id}",
+                    idempotency_key_prefix=f"ADMIN_CANCEL_{cancellation.id}",
+                    release_reason="Admin Approved Cancellation"
+                )
             elif action == 'reject':
                 cancellation.status = 'Rejected'
                 cancellation.admin_notes = notes

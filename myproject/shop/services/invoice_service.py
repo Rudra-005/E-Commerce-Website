@@ -34,9 +34,11 @@ class InvoiceService:
             # Simple tax calculation (e.g. 18% GST overall logic if you want to be precise,
             # but usually subtotal includes tax or we calculate it).
             # For simplicity matching Flipkart:
-            # Let's say shipping is 50 if subtotal < 500, else 0
-            shipping_charge = 50.00 if subtotal < 500 else 0.00
-            discount = 0.00
+            # Let's say shipping is 50 if subtotal < 500, else 0. But we respect order.shipping_discount
+            base_shipping = 50.00 if subtotal < 500 else 0.00
+            shipping_charge = 0.00 if order.subscription_used and getattr(order, 'shipping_discount', 0) > 0 else base_shipping
+            
+            discount = float(getattr(order, 'membership_discount', 0))
             
             # Grand total should match order.total_price ideally, 
             # but since order.total_price is what the user paid:
@@ -68,6 +70,9 @@ class InvoiceService:
                 gst_number="29ABCDE1234F1Z5", # Mock Company GST
                 shipping_address=shipping_addr_text,
                 billing_address=shipping_addr_text, # Assuming same for now
+                subscription_used=getattr(order, 'subscription_used', False),
+                membership_discount=getattr(order, 'membership_discount', 0),
+                shipping_discount=getattr(order, 'shipping_discount', 0),
             )
 
             # 4. Generate PDF

@@ -259,7 +259,7 @@
                                             Toggle
                                         </button>
                                     </form>
-                                    <form method="post" action="{% url 'admin_email_campaigns' %}" style="margin: 0; display: inline;" onsubmit="return confirm('Are you sure you want to delete this campaign?');">
+                                    <form method="post" action="{% url 'admin_email_campaigns' %}" style="margin: 0; display: inline;" onsubmit="event.preventDefault(); showCustomConfirm('Are you sure you want to delete this campaign?').then(res => { if(res) this.submit(); });">
                                         {% csrf_token %}
                                         <input type="hidden" name="action" value="delete_campaign">
                                         <input type="hidden" name="campaign_id" value="{{ camp.id }}">

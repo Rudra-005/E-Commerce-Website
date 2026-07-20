@@ -153,6 +153,11 @@
                         💳 {{ order.payment_method }} 
                         ({% if order.payment_status == 'Paid' %}<span style="color: #059669;">Paid</span>{% elif order.payment_status == 'Failed' %}<span style="color: #dc2626;">Failed</span>{% else %}<span style="color: #d97706;">{{ order.payment_status }}</span>{% endif %})
                     </span>
+                    {% if order.subscription_used %}
+                    <span style="font-size: 13px; font-weight: bold; color: var(--primary-blue); background: #e0f2fe; padding: 3px 6px; border-radius: 4px; border: 1px solid var(--primary-blue);">
+                        ⭐ Premium Saved ₹{{ order.membership_discount|add:order.shipping_discount }}
+                    </span>
+                    {% endif %}
                 </div>
             </div> <!-- Close order-header -->
 
@@ -247,7 +252,7 @@
                             </div>
                         {% endwith %}
                     {% elif order.status == 'Confirmed' or order.status == 'Delivered' %}
-                        <form action="{% url 'request_refund' order.id %}" method="POST" style="display: inline-flex; align-items: center; gap: 10px;" onsubmit="return confirm('Are you sure you want to request a refund for this order?');">
+                        <form action="{% url 'request_refund' order.id %}" method="POST" style="display: inline-flex; align-items: center; gap: 10px;" onsubmit="event.preventDefault(); showCustomConfirm('Are you sure you want to request a refund for this order?').then(res => { if(res) this.submit(); });">
                             {% csrf_token %}
                             <input type="text" name="reason" placeholder="Reason for refund..." required style="padding: 8px; border: 2px solid #000; outline: none; font-size: 14px; width: 250px;">
                             <button type="submit" class="comic-btn" style="background: var(--primary-yellow); color: #000; padding: 8px 15px; font-size: 16px;">Request Refund 💸</button>
@@ -394,7 +399,7 @@
         const otherReason = document.getElementById('cancelOtherReason').value;
         
         if (!reason) {
-            alert('Please select a cancellation reason.');
+            await showCustomAlert('Please select a cancellation reason.');
             return;
         }
         
@@ -414,15 +419,15 @@
             });
             const data = await res.json();
             if (data.success) {
-                alert('Cancellation requested successfully!');
+                await showCustomAlert('Cancellation requested successfully!');
                 window.location.reload();
             } else {
-                alert(data.error || 'Failed to cancel item.');
+                await showCustomAlert(data.error || 'Failed to cancel item.');
                 btn.innerText = originalText;
                 btn.disabled = false;
             }
         } catch(err) {
-            alert('Error processing request.');
+            await showCustomAlert('Error processing request.');
             btn.innerText = originalText;
             btn.disabled = false;
         }

@@ -51,6 +51,15 @@ class Product(models.Model):
         default=0
     )
 
+    early_access_only = models.BooleanField(
+        default=False,
+        help_text="Only available for premium members"
+    )
+
+    # Added for analytics background task
+    popularity_score = models.FloatField(
+        default=0.0
+    )
 
 
     @property
@@ -129,6 +138,12 @@ class Cart(models.Model):
     quantity = models.PositiveIntegerField(
         default=1
     )
+
+    # Added for checkout expiration and guest cart cleanup
+    session_key = models.CharField(max_length=40, blank=True, null=True)
+    status = models.CharField(max_length=20, default="ACTIVE")
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
 
     @property
     def subtotal(self):
@@ -334,11 +349,17 @@ class Order(models.Model):
     # Payment Fields
     payment_method = models.CharField(max_length=50, default="Online")
     payment_status = models.CharField(max_length=50, default="Pending")
+    cod_verified = models.BooleanField(default=False)
     
     # Razorpay Payment Fields
     razorpay_order_id = models.CharField(max_length=100, blank=True, null=True)
     razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
     razorpay_signature = models.CharField(max_length=200, blank=True, null=True)
+
+    # Subscription Tracking
+    subscription_used = models.BooleanField(default=False)
+    membership_discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    shipping_discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     @property
     def get_refund(self):
@@ -599,6 +620,11 @@ class Invoice(models.Model):
     payment_status = models.CharField(max_length=50, default="Paid")
     gst_number = models.CharField(max_length=20, blank=True, null=True)
     
+    # Subscription Tracking
+    subscription_used = models.BooleanField(default=False)
+    membership_discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    shipping_discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    
     # Addresses (Snapshot at time of order)
     billing_address = models.TextField()
     shipping_address = models.TextField()
@@ -650,3 +676,110 @@ class AIEmailLog(models.Model):
 
     def __str__(self):
         return f"{self.campaign.topic} - {self.language} ({self.status})"
+
+# ==========================================
+# Subscription System Models
+# ==========================================
+
+class SubscriptionPlan(models.Model):
+    name = models.CharField(max_length=100)
+    razorpay_plan_id = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    billing_cycle = models.CharField(
+        max_length=20,
+        choices=[('monthly', 'Monthly'), ('yearly', 'Yearly')]
+    )
+    
+    # Benefits
+    discount_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
+    free_delivery = models.BooleanField(default=False)
+    priority_support = models.BooleanField(default=False)
+    early_access = models.BooleanField(default=False)
+    premium_access = models.BooleanField(default=False)
+    
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+class UserSubscription(models.Model):
+    STATUS_CHOICES = (
+        ('ACTIVE', 'Active'),
+        ('PENDING', 'Pending'),
+        ('CANCELLED', 'Cancelled'),
+        ('EXPIRED', 'Expired'),
+        ('PAUSED', 'Paused'),
+    )
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscriptions')
+    subscription_plan = models.ForeignKey(SubscriptionPlan, on_delete=models.PROTECT)
+    
+    razorpay_subscription_id = models.CharField(max_length=100, unique=True, null=True, blank=True)
+    razorpay_customer_id = models.CharField(max_length=100, blank=True, null=True)
+    
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    
+    start_date = models.DateTimeField(null=True, blank=True)
+    end_date = models.DateTimeField(null=True, blank=True)
+    next_billing_date = models.DateTimeField(null=True, blank=True)
+    
+    auto_renew = models.BooleanField(default=True)
+    cancel_at_cycle_end = models.BooleanField(default=False)
+    
+    payment_count = models.IntegerField(default=0)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.subscription_plan.name} ({self.status})"
+
+# ==========================================
+# Task-specific Models (Coupon & Notification)
+# ==========================================
+
+class Coupon(models.Model):
+    code = models.CharField(max_length=50, unique=True)
+    discount_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
+    is_active = models.BooleanField(default=True)
+    expires_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.code} ({self.discount_percentage}%)"
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    archived = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Notification for {self.user.username}"
+
+# ==========================================
+# Inventory Transactions
+# ==========================================
+
+class InventoryTransaction(models.Model):
+    TRANSACTION_TYPES = [
+        ('RESERVED', 'Reserved'),
+        ('COMMITTED', 'Committed'),
+        ('RELEASED', 'Released'),
+        ('RESTOCKED', 'Restocked'),
+    ]
+
+    reference_id = models.CharField(max_length=100, help_text="Order ID or Cart ID")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='inventory_transactions')
+    quantity = models.IntegerField()
+    transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES)
+    idempotency_key = models.CharField(max_length=255, unique=True, help_text="Ensures idempotent operations")
+    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.transaction_type} {self.quantity} of {self.product.name} ({self.reference_id})"

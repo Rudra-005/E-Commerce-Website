@@ -290,12 +290,12 @@ body {
             if (data.access_token) {
                 window.location.href = "/";
             } else {
-                alert("Authentication failure: " + (data.error || "Unknown"));
+                showCustomAlert("Authentication failure: " + (data.error || "Unknown"));
             }
         })
         .catch(err => {
-            console.error("Error connecting to backend authentication:", err);
-            alert("Connection error: " + err.message);
+            console.error(err);
+            showCustomAlert("Connection error: " + err.message);
         });
     }
 
