@@ -392,3 +392,4 @@ dj-database-url
 gunicorn
 uvicorn
 whitenoise
+honcho
