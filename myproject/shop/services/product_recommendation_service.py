@@ -1,6 +1,5 @@
 import os
-import faiss
-import numpy as np
+# ML Libraries imported locally inside methods to save RAM
 import logging
 from django.conf import settings
 from shop.models import Product
@@ -19,6 +18,9 @@ class ProductRecommendationService:
             return
 
         try:
+            import faiss
+            import numpy as np
+            
             base_dir = settings.BASE_DIR
             emb_path = os.path.join(base_dir, 'ml_data', 'embeddings', 'product_embeddings.npy')
             id_path = os.path.join(base_dir, 'ml_data', 'embeddings', 'product_ids.npy')
@@ -57,10 +59,10 @@ class ProductRecommendationService:
             
         product_id_str = str(product_id)
         
-        # Find the index of the queried product
         try:
+            import numpy as np
             idx = np.where(cls._product_ids == product_id_str)[0][0]
-        except IndexError:
+        except (IndexError, ImportError):
             return [] # Product not in FAISS index
             
         # Reconstruct the vector from the FAISS index

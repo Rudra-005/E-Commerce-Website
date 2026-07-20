@@ -68,7 +68,6 @@ ecdsa
 email-validator
 exceptiongroup
 executing
-faiss-cpu
 fastapi
 fastapi-cli
 fastjsonschema
@@ -195,7 +194,6 @@ neo4j
 nest-asyncio
 networkx
 nltk
-numpy
 oauthlib
 onnxruntime
 openai
@@ -212,7 +210,6 @@ orjson
 ormsgpack
 overrides
 packaging>=23.2,<25
-pandas
 pandocfilters
 parso
 passlib
@@ -286,11 +283,9 @@ rpds-py
 rsa
 s3transfer
 safetensors
-scikit-learn
 scipy
 seaborn
 Send2Trash
-sentence-transformers
 service-identity
 shellingham
 six
@@ -298,9 +293,6 @@ smart-open
 smmap
 sniffio
 soupsieve
-spacy
-spacy-legacy
-spacy-loggers
 SQLAlchemy
 sqlite-vec
 sqlparse
@@ -322,10 +314,6 @@ tbb
 tenacity
 tensorboard
 tensorboard-data-server
-tensorflow
-tensorflow-estimator
-tensorflow-io-gcs-filesystem
-tensorflow-recommenders
 termcolor
 textblob
 textstat
@@ -337,11 +325,9 @@ tinycss2
 tokenizers
 toml
 tomli
-torch
 tornado
 tqdm
 traitlets
-transformers
 Twisted
 txaio
 typer

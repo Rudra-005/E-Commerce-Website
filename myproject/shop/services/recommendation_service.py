@@ -1,6 +1,5 @@
 import os
-import faiss
-import numpy as np
+# ML Libraries imported locally inside methods to save RAM
 import logging
 from django.conf import settings
 from django.db.models import Count, Avg, Case, When
@@ -26,6 +25,9 @@ class RecommendationEngine:
             return
 
         try:
+            import faiss
+            import numpy as np
+            
             base_dir = settings.BASE_DIR
             emb_dir = os.path.join(base_dir, 'ml_data', 'embeddings')
             p_emb_path = os.path.join(emb_dir, 'product_embeddings.npy')
@@ -42,6 +44,7 @@ class RecommendationEngine:
             p_embeddings = np.load(p_emb_path).astype('float32')
             cls._product_ids = np.load(p_id_path, allow_pickle=True)
             faiss.normalize_L2(p_embeddings) # For inner product -> cosine similarity
+
             
             dimension = p_embeddings.shape[1]
             cls._product_faiss_index = faiss.IndexFlatIP(dimension)
@@ -90,9 +93,10 @@ class RecommendationEngine:
         product_id_str = str(product_id)
         
         try:
+            import numpy as np
             idx = np.where(cls._product_ids == product_id_str)[0][0]
             query_vector = cls._product_faiss_index.reconstruct(int(idx)).reshape(1, -1)
-        except (IndexError, RuntimeError, Exception):
+        except (IndexError, RuntimeError, Exception, ImportError):
             return cls._get_fallback_similar_products(product_id, limit)
             
         # Search FAISS for more items (since we will filter out wrong categories)
