@@ -206,12 +206,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # EMAIL CONFIG
 
 EMAIL_BACKEND = "shop.mail_backends.IPv4EmailBackend"
-
 EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
+EMAIL_PORT = 465
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
 EMAIL_TIMEOUT = 10  # Prevent hanging on Render
 
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "shuttler942@gmail.com")
