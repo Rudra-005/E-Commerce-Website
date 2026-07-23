@@ -597,13 +597,17 @@ class SignupView(View):
         request.session["signup_email"] = email
         request.session["signup_password"] = password1
 
-        send_mail(
-            "Velora Email Verification",
-            f"Your OTP is {otp}",
-            settings.EMAIL_HOST_USER,
-            [email],
-            fail_silently=False,
-        )
+        import threading
+        threading.Thread(
+            target=send_mail,
+            args=(
+                "Velora Email Verification",
+                f"Your OTP is {otp}",
+                settings.EMAIL_HOST_USER,
+                [email]
+            ),
+            kwargs={'fail_silently': False}
+        ).start()
 
         return redirect("verify_otp")
 
@@ -1367,13 +1371,17 @@ class ForgotPasswordView(View):
         request.session["reset_email"] = email
 
         # Send OTP email
-        send_mail(
-            "Velora Password Reset OTP",
-            f"Your password reset OTP is: {otp}\n\nThis OTP is valid for 10 minutes. If you did not request a password reset, please ignore this email.",
-            settings.EMAIL_HOST_USER,
-            [email],
-            fail_silently=False,
-        )
+        import threading
+        threading.Thread(
+            target=send_mail,
+            args=(
+                "Velora Password Reset OTP",
+                f"Your password reset OTP is: {otp}\n\nThis OTP is valid for 10 minutes. If you did not request a password reset, please ignore this email.",
+                settings.EMAIL_HOST_USER,
+                [email]
+            ),
+            kwargs={'fail_silently': False}
+        ).start()
 
         return redirect("forgot_password_verify_otp")
 
