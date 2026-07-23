@@ -156,13 +156,7 @@ def check_ai_campaigns():
                 client = get_client()
                 users = User.objects.filter(email__isnull=False).exclude(email="")
                 
-                import threading
-                thread = threading.Thread(
-                    target=AIEmailCampaignService._run_single_campaign,
-                    args=(campaign, client, users)
-                )
-                thread.daemon = True
-                thread.start()
+                AIEmailCampaignService._run_single_campaign(campaign, client, users)
                 
     except Exception as e:
         logger.error(f"Error checking AI campaigns: {e}")

@@ -132,6 +132,13 @@ class AIEmailCampaignService:
         Runs all active campaigns asynchronously in a separate thread.
         This replaces the `.delay()` from Celery.
         """
-        thread = threading.Thread(target=AIEmailCampaignService.run_all_active_campaigns)
-        thread.daemon = True
+        def target():
+            try:
+                AIEmailCampaignService.run_all_active_campaigns()
+            finally:
+                from django.db import connection
+                connection.close()
+
+        thread = threading.Thread(target=target)
+        thread.daemon = False
         thread.start()

@@ -148,7 +148,7 @@ class ChatAPIView(View):
                     messages = build_messages(chat_history[:-1], user_message, product_context, user_context_str)
 
                     completion = client.chat.completions.create(
-                        model="llama-3.1-8b-instant",
+                        model="llama-3.3-70b-versatile",
                         messages=messages,
                         temperature=0.7,
                         max_tokens=1024,

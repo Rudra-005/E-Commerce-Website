@@ -580,13 +580,17 @@ class SignupView(View):
             ctx["error"] = "Passwords do not match"
             return render(request, "shop/signup.html", ctx)
 
+        errors = []
         if User.objects.filter(username=username).exists():
-            ctx["error"] = "Username already exists. Choose another username."
-            return render(request, "shop/signup.html", ctx)
+            errors.append("Username already exists.")
 
         if User.objects.filter(email__iexact=email).exists():
-            ctx["error"] = "An account with this email already exists."
-            return render(request, "shop/signup.html", ctx)
+            errors.append("Email address already exists.")
+
+        if errors:
+            for error_msg in errors:
+                messages.error(request, error_msg)
+            return redirect("signup")
 
         otp = str(random.randint(100000, 999999))
 
@@ -597,17 +601,20 @@ class SignupView(View):
         request.session["signup_email"] = email
         request.session["signup_password"] = password1
 
-        import threading
-        threading.Thread(
-            target=send_mail,
-            args=(
-                "Velora Email Verification",
-                f"Your OTP is {otp}",
-                settings.EMAIL_HOST_USER,
-                [email]
-            ),
-            kwargs={'fail_silently': False}
-        ).start()
+        try:
+            from django.core.mail import EmailMessage
+            msg = EmailMessage(
+                subject="Velora Email Verification",
+                body=f"Your OTP is {otp}",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[email]
+            )
+            msg.send(fail_silently=False)
+            logger.info(f"Successfully sent OTP to {email}")
+        except Exception as e:
+            logger.error(f"Failed to send OTP email to {email}: {e}")
+            messages.error(request, "Failed to send verification email. Please try again later.")
+            return redirect("signup")
 
         return redirect("verify_otp")
 
