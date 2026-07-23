@@ -610,12 +610,15 @@ class SignupView(View):
                 to=[email]
             )
             msg.send(fail_silently=False)
-            logger.info(f"Successfully sent OTP to {email}")
         except Exception as e:
             logger.error(f"Failed to send OTP email to {email}: {e}")
+            if settings.DEBUG and ("timed out" in str(e).lower() or "504" in str(e)):
+                messages.warning(request, f"Render blocked outbound emails. [DEBUG MODE] Your OTP is: {otp}")
+                return redirect("verify_otp")
+            
             if "535" in str(e) or "Authentication" in str(e):
                 messages.error(request, "Server Error: SMTP Authentication failed. Check EMAIL_HOST_PASSWORD.")
-            elif "504" in str(e) or "Timeout" in str(e):
+            elif "504" in str(e) or "Timeout" in str(e) or "timed out" in str(e).lower():
                 messages.error(request, "Server Error: SMTP connection timed out. Could not reach email provider.")
             else:
                 messages.error(request, f"Failed to send verification email (Error: {str(e)[:50]}). Please try again.")
