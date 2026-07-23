@@ -80,6 +80,8 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "http://localhost:8000/auth/google/callback/")
 
+MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
