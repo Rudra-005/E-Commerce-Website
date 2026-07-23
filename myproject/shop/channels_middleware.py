@@ -36,7 +36,11 @@ class JWTAuthMiddleware:
         access_token = cookies.get("access_token")
         
         if access_token:
-            scope["user"] = await get_user_from_token(access_token)
+            jwt_user = await get_user_from_token(access_token)
+            if jwt_user.is_authenticated:
+                scope["user"] = jwt_user
+            elif "user" not in scope:
+                scope["user"] = AnonymousUser()
         else:
             if "user" not in scope:
                 scope["user"] = AnonymousUser()
