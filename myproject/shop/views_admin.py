@@ -172,49 +172,6 @@ class AdminEmailCampaignsView(View):
         }
         return render(request, "admin/email_campaigns.html", context)
 
-    def _sync_celery_beat(self, campaign):
-        """Dynamically updates the Celery Beat task interval for the campaign."""
-        from django_celery_beat.models import IntervalSchedule, PeriodicTask
-        
-        # If campaign is not active or deleted, disable the task
-        if not campaign or not campaign.is_active:
-            PeriodicTask.objects.filter(name='Send AI Email Campaign (Every 1 Minute)').update(enabled=False)
-            PeriodicTask.objects.filter(name='Send AI Email Campaign').update(enabled=False)
-            return
-
-        # Translate schedule unit to Celery Beat period
-        period_map = {
-            'Minutes': IntervalSchedule.MINUTES,
-            'Hours': IntervalSchedule.HOURS,
-            'Days': IntervalSchedule.DAYS,
-            'Weeks': IntervalSchedule.DAYS, # Weeks mapped to days * 7
-        }
-
-        period = period_map.get(campaign.schedule_unit, IntervalSchedule.MINUTES)
-        every = campaign.schedule_value
-        if campaign.schedule_unit == 'Weeks':
-            every = campaign.schedule_value * 7
-
-        # Find or create IntervalSchedule
-        schedule, _ = IntervalSchedule.objects.get_or_create(
-            every=every,
-            period=period
-        )
-
-        # Deactivate any legacy 1-min hardcoded beat task to prevent duplicates
-        PeriodicTask.objects.filter(name='Send AI Email Campaign (Every 1 Minute)').update(enabled=False)
-
-        # Create or update main Send AI Email Campaign task
-        periodic_task, created = PeriodicTask.objects.update_or_create(
-            name='Send AI Email Campaign',
-            defaults={
-                'task': 'shop.tasks.send_ai_email_campaign_task',
-                'interval': schedule,
-                'enabled': True,
-                'queue': 'email',
-                'description': f"Triggers AI email campaign '{campaign.topic}' dynamically",
-            }
-        )
 
     def post(self, request):
         from shop.models import AIEmailCampaign, AIEmailLog
@@ -268,9 +225,7 @@ class AdminEmailCampaignsView(View):
                 )
                 messages.success(request, f"New campaign '{topic}' created successfully.")
 
-            # Sync with Celery Beat Scheduler
-            self._sync_celery_beat(campaign)
-                
+            
         elif action == 'toggle_active':
             campaign_id = request.POST.get('campaign_id')
             campaign = AIEmailCampaign.objects.get(id=campaign_id)
@@ -279,11 +234,9 @@ class AdminEmailCampaignsView(View):
                 AIEmailCampaign.objects.all().update(is_active=False)
                 campaign.is_active = True
                 messages.success(request, f"Campaign '{campaign.topic}' is now active.")
-                self._sync_celery_beat(campaign)
             else:
                 campaign.is_active = False
                 messages.success(request, f"Campaign '{campaign.topic}' is now deactivated.")
-                self._sync_celery_beat(campaign)
             campaign.save()
             
         elif action == 'delete_campaign':
@@ -291,19 +244,18 @@ class AdminEmailCampaignsView(View):
             campaign = AIEmailCampaign.objects.get(id=campaign_id)
             topic = campaign.topic
             
-            # If deleting the currently active campaign, make sure to disable Celery Beat task
+            # If deleting the currently active campaign, ensure it's marked inactive
             if campaign.is_active:
                 campaign.is_active = False
-                self._sync_celery_beat(campaign)
                 
             campaign.delete()
             messages.success(request, f"Campaign '{topic}' deleted successfully.")
             
         elif action == 'trigger_now':
-            # Manually trigger the email campaign task asynchronously
-            from shop.tasks import send_ai_email_campaign_task
-            send_ai_email_campaign_task.delay()
-            messages.success(request, "AI Email Campaign task triggered successfully in Celery.")
+            # Manually trigger the email campaign task asynchronously via thread
+            from shop.services.email_campaign_service import AIEmailCampaignService
+            AIEmailCampaignService.run_all_campaigns_async()
+            messages.success(request, "AI Email Campaign task triggered successfully in background thread.")
             
         return redirect('admin_email_campaigns')
 

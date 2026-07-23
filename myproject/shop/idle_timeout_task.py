@@ -120,11 +120,59 @@ def check_idle_conversations():
     except Exception as e:
         logger.error(f"Error in idle timeout task: {e}")
 
+def check_ai_campaigns():
+    try:
+        from shop.models import AIEmailCampaign
+        from shop.services.email_campaign_service import AIEmailCampaignService
+        from django.utils import timezone
+        
+        active_campaigns = AIEmailCampaign.objects.filter(is_active=True)
+        now = timezone.now()
+        
+        for campaign in active_campaigns:
+            should_run = False
+            if not campaign.last_sent_at:
+                should_run = True
+            else:
+                elapsed = now - campaign.last_sent_at
+                if campaign.schedule_unit == 'Minutes':
+                    if elapsed.total_seconds() >= (campaign.schedule_value * 60):
+                        should_run = True
+                elif campaign.schedule_unit == 'Hours':
+                    if elapsed.total_seconds() >= (campaign.schedule_value * 3600):
+                        should_run = True
+                elif campaign.schedule_unit == 'Days':
+                    if elapsed.total_seconds() >= (campaign.schedule_value * 86400):
+                        should_run = True
+                elif campaign.schedule_unit == 'Weeks':
+                    if elapsed.total_seconds() >= (campaign.schedule_value * 604800):
+                        should_run = True
+                        
+            if should_run:
+                # Run the campaign directly in the APScheduler thread pool
+                from django.contrib.auth.models import User
+                from chatbot.services.groq_service import get_client
+                
+                client = get_client()
+                users = User.objects.filter(email__isnull=False).exclude(email="")
+                
+                import threading
+                thread = threading.Thread(
+                    target=AIEmailCampaignService._run_single_campaign,
+                    args=(campaign, client, users)
+                )
+                thread.daemon = True
+                thread.start()
+                
+    except Exception as e:
+        logger.error(f"Error checking AI campaigns: {e}")
+
 def start_scheduler():
     global _scheduler
     if _scheduler is None:
         _scheduler = BackgroundScheduler()
         # Run every 10 seconds
         _scheduler.add_job(check_idle_conversations, 'interval', seconds=10)
+        _scheduler.add_job(check_ai_campaigns, 'interval', seconds=60)
         _scheduler.start()
-        logger.info("Started idle timeout background scheduler.")
+        logger.info("Started idle timeout and AI campaign background scheduler.")
