@@ -249,3 +249,18 @@ class RefundTransactionAdmin(admin.ModelAdmin):
     list_display = ("id", "refund_request", "amount", "status", "processed_at")
     list_filter = ("status", "processed_at")
     search_fields = ("refund_request__order__id", "transaction_id")
+
+from .models import SubscriptionPlan, UserSubscription
+
+@admin.register(SubscriptionPlan)
+class SubscriptionPlanAdmin(admin.ModelAdmin):
+    list_display = ('name', 'amount', 'billing_cycle', 'is_active', 'razorpay_plan_id')
+    list_filter = ('billing_cycle', 'is_active')
+    search_fields = ('name', 'razorpay_plan_id')
+
+@admin.register(UserSubscription)
+class UserSubscriptionAdmin(admin.ModelAdmin):
+    list_display = ('user', 'subscription_plan', 'status', 'start_date', 'end_date', 'auto_renew')
+    list_filter = ('status', 'auto_renew')
+    search_fields = ('user__username', 'razorpay_subscription_id')
+
