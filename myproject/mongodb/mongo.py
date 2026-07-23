@@ -17,8 +17,9 @@ class MongoDBClient:
 
     def _init_client(self):
         try:
+            import os
             # Assuming default URI if not in settings
-            uri = getattr(settings, 'MONGODB_URI', 'mongodb://localhost:27017')
+            uri = getattr(settings, 'MONGODB_URI', os.getenv('MONGODB_URI', 'mongodb://localhost:27017'))
             self.client = MongoClient(uri, serverSelectionTimeoutMS=5000)
             
             # Test connection
@@ -37,8 +38,11 @@ class MongoDBClient:
             
             logger.info("Successfully connected to MongoDB and initialized indexes.")
             
-        except ConnectionFailure:
-            logger.error("Failed to connect to MongoDB. Ensure it is running on localhost:27017")
+        except ConnectionFailure as e:
+            import os
+            uri = getattr(settings, 'MONGODB_URI', os.getenv('MONGODB_URI', ''))
+            safe_uri = uri.split('@')[-1] if '@' in uri else 'localhost'
+            logger.error(f"Failed to connect to MongoDB at {safe_uri}. Real Error: {e}")
             self.client = None
             self.db = None
         except Exception as e:
