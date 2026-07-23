@@ -246,10 +246,11 @@ class ChatAPIView(View):
             return JsonResponse({'error': 'Invalid JSON payload.'}, status=400)
         except Exception as e:
             logger.error(f"Chat API error: {e}", exc_info=True)
-            return JsonResponse({
-                'message': "I'm having a small issue right now. Please try again!",
-                'products': [],
-            })
+            
+            def error_stream():
+                yield f"event: error\ndata: {json.dumps({'message': 'I encountered an issue processing your request.', 'debug': str(e)})}\n\n"
+            
+            return StreamingHttpResponse(error_stream(), content_type='text/event-stream')
 
 
 # =====================================
