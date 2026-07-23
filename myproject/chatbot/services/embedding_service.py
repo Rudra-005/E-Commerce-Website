@@ -26,12 +26,14 @@ def get_model():
                 logger.info("Loading BAAI/bge-small-en-v1.5 embedding model...")
                 try:
                     if SentenceTransformer is None:
-                        raise ImportError("sentence_transformers is not installed")
+                        logger.warning("sentence_transformers is not installed. Embedding model disabled.")
+                        return None
                     # Load from local cache, avoiding network checks and potential hangs
                     _model = SentenceTransformer('BAAI/bge-small-en-v1.5', local_files_only=True, device='cpu')
                 except Exception as e:
                     logger.warning(f"Could not load model locally from cache, falling back to online load: {e}")
-                    _model = SentenceTransformer('BAAI/bge-small-en-v1.5', device='cpu')
+                    if SentenceTransformer:
+                        _model = SentenceTransformer('BAAI/bge-small-en-v1.5', device='cpu')
                 logger.info("Embedding model loaded successfully.")
     return _model
 
@@ -72,6 +74,8 @@ def build_product_text(product):
 def generate_embedding(text):
     """Generate embedding vector for a single text string."""
     model = get_model()
+    if model is None:
+        raise Exception("Embedding model is disabled (sentence_transformers missing).")
     embedding = model.encode(text, normalize_embeddings=True)
     return embedding.tolist()
 

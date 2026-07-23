@@ -150,8 +150,22 @@ def search_products(query, top_k=8):
         query_vector = np.array(query_embedding, dtype=np.float32)
     except Exception as e:
         logger.error(f"Failed to generate embedding (is sentence_transformers installed?): {e}")
-        # If embedding fails, return empty products so chat doesn't crash
-        return [], filters
+        # FALLBACK: If embedding fails, return top 8 SQL filtered products directly
+        fallback_products = []
+        for product in product_qs[:top_k]:
+            fallback_products.append({
+                'id': product.id,
+                'name': product.name,
+                'price': str(product.price),
+                'image': product.image.url if product.image else None,
+                'description': product.description[:200],
+                'category': product.category_fk.name if product.category_fk else product.category,
+                'rating': product.average_rating,
+                'stock': product.stock,
+                'url': f'/product/{product.id}/',
+                'similarity': 1.0,
+            })
+        return fallback_products, filters
 
     # Normalize query vector
     norm_query = np.linalg.norm(query_vector)
