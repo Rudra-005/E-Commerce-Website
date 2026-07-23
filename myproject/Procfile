@@ -1,3 +1,1 @@
 web: gunicorn myproject.asgi:application -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
-worker: celery -A myproject worker -l info -c 1
-beat: celery -A myproject beat -l info
