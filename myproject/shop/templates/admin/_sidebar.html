@@ -24,7 +24,7 @@
         </style>
 
         <!-- Admin Links -->
-        {% if request.user.userprofile.role == 'admin' %}
+        {% if request.user.is_superuser or user_profile_obj.role == 'admin' %}
             <a href="{% url 'admin_dashboard' %}"><i class="fas fa-home"></i> Dashboard</a>
             <a href="{% url 'admin_chat' %}"><i class="fas fa-comments"></i> Chats</a>
             <a href="{% url 'admin_orders' %}"><i class="fas fa-box"></i> Orders</a>
@@ -39,7 +39,7 @@
         {% endif %}
 
         <!-- Support Links -->
-        {% if request.user.userprofile.role == 'support' %}
+        {% if user_profile_obj.role == 'support' %}
             <a href="{% url 'admin_chat' %}"><i class="fas fa-comments"></i> Chats</a>
         {% endif %}
         

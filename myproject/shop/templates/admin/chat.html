@@ -474,7 +474,7 @@
             <i class="fas fa-bolt"></i> VELORA PRO
         </div>
         <nav class="sidebar-nav">
-            {% if request.user.userprofile.role == 'admin' or request.user.is_superuser %}
+            {% if user_profile_obj.role == 'admin' or request.user.is_superuser %}
                 <div class="nav-group-title">Main Menu</div>
                 <a href="{% url 'admin_dashboard' %}"><i class="fas fa-home"></i> <span>Dashboard</span></a>
                 <a href="{% url 'admin_chat' %}" class="active"><i class="fas fa-comments"></i> <span>Chats</span></a>
@@ -487,7 +487,7 @@
                 <a href="{% url 'admin_refunds' %}"><i class="fas fa-undo"></i> <span>Refunds</span></a>
                 <a href="{% url 'admin_settings' %}"><i class="fas fa-cog"></i> <span>Settings</span></a>
                 <a href="/django-admin/"><i class="fas fa-database"></i> <span>Django Admin</span></a>
-            {% elif request.user.userprofile.role == 'support' %}
+            {% elif user_profile_obj.role == 'support' %}
                 <div class="nav-group-title">Support</div>
                 <a href="{% url 'admin_chat' %}" class="active"><i class="fas fa-comments"></i> <span>Chats</span></a>
             {% endif %}
@@ -500,7 +500,7 @@
                 <div class="avatar">{{ request.user.username|make_list|first|upper }}</div>
                 <div class="info">
                     <div class="name">{{ request.user.username }}</div>
-                    <div class="role">{{ request.user.userprofile.role|default:"Admin" }}</div>
+                    <div class="role">{{ user_profile_obj.role|default:"Admin" }}</div>
                 </div>
             </div>
             <a href="{% url 'logout' %}" class="logout-btn" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
