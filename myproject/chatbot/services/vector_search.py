@@ -145,8 +145,13 @@ def search_products(query, top_k=8):
         return [], filters
 
     # ── Step 2: Generate query embedding ──
-    query_embedding = generate_embedding(query)
-    query_vector = np.array(query_embedding, dtype=np.float32)
+    try:
+        query_embedding = generate_embedding(query)
+        query_vector = np.array(query_embedding, dtype=np.float32)
+    except Exception as e:
+        logger.error(f"Failed to generate embedding (is sentence_transformers installed?): {e}")
+        # If embedding fails, return empty products so chat doesn't crash
+        return [], filters
 
     # Normalize query vector
     norm_query = np.linalg.norm(query_vector)
