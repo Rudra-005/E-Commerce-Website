@@ -7,6 +7,11 @@ import sys
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')
+    
+    # Fix PyTorch/OpenMP hangs in multi-threaded environment (Windows)
+    os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
+    os.environ['OMP_NUM_THREADS'] = '1'
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

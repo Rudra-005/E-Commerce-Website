@@ -613,7 +613,12 @@ class SignupView(View):
             logger.info(f"Successfully sent OTP to {email}")
         except Exception as e:
             logger.error(f"Failed to send OTP email to {email}: {e}")
-            messages.error(request, "Failed to send verification email. Please try again later.")
+            if "535" in str(e) or "Authentication" in str(e):
+                messages.error(request, "Server Error: SMTP Authentication failed. Check EMAIL_HOST_PASSWORD.")
+            elif "504" in str(e) or "Timeout" in str(e):
+                messages.error(request, "Server Error: SMTP connection timed out. Could not reach email provider.")
+            else:
+                messages.error(request, f"Failed to send verification email (Error: {str(e)[:50]}). Please try again.")
             return redirect("signup")
 
         return redirect("verify_otp")
