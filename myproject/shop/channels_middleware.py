@@ -1,10 +1,13 @@
 from channels.db import database_sync_to_async
-from django.contrib.auth.models import AnonymousUser, User
 from django.conf import settings
 import jwt
 
 @database_sync_to_async
 def get_user_from_token(token):
+    from django.contrib.auth import get_user_model
+    from django.contrib.auth.models import AnonymousUser
+    
+    User = get_user_model()
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
         if payload.get("token_type") == "access":
@@ -18,6 +21,8 @@ class JWTAuthMiddleware:
         self.app = app
 
     async def __call__(self, scope, receive, send):
+        from django.contrib.auth.models import AnonymousUser
+        
         headers = dict(scope.get("headers", []))
         cookies = {}
         if b"cookie" in headers:
