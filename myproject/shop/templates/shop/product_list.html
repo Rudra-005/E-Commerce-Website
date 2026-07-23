@@ -669,54 +669,127 @@
     }
     
     /* MOBILE NAVBAR FIX */
+    .mobile-menu-btn {
+        display: none;
+        background: var(--primary-yellow);
+        border: 4px solid #000;
+        font-size: 24px;
+        padding: 5px 12px;
+        cursor: pointer;
+        box-shadow: 4px 4px 0px #000;
+        font-weight: bold;
+    }
+
     @media (max-width: 950px) {
         .comic-navbar {
-            justify-content: center;
-            padding: 15px 10px;
-            gap: 15px;
-            position: static; /* Let it scroll up on mobile to save space */
+            padding: 10px;
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            grid-template-areas: 
+                "logo cart menu"
+                "search search search"
+                "nav nav nav";
+            gap: 12px;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
+
+        .comic-logo { grid-area: logo; }
+        
+        .comic-logo-box {
+            padding: 5px 10px;
+            transform: none !important;
+            box-shadow: 4px 4px 0px #000 !important;
+            border-width: 4px;
+        }
+        
+        .comic-logo-icon { font-size: 24px; margin-right: 5px; }
+        .comic-logo-text { font-size: 20px; }
+
         .comic-nav-right {
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
+            display: contents; /* Exposes children to the navbar grid */
         }
+        
+        .mobile-menu-btn {
+            display: block;
+            grid-area: menu;
+            transform: none !important;
+        }
+
         .comic-search {
+            grid-area: search;
             width: 100%;
             margin: 0;
+            transform: none !important;
+            box-shadow: 4px 4px 0px #000 !important;
+            border-width: 4px;
         }
-        .comic-search form {
-            width: 100%;
-        }
+        
         .comic-search input {
-            width: 100%;
             font-size: 16px;
+            padding: 8px;
         }
-        .comic-nav-links {
-            width: 100%;
-            padding: 10px;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .comic-nav-links a {
+        
+        .comic-search button {
             font-size: 18px;
+            padding: 5px 10px;
         }
-        .user-profile {
-            flex: 1;
+
+        .comic-cart-btn {
+            grid-area: cart;
+            padding: 6px 10px;
+            font-size: 14px;
+            transform: none !important;
+            box-shadow: 4px 4px 0px #000 !important;
+            border-width: 4px;
+            white-space: nowrap;
+        }
+
+        .comic-nav-links, .user-profile {
+            display: none; /* Hidden by default on mobile */
+            grid-area: nav;
+            flex-direction: column;
+            width: 100%;
+            gap: 10px;
+            transform: none !important;
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+            background: transparent !important;
+        }
+        
+        .mobile-menu-active .comic-nav-links,
+        .mobile-menu-active .user-profile {
             display: flex;
         }
+
+        .comic-nav-links a {
+            background: #fff;
+            border: 4px solid #000;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 4px 4px 0px #000;
+            font-size: 16px;
+        }
+
         .comic-login-btn {
             width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            transform: none !important;
+            box-shadow: 4px 4px 0px #000 !important;
+            border-width: 4px;
             justify-content: center;
-            padding: 12px;
-            font-size: 20px;
         }
-        .comic-cart-btn {
-            flex: 1;
-            justify-content: center;
-            padding: 12px;
-            font-size: 20px;
+        
+        .profile-dropdown {
+            width: 100%;
+            position: relative;
+            top: 0;
+            box-shadow: 4px 4px 0px #000;
+            border-width: 4px;
         }
     }
 
@@ -1314,6 +1387,8 @@
             <span class="comic-logo-text">Velora</span>
         </div>
     </a>
+    
+    <button class="mobile-menu-btn" onclick="document.querySelector('.comic-navbar').classList.toggle('mobile-menu-active')">☰</button>
 
     <div class="comic-nav-right">
         <div class="comic-search">
