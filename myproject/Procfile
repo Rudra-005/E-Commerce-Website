@@ -1,1 +1,1 @@
-web: gunicorn myproject.asgi:application -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+web: gunicorn myproject.asgi:application -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT --access-logfile - --error-logfile - --forwarded-allow-ips="*"
